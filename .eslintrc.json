@@ -1,0 +1,55 @@
+{
+    "globals": {
+        "JSX": "readonly"
+    },
+    "extends": [
+        "next",
+        "next/core-web-vitals",
+        "plugin:react/recommended",
+        "airbnb",
+        "plugin:prettier/recommended",
+        "prettier",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": ["react", "@typescript-eslint"],
+    "rules": {
+        "@typescript-eslint/no-use-before-define": ["error"],
+        "prettier/prettier": "error",
+        "indent": "off",
+        "import/extensions": "off",
+        "import/no-unresolved": "off", // needs to be reviewed
+        "no-use-before-define": "off",
+        "no-nested-ternary": "off",
+        "react/require-default-props": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+        "react/no-array-index-key": 1,
+        "react/jsx-props-no-spreading": "off",
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "react/function-component-definition": [
+            // https://github.com/airbnb/javascript/issues/2505 issue causing functions to be used
+            "warn",
+            {
+                "namedComponents": "arrow-function",
+                "unnamedComponents": "arrow-function"
+            }
+        ],
+        "react/jsx-curly-brace-presence": [
+            "error",
+            {
+                "props": "always",
+                "children": "ignore"
+            }
+        ]
+    }
+}

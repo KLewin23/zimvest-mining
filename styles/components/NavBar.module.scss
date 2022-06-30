@@ -1,0 +1,33 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    height: 80px;
+    max-width: 1800px;
+    margin: auto;
+    nav {
+        display: flex;
+        flex-direction: row;
+        gap: 2.375rem;
+        > * {
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom-color 0.2s ease-in-out;
+            &:hover {
+                border-bottom: 1px solid black;
+            }
+        }
+    }
+    > div {
+        display: flex;
+        flex-direction: row;
+        gap: 3rem;
+        > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}

@@ -1,0 +1,26 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #f49232;
+    height: 30px;
+    padding-inline: 1rem;
+    color: white;
+    div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    > div {
+        max-width: 1800px;
+        margin: auto;
+        justify-content: space-between;
+        flex-grow: 1;
+        >div {
+            gap: 1rem;
+            >div {
+                gap: .25rem;
+            }
+        }
+    }
+}
