@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install",
+    "snyk": "snyk test",
+    "test": "snyk test"
   },
   "dependencies": {
     "@fontsource/montserrat": "^4.5.11",
@@ -30,8 +33,10 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.0",
     "eslint-plugin-react-hooks": "^4.5.0",
+    "husky": "^8.0.1",
     "prettier": "^2.7.1",
     "sass": "^1.53.0",
+    "snyk": "^1.961.0",
     "typescript": "4.7.4"
   }
 }
