@@ -1,0 +1,61 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    .iconList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2.0625rem 1.5rem;
+        color: #95979C;
+        border-right: 1px solid rgba(42, 46, 57, 0.1);
+        background-color: white;
+        gap: 2rem;
+        > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+    }
+    .productSearch {
+        display: flex;
+        flex-direction: column;
+        padding: 2.0625rem 1.5rem;
+        background-color: white;
+        gap: 1rem;
+        .search {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+            border-radius: 5px;
+            background: rgba(229, 229, 229, 0.4);
+            padding: 0.625rem;
+            > input {
+                background: none;
+                font-size: 1rem;
+                border: none;
+                min-width: 150px;
+            }
+        }
+        .list {
+            display: flex;
+            flex-direction: column;
+            > div {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                flex: none;
+                flex-grow: 0;
+                gap: 12px;
+                padding: 0.625rem;
+                border-bottom: 1px solid rgba(42, 46, 57, 0.1);
+                cursor: pointer;
+                > p {
+                    flex-grow: 1;
+                }
+            }
+        }
+    }
+}

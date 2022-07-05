@@ -3,34 +3,70 @@
     display: flex;
     background-color: #e5e5e5;
     width: 100%;
-    height: calc(100% - 110px);
+    height: 100%;
+    padding-block: 4rem;
     input {
         width: 100%;
         background: #ffffff;
         border: 1px solid #ced4da;
-        border-radius: 5px;
+        border-radius: 6px;
         height: 40px;
         padding-inline: 0.7rem;
         font-size: 1rem;
-        font-family: 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-            Helvetica Neue, sans-serif;
+        &::placeholder {
+            opacity: 0.5;
+        }
     }
 }
 
-.authBox {
+.box {
     position: absolute;
     display: flex;
     flex-direction: column;
     justify-content: center;
     left: 50%;
-    top: 4rem;
+    top: 3rem;
     transform: translateX(-50%);
     background-color: white;
     border-radius: 5px;
-    padding: 3.625rem;
+    padding: 3rem 3.5rem 2rem 3.5rem;
+    form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .inputs {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        flex-grow: 1;
+        transition: opacity 0.3s ease-in-out;
+    }
+    > p {
+        margin-block: 2rem 1rem;
+        text-align: center;
+    }
+}
+
+.button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.authBox {
+    @extend .box;
     width: 480px;
     min-width: 480px;
     overflow: hidden;
+
     .slideBox {
         position: relative;
         display: flex;
@@ -40,81 +76,90 @@
         width: calc(200% + 5rem);
         transition: margin-left 0.3s ease-in-out;
     }
-    .inputs {
-        margin-top: 2.5rem;
-        margin-bottom: 1rem;
+    h5 {
         display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        flex-grow: 1;
-        transition: opacity 0.3s ease-in-out;
+        flex-direction: row;
+        gap: 0.15rem;
+        a {
+            font-weight: 600;
+            color: #f49232;
+        }
+    }
+    .group {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    .actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        a {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f49232;
+            cursor: pointer;
+        }
     }
     .signup {
         text-align: center;
-        margin-block: 1rem;
-        b {
-            border-bottom: 1px solid transparent;
+        margin-block: 2rem 1rem;
+        a {
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: underline;
+            margin-left: 0.3rem;
+            color: #f49232;
             cursor: pointer;
-            transition: 0.2s border-bottom-color ease-in-out;
-            &:hover {
-                border-bottom-color: black;
-            }
         }
     }
-}
 
-.divider {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    color: #d9d9d9;
-    span {
-        width: 40%;
-        height: 1px;
-        background-color: #d9d9d9;
+    .errorMessage {
+        height: 1.5rem;
+        line-height: 2.25rem;
+        font-weight: bold;
+        color: #ec4c4c;
+        &:first-letter {
+            text-transform: capitalize;
+        }
+    }
+
+    .googleButton {
+        @extend .button;
+        margin-top: 0.5rem;
+        background: white;
+        border: 1px solid #e5e5e5;
+        color: black;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
     }
 }
 
 .zim_button {
-    margin-top: 1rem;
-    border-radius: 5px;
-    background-color: #ed7830;
+    @extend .button;
+    margin-top: 1.5rem;
+    background-color: #f49232;
     border: none;
-    height: 40px;
     color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
     transition: background-color 0.2s ease-in-out;
     &:hover {
         background-color: #f66a0f;
     }
 }
 
-.errorMessage {
-    font-weight: bold;
-    color: #ec4c4c;
-    margin-bottom: 0.75rem;
-    &:first-letter {
-        text-transform: capitalize;
+.verify {
+    @extend .box;
+    min-width: 650px;
+    text-align: center;
+    gap: 2rem;
+    button {
+        width: 50%;
+        margin: auto;
     }
 }
 
-.googleButton {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 1rem auto 0 auto;
-    background: #4285f4;
-    border-radius: 2px;
-    color: white;
-    border: none;
-    font-size: 1rem;
-    height: 40px;
-    width: fit-content;
-    font-family: 'roboto', 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
-        Droid Sans, Helvetica Neue, sans-serif;
-    cursor: pointer;
+.forgottenPassword {
+    @extend .box;
+    width: 400px;
 }

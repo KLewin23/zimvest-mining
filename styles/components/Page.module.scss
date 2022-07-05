@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100% - 110px);
+}
+
+.widget {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    max-height: 35px;
+    overflow: hidden;
+}

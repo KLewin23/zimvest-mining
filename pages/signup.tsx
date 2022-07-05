@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Page from '../components/Page';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
 import { userApiUrl } from '../components/utils';
+import Checkbox from '../components/Checkbox';
 
 interface FormValues {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    rePassword: string;
-    companyName: string;
+    'First Name': string;
+    'Last Name': string;
+    Email: string;
+    Password: string;
+    'Confirm Password': string;
+    'Company Name': string;
+    Declaration: boolean;
 }
 
 const SignUp = (): JSX.Element => {
@@ -24,51 +26,55 @@ const SignUp = (): JSX.Element => {
         getValues,
         handleSubmit,
         formState: { errors },
+        control,
     } = useForm<FormValues>();
-    const [onNextState, setOnNextState] = useState(false);
-    const router = useRouter();
+    const [signUpComplete, setSignUpComplete] = useState(false);
 
     const signup: SubmitHandler<FormValues> = data => {
-        if (!onNextState) {
-            return setOnNextState(true);
-        }
-
-        return fetch(`${userApiUrl}/user`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ...data }),
-        })
+        return axios
+            .post(
+                `${userApiUrl}/user`,
+                {
+                    ...data,
+                },
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                },
+            )
             .then(async res => {
                 if (res.status === 200) {
-                    await router.push('/verify');
+                    setSignUpComplete(true); // TODO change to a message telling them to verify
                 }
             })
             .catch(() => null);
     };
 
     const errorMessage = () => {
-        const firstError = (['email', 'password', 'rePassword', 'firstName', 'lastName', 'companyName'] as (keyof FormValues)[]).find(
-            err => errors[err],
-        );
+        const firstError = (
+            ['First Name', 'Last Name', 'Company Name', 'Email', 'Password', 'Confirm Password', 'Declaration'] as (keyof FormValues)[]
+        ).find(err => errors[err]);
         if (!firstError) return '';
         switch (errors[firstError]?.type) {
             case 'required': {
-                return `${firstError} is a required field`;
+                return `${firstError} is a required field.`;
             }
             case 'minLength': {
-                return `${firstError} must be 8 characters or longer`;
+                return `${firstError} must be 8 characters or longer.`;
             }
             case 'maxLength': {
-                return `${firstError} must be 8 characters or longer`;
+                return `${firstError} must be 8 characters or longer.`;
             }
             case 'matchesReType': {
-                return `Passwords must match`;
+                return `Passwords must match.`;
+            }
+            case 'isTrue': {
+                return 'You must accept the declaration.';
             }
             default:
-                return 'Something is wrong in the form';
+                return 'Something is wrong in the form.';
         }
     };
 
@@ -83,109 +89,119 @@ const SignUp = (): JSX.Element => {
                 <div className={styles.main}>
                     <div className={styles.authBox}>
                         <Image src={Logo} width={150} height={60} />
-                        <form onSubmit={handleSubmit(signup)}>
-                            <div className={styles.slideBox} style={{ marginLeft: onNextState ? 'calc(-100% - 5rem)' : '0' }}>
-                                <div className={styles.inputs} style={{ opacity: onNextState ? 0 : 1 }}>
-                                    <label htmlFor={'email'} className={styles.email}>
-                                        <p>Email</p>
-                                        <input
-                                            id={'email'}
-                                            type={'text'}
-                                            placeholder={'Email'}
-                                            style={{ borderColor: errors.email ? '#EC4C4C' : '#ced4da' }}
-                                            {...register('email', { required: true })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'password'} className={styles.password}>
-                                        <p>Password</p>
-                                        <input
-                                            id={'password'}
-                                            style={{ borderColor: errors.password ? '#EC4C4C' : '#ced4da' }}
-                                            type={'password'}
-                                            placeholder={'Password'}
-                                            {...register('password', {
-                                                validate: { matchesReType: value => value === getValues('rePassword') },
-                                                required: true,
-                                                minLength: 8,
-                                                maxLength: 24,
-                                            })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'rePassword'} className={styles.password}>
-                                        <p>Re-type Password</p>
-                                        <input
-                                            id={'rePassword'}
-                                            style={{ borderColor: errors.password ? '#EC4C4C' : '#ced4da' }}
-                                            type={'password'}
-                                            placeholder={'Re-type Password'}
-                                            {...register('rePassword', {
-                                                validate: { matchesReType: value => value === getValues('password') },
-                                                required: true,
-                                                minLength: 8,
-                                                maxLength: 24,
-                                            })}
-                                        />
-                                    </label>
-                                </div>
-                                <div className={styles.inputs} style={{ opacity: onNextState ? 1 : 0 }}>
-                                    <label htmlFor={'firstName'} className={styles.email}>
-                                        <p>First name</p>
-                                        <input
-                                            id={'firstName'}
-                                            type={'text'}
-                                            placeholder={'First name'}
-                                            style={{ borderColor: errors.firstName ? '#EC4C4C' : '#ced4da' }}
-                                            {...register('firstName', { required: onNextState })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'lastName'} className={styles.password}>
-                                        <p>Last name</p>
-                                        <input
-                                            id={'lastName'}
-                                            type={'text'}
-                                            placeholder={'Last name'}
-                                            style={{ borderColor: errors.lastName ? '#EC4C4C' : '#ced4da' }}
-                                            {...register('lastName', { required: onNextState })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'companyName'} className={styles.password}>
-                                        <p>Company name</p>
+                        {signUpComplete ? (
+                            <p>Thank you for creating an account, we have sent you a verification email.</p>
+                        ) : (
+                            <form onSubmit={handleSubmit(signup)}>
+                                <div className={styles.inputs}>
+                                    <div className={styles.group}>
+                                        <label htmlFor={'firstName'}>
+                                            <p>First name</p>
+                                            <input
+                                                id={'firstName'}
+                                                type={'text'}
+                                                placeholder={'First name'}
+                                                style={{ borderColor: errors['First Name'] ? '#EC4C4C' : '#ced4da' }}
+                                                {...register('First Name', { required: true })}
+                                            />
+                                        </label>
+                                        <label htmlFor={'lastName'}>
+                                            <p>Last name</p>
+                                            <input
+                                                id={'lastName'}
+                                                type={'text'}
+                                                placeholder={'Last name'}
+                                                style={{ borderColor: errors['Last Name'] ? '#EC4C4C' : '#ced4da' }}
+                                                {...register('Last Name', { required: true })}
+                                            />
+                                        </label>
+                                    </div>
+                                    <label htmlFor={'companyName'}>
+                                        <p>Company</p>
                                         <input
                                             id={'companyName'}
                                             type={'text'}
                                             placeholder={'Company name'}
-                                            style={{ borderColor: errors.companyName ? '#EC4C4C' : '#ced4da' }}
-                                            {...register('companyName', { required: onNextState })}
+                                            style={{ borderColor: errors['Company Name'] ? '#EC4C4C' : '#ced4da' }}
+                                            {...register('Company Name', { required: true })}
+                                        />
+                                    </label>
+                                    <label htmlFor={'email'}>
+                                        <p>Email</p>
+                                        <input
+                                            id={'email'}
+                                            type={'email'}
+                                            placeholder={'Email'}
+                                            style={{ borderColor: errors.Email ? '#EC4C4C' : '#ced4da' }}
+                                            {...register('Email', { required: true })}
+                                        />
+                                    </label>
+                                    <label htmlFor={'password'}>
+                                        <p>Password</p>
+                                        <input
+                                            id={'password'}
+                                            style={{ borderColor: errors.Password ? '#EC4C4C' : '#ced4da' }}
+                                            type={'password'}
+                                            placeholder={'Password'}
+                                            {...register('Password', {
+                                                validate: { matchesReType: value => value === getValues('Confirm Password') },
+                                                required: true,
+                                                minLength: 8,
+                                                maxLength: 24,
+                                            })}
+                                        />
+                                    </label>
+                                    <label htmlFor={'rePassword'}>
+                                        <p>Confirm Password</p>
+                                        <input
+                                            id={'rePassword'}
+                                            style={{ borderColor: errors['Confirm Password'] ? '#EC4C4C' : '#ced4da' }}
+                                            type={'password'}
+                                            placeholder={'Confirm Password'}
+                                            {...register('Confirm Password', {
+                                                validate: { matchesReType: value => value === getValues('Password') },
+                                                required: true,
+                                                minLength: 8,
+                                                maxLength: 24,
+                                            })}
                                         />
                                     </label>
                                 </div>
-                            </div>
-                            <h4 className={styles.errorMessage}>{errorMessage() || ''}</h4>
-                            <div>
-                                <Link href={'/forgot'}>
-                                    <h4>Forgotten your password?</h4>
-                                </Link>
-                            </div>
-                            <button type={'submit'} className={styles.zim_button}>
-                                {onNextState ? 'Sign Up' : 'Next'}
-                            </button>
-                        </form>
-                        <h4 className={styles.signup}>
-                            Already have an account?
-                            <Link href={'/login'}>
-                                <b>Login</b>
-                            </Link>
-                        </h4>
+                                <h4 className={styles.errorMessage} style={{ marginBottom: errorMessage() ? '0.75rem' : 0 }}>
+                                    {errorMessage() || ''}
+                                </h4>
+                                <Controller
+                                    name={'Declaration'}
+                                    control={control}
+                                    defaultValue={false}
+                                    rules={{ validate: { isTrue: value => value } }}
+                                    render={({ field }) => (
+                                        <Checkbox
+                                            error={errors.Declaration !== undefined}
+                                            checked={field.value}
+                                            onClick={() => field.onChange(!field.value)}
+                                        >
+                                            <h5>
+                                                I accept the <Link href={'/tos'}>Terms of Service</Link> as well as
+                                                <Link href={'/privacy-policy'}>Privacy Policy.</Link>
+                                            </h5>
+                                        </Checkbox>
+                                    )}
+                                />
 
-                        <div className={styles.divider}>
-                            <span />
-                            <h4>OR</h4>
-                            <span />
-                        </div>
-                        <button type={'button'} className={styles.googleButton}>
-                            <Image src={GoogleIcon} />
-                            Sign up with Google
-                        </button>
+                                <button type={'submit'} className={styles.zim_button}>
+                                    Create account
+                                </button>
+                                <button type={'button'} className={styles.googleButton}>
+                                    <Image src={GoogleIcon} />
+                                    Register with Google
+                                </button>
+                                <h4 className={styles.signup}>
+                                    Already have an account?
+                                    <Link href={'/login'}>Login</Link>
+                                </h4>
+                            </form>
+                        )}
                     </div>
                 </div>
             </Page>
