@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export const userApiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'user-api.galacticnodes.com';
+export const userApiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'http://zimvestmining.com:4000';
 export const fetchUser = async (cookie: string) => axios.get(`${userApiUrl}/user`, { withCredentials: true, headers: { cookie } });
 
 export const useEventListener = <K extends keyof WindowEventMap>(eventName: K, callback: (event: WindowEventMap[K]) => void): void => {
