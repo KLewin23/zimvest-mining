@@ -51,7 +51,7 @@ const Login = (): JSX.Element => {
                 if (e.response.status === 403 || e.response.status === 400) {
                     setError('email', { type: 'invalid' });
                 }
-                console.log(e);
+                setError('email', { type: 'server_error' });
             });
     };
 
@@ -59,12 +59,11 @@ const Login = (): JSX.Element => {
         const firstError = (['email', 'password'] as (keyof FormValues)[]).find(err => errors[err]);
         if (!firstError) return '';
         switch (errors[firstError]?.type) {
-            case 'required': {
+            case 'required':
                 return `${firstError} is a required field.`;
-            }
-            case 'invalid': {
+            case 'invalid':
                 return 'Incorrect email or password';
-            }
+            case 'server_error':
             default:
                 return 'Something is wrong in the form.';
         }

@@ -1,0 +1,38 @@
+@mixin input {
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    height: 40px;
+    padding-inline: 0.7rem;
+    font-size: 1rem;
+    &::placeholder {
+        opacity: 0.5;
+    }
+}
+
+@mixin flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+@mixin flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin button-base {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+@mixin bare-button {
+    border: none;
+    background: none;
+}

@@ -27,15 +27,22 @@ const SignUp = (): JSX.Element => {
         handleSubmit,
         formState: { errors },
         control,
+        setError,
     } = useForm<FormValues>();
     const [signUpComplete, setSignUpComplete] = useState(false);
+    const [apiRequestSent, setApiRequestSent] = useState(false);
 
     const signup: SubmitHandler<FormValues> = data => {
-        return axios
+        setApiRequestSent(true);
+        axios
             .post(
                 `${userApiUrl}/user`,
                 {
-                    ...data,
+                    firstName: data['First Name'],
+                    lastName: data['Last Name'],
+                    email: data.Email,
+                    password: data.Password,
+                    companyName: data['Company Name'],
                 },
                 {
                     headers: {
@@ -49,7 +56,13 @@ const SignUp = (): JSX.Element => {
                     setSignUpComplete(true); // TODO change to a message telling them to verify
                 }
             })
-            .catch(() => null);
+            .catch(e => {
+                setApiRequestSent(false);
+                if (e.response.status === 409) {
+                    return setError('First Name', { type: 'user_exists' });
+                }
+                return setError('First Name', { type: 'server_error' });
+            });
     };
 
     const errorMessage = () => {
@@ -58,21 +71,19 @@ const SignUp = (): JSX.Element => {
         ).find(err => errors[err]);
         if (!firstError) return '';
         switch (errors[firstError]?.type) {
-            case 'required': {
+            case 'required':
                 return `${firstError} is a required field.`;
-            }
-            case 'minLength': {
+            case 'minLength':
                 return `${firstError} must be 8 characters or longer.`;
-            }
-            case 'maxLength': {
+            case 'maxLength':
                 return `${firstError} must be 8 characters or longer.`;
-            }
-            case 'matchesReType': {
+            case 'matchesReType':
                 return `Passwords must match.`;
-            }
-            case 'isTrue': {
+            case 'isTrue':
                 return 'You must accept the declaration.';
-            }
+            case 'user_exists':
+                return 'A user already exists with the email you provided';
+            case 'server_error':
             default:
                 return 'Something is wrong in the form.';
         }
@@ -189,7 +200,7 @@ const SignUp = (): JSX.Element => {
                                     )}
                                 />
 
-                                <button type={'submit'} className={styles.zim_button}>
+                                <button type={'submit'} className={`${styles.zim_button} ${apiRequestSent ? styles.loading : ''}`}>
                                     Create account
                                 </button>
                                 <button type={'button'} className={styles.googleButton}>

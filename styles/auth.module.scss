@@ -1,3 +1,5 @@
+@use 'components/index.module';
+
 .main {
     position: relative;
     display: flex;
@@ -6,16 +8,8 @@
     height: 100%;
     padding-block: 4rem;
     input {
+        @include index.input;
         width: 100%;
-        background: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        height: 40px;
-        padding-inline: 0.7rem;
-        font-size: 1rem;
-        &::placeholder {
-            opacity: 0.5;
-        }
     }
 }
 
@@ -47,18 +41,6 @@
         margin-block: 2rem 1rem;
         text-align: center;
     }
-}
-
-.button {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
-    height: 40px;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
 }
 
 .authBox {
@@ -125,7 +107,7 @@
     }
 
     .googleButton {
-        @extend .button;
+        @include index.button-base;
         margin-top: 0.5rem;
         background: white;
         border: 1px solid #e5e5e5;
@@ -136,16 +118,49 @@
     }
 }
 
+@keyframes button-anim {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .zim_button {
-    @extend .button;
+    @include index.button-base;
+    position: relative;
     margin-top: 1.5rem;
     background-color: #f49232;
     border: none;
     color: white;
-    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, color 0.2s linear;
     &:hover {
         background-color: #f66a0f;
     }
+    &::after {
+        content: '';
+        display: block;
+        width: 1.2em;
+        height: 1.2em;
+        position: absolute;
+        left: calc(50% - 0.75em);
+        top: calc(50% - 0.75em);
+        border: 0.15em solid transparent;
+        border-right-color: white;
+        border-radius: 50%;
+        animation: button-anim 0.7s linear infinite;
+        opacity: 0;
+    }
+}
+
+.zim_button.loading {
+    color: transparent;
+}
+
+.zim_button.loading::after {
+    opacity: 1;
 }
 
 .verify {

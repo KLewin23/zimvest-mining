@@ -1,0 +1,140 @@
+@use 'components/index.module';
+
+.main {
+    @include index.flex-row;
+    justify-content: center;
+    padding-block: 3rem;
+    width: 100%;
+    height: auto;
+    min-height: calc(100vh - 110px);
+    background-color: #e5e5e5;
+
+    .collapse {
+        @include index.flex-col;
+        position: relative;
+        gap: 3.125rem;
+        border-radius: 5px;
+        padding: 2.5rem;
+        min-width: 600px;
+        width: 50%;
+        transition: max-height 0.2s linear;
+        background-color: white;
+        overflow: hidden;
+        h2 {
+            font-weight: bold;
+        }
+        .title {
+            position: absolute;
+            @include index.flex-row;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+            width: 100%;
+            padding-inline: 2.5rem;
+            font-weight: normal;
+            top: 0;
+            color: #f49232;
+            left: 0;
+            z-index: 20;
+            h3 {
+                transition: opacity 0.1s linear 0.1s;
+            }
+        }
+        > div {
+            @include index.flex-row;
+            z-index: 10;
+            transition: opacity 0.1s linear 0.1s;
+        }
+        section {
+            @include index.flex-col;
+            row-gap: 1.5625rem;
+            h3 {
+                font-weight: bold;
+            }
+            div {
+                display: grid;
+                row-gap: 1.5625rem;
+                column-gap: 2rem;
+                width: 80%;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                .firstCol {
+                    grid-column: 1;
+                }
+                input {
+                    @include index.input;
+                    width: 100%;
+                }
+            }
+            button {
+                @include index.button-base;
+                border: none;
+                background-color: #f49232;
+                color: white;
+                width: 200px;
+                min-width: 100px;
+            }
+        }
+    }
+    .account {
+        @extend .collapse;
+        .layer1 {
+            .profilePic {
+                border-radius: 50%;
+            }
+            gap: 2rem;
+            > div {
+                @include index.flex-col;
+                justify-content: space-between;
+                flex-grow: 1;
+                .changePhoto {
+                    background: none;
+                    border: none;
+                    width: fit-content;
+                    padding: 0;
+                    color: #f49232;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+                svg {
+                    transform: rotate(270deg);
+                }
+            }
+            .logout {
+                @include index.flex-row;
+                justify-content: flex-end;
+                align-items: flex-end;
+                font-weight: bold;
+                color: #bbbbbb;
+            }
+        }
+        .socialMedia {
+            label {
+                width: calc(55%);
+                @include index.flex-row;
+                align-items: center;
+                gap: 1rem;
+                grid-column: 1 / span 1;
+            }
+            button {
+                width: 200px;
+                min-width: 100px;
+            }
+        }
+    }
+}
+
+.expandBtn {
+    @include index.bare-button;
+    width: fit-content;
+    cursor: pointer;
+    height: fit-content;
+}
+
+@media only screen and (max-width: 1119px) {
+    .main {
+        padding: 1rem;
+        .collapse {
+            width: 100%;
+        }
+    }
+}

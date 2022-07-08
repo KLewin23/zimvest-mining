@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 

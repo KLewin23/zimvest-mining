@@ -45,26 +45,20 @@ const ForgottenPassword = ({ code }: { code: string }): JSX.Element => {
         const firstError = (['New Password', 'Confirm Password'] as (keyof FormValues)[]).find(err => errors[err]);
         if (!firstError) return '';
         switch (errors[firstError]?.type) {
-            case 'minLength': {
+            case 'minLength':
                 return `${firstError} must be 8 characters or longer.`;
-            }
-            case 'maxLength': {
+            case 'maxLength':
                 return `${firstError} must be 8 characters or longer.`;
-            }
-            case 'matchesReType': {
+            case 'matchesReType':
                 return `Passwords must match.`;
-            }
-            case 'required': {
+            case 'required':
                 return `${firstError} is a required field.`;
-            }
             case '400':
-            case '403': {
+            case '403':
                 return 'This change password request is either expired or invalid.';
-            }
             case 'unknown':
-            default: {
+            default:
                 return 'Something is wrong in the form.';
-            }
         }
     };
 

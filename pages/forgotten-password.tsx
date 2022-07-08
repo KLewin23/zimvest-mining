@@ -34,9 +34,8 @@ const ForgottenPassword = (): JSX.Element => {
     const errorMessage = () => {
         if (!errors.email) return '';
         switch (errors.email?.type) {
-            case 'required': {
+            case 'required':
                 return `Email is a required field.`;
-            }
             default:
                 return 'Something is wrong in the form.';
         }

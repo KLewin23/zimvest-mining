@@ -9,7 +9,8 @@
         "airbnb",
         "plugin:prettier/recommended",
         "prettier",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:switch-case/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -19,7 +20,7 @@
         "ecmaVersion": 12,
         "sourceType": "module"
     },
-    "plugins": ["react", "@typescript-eslint"],
+    "plugins": ["react", "@typescript-eslint", "switch-case"],
     "rules": {
         "@typescript-eslint/no-use-before-define": ["error"],
         "prettier/prettier": "error",
