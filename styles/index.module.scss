@@ -1,0 +1,9 @@
+.main {
+    display: flex;
+    flex-grow: 1;
+    padding: 3rem;
+    .banner {
+        min-width: 300px;
+        width: 70%;
+    }
+}

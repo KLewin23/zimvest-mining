@@ -1,50 +1,24 @@
 @use 'components/index.module';
 
+@keyframes button-anim {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .main {
-    @include index.flex-row;
-    justify-content: center;
+    @include index.flex-col;
+    align-items: center;
+    gap: 2rem;
     padding-block: 3rem;
     width: 100%;
     height: auto;
     min-height: calc(100vh - 110px);
     background-color: #e5e5e5;
-
-    .collapse {
-        @include index.flex-col;
-        position: relative;
-        gap: 3.125rem;
-        border-radius: 5px;
-        padding: 2.5rem;
-        min-width: 600px;
-        width: 50%;
-        transition: max-height 0.2s linear;
-        background-color: white;
-        overflow: hidden;
-        h2 {
-            font-weight: bold;
-        }
-        .title {
-            position: absolute;
-            @include index.flex-row;
-            justify-content: space-between;
-            align-items: center;
-            height: 90px;
-            width: 100%;
-            padding-inline: 2.5rem;
-            font-weight: normal;
-            top: 0;
-            color: #f49232;
-            left: 0;
-            z-index: 20;
-            h3 {
-                transition: opacity 0.1s linear 0.1s;
-            }
-        }
-        > div {
-            @include index.flex-row;
-            z-index: 10;
-            transition: opacity 0.1s linear 0.1s;
-        }
+    .tab {
         section {
             @include index.flex-col;
             row-gap: 1.5625rem;
@@ -67,17 +41,47 @@
             }
             button {
                 @include index.button-base;
+                position: relative;
                 border: none;
                 background-color: #f49232;
                 color: white;
                 width: 200px;
                 min-width: 100px;
+                transition: color 0.2s linear;
+                &:hover {
+                    background-color: #f66a0f;
+                }
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 1.2em;
+                    height: 1.2em;
+                    position: absolute;
+                    left: calc(50% - 0.75em);
+                    top: calc(50% - 0.75em);
+                    border: 0.15em solid transparent;
+                    border-right-color: white;
+                    border-radius: 50%;
+                    animation: button-anim 0.7s linear infinite;
+                    opacity: 0;
+                }
+            }
+            button.loading {
+                color: transparent;
+            }
+
+            button.loading::after {
+                opacity: 1;
             }
         }
     }
+
     .account {
-        @extend .collapse;
+        @include index.flex-col;
+        @extend .tab;
+        gap: 1.5625rem;
         .layer1 {
+            @include index.flex-row;
             .profilePic {
                 border-radius: 50%;
             }
@@ -109,7 +113,7 @@
         }
         .socialMedia {
             label {
-                width: calc(55%);
+                width: calc(65%);
                 @include index.flex-row;
                 align-items: center;
                 gap: 1rem;
@@ -120,7 +124,68 @@
                 min-width: 100px;
             }
         }
+        .info {
+            width: 100%;
+            @include index.flex-row;
+            align-items: center;
+            gap: 0.3rem;
+            color: #969696;
+            h3 {
+                margin-right: 2rem;
+                color: black;
+            }
+        }
     }
+    .wishlist {
+        @include index.flex-col;
+        gap: 1.5625rem;
+        > div {
+            @include index.flex-row;
+            gap: 1.5625rem;
+            .text {
+                flex-grow: 1;
+            }
+            > div {
+                @include index.flex-col;
+                justify-content: space-between;
+                padding-block: 1rem;
+
+                button {
+                    @include index.bare-button;
+                    border-radius: 5px;
+                    min-width: 150px;
+                }
+                .addToCart {
+                    background-color: #f49232;
+                    color: white;
+                    height: 55%;
+                }
+                .remove {
+                    background-color: white;
+                    color: black;
+                    height: 40%;
+                    border: 1px solid #e5e5e5;
+                }
+                .productsRemove {
+                    @extend .remove;
+                    height: 55%;
+                }
+                span {
+                    font-weight: bold;
+                    color: #f49232;
+                }
+            }
+        }
+    }
+}
+
+.createButton {
+    @include index.button-base;
+    background-color: #f49232;
+    border: none;
+    color: white;
+    width: fit-content;
+    padding-inline: 2rem;
 }
 
 .expandBtn {
@@ -132,9 +197,6 @@
 
 @media only screen and (max-width: 1119px) {
     .main {
-        padding: 1rem;
-        .collapse {
-            width: 100%;
-        }
+        padding: 1.5625rem;
     }
 }

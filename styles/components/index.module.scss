@@ -34,5 +34,6 @@
 
 @mixin bare-button {
     border: none;
+    cursor: pointer;
     background: none;
 }

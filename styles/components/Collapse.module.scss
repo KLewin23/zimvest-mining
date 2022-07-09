@@ -1,0 +1,46 @@
+@use 'index.module';
+
+.collapse {
+    @include index.flex-col;
+    position: relative;
+    gap: 3.125rem;
+    border-radius: 5px;
+    padding: 2.5rem;
+    min-width: 600px;
+    width: 50%;
+    background-color: white;
+    overflow: hidden;
+    h2 {
+        font-weight: bold;
+    }
+    .title {
+        position: absolute;
+        @include index.flex-row;
+        justify-content: space-between;
+        align-items: center;
+        height: 90px;
+        width: 100%;
+        padding-inline: 2.5rem;
+        font-weight: normal;
+        top: 0;
+        color: #f49232;
+        left: 0;
+        z-index: 20;
+        h3 {
+            transition: opacity 0.1s linear 0.1s;
+        }
+        button {
+            @include index.bare-button;
+        }
+    }
+    > div,
+    > form {
+        transition: opacity 0.1s linear 0.1s;
+    }
+}
+
+@media only screen and (max-width: 1119px) {
+    .collapse {
+        width: 100%;
+    }
+}
