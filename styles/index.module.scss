@@ -1,9 +1,13 @@
+@use 'components/index.module';
+
 .main {
     display: flex;
     flex-grow: 1;
     padding: 3rem;
+    gap: 4rem;
+    background-color: #E5E5E5;
+    min-height: calc(100vh - 145px); // temp fix
     .banner {
-        min-width: 300px;
-        width: 70%;
+        flex-grow: 1;
     }
 }

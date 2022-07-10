@@ -1,0 +1,25 @@
+@use 'index.module';
+
+.advert {
+    @include index.flex-col;
+    align-items: center;
+    min-width: 25%;
+    width: 25%;
+    gap: 1rem;
+    text-align: center;
+    > div {
+        @include index.flex-col;
+        gap: 0.5rem;
+    }
+    button {
+        @include index.button-base;
+        border: none;
+        background-color: #f49232;
+        color: white;
+        font-size: 0.875rem;
+        width: 60%;
+        &:hover {
+            background-color: #f66a0f;
+        }
+    }
+}

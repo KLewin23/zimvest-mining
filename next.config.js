@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-}
+    async rewrites() {
+        return [
+            {
+                source: '/profile',
+                destination: '/profile/base',
+            },
+        ];
+    },
+    reactStrictMode: true,
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

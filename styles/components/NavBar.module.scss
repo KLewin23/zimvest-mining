@@ -6,10 +6,8 @@
     justify-content: space-between;
     background-color: white;
     height: 80px;
-    max-width: 1800px;
-    width: calc(100% - 2rem);
     margin: auto;
-    padding-right: 2rem;
+    padding-inline: 2rem 4rem;
     z-index: 30;
     font-weight: 600;
     .logo {

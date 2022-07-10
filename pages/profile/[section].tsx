@@ -7,12 +7,12 @@ import { useForm } from 'react-hook-form';
 import { FaWhatsapp, FaTwitter, FaGlobe } from 'react-icons/fa';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { MdOutlineFileDownload, MdFacebook, MdInfoOutline } from 'react-icons/md';
-import { Fake } from '../public';
-import Page from '../components/Page';
-import styles from '../styles/profile.module.scss';
-import Collapse from '../components/Collapse';
-import TestProduct from '../public/testProduct.png';
-import { fetchUser, User, userApiUrl } from '../components/utils';
+import { Fake } from '../../public';
+import Page from '../../components/Page';
+import styles from '../../styles/profile.module.scss';
+import Collapse from '../../components/Collapse';
+import TestProduct from '../../public/testProduct.png';
+import { fetchUser, User, userApiUrl } from '../../components/utils';
 
 interface Props {
     user?: User;
@@ -32,10 +32,18 @@ interface FormValues {
     'Website Url': string;
 }
 
-const Profile = ({ user }: Props): JSX.Element => {
-    const [openedTab, setOpenedTab] = useState('');
+const Section = ({ user }: Props): JSX.Element => {
+    const { push, query } = useRouter();
+    const [openedTab, setOpenedTab] = useState(
+        query.section === 'account'
+            ? 'Account'
+            : query.section === 'products'
+            ? 'Products'
+            : query.section === 'wishlist'
+            ? 'Wishlist'
+            : '',
+    );
     const [apiRequestSent, setApiRequestSent] = useState(false);
-    const router = useRouter();
     const {
         register,
         //   formState: { errors },
@@ -103,7 +111,7 @@ const Profile = ({ user }: Props): JSX.Element => {
                 },
             )
             .then(async () => {
-                await router.push('/profile');
+                await push('/profile');
                 setApiRequestSent(false);
             })
             .catch(e => {
@@ -329,7 +337,20 @@ const Profile = ({ user }: Props): JSX.Element => {
     );
 };
 
-export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+export const getServerSideProps = async ({ req, query }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+    if (
+        query.section !== 'account' &&
+        query.section !== 'wishlist' &&
+        query.section !== 'products' &&
+        query.section !== 'base' &&
+        query.section !== 'reservations'
+    )
+        return {
+            redirect: {
+                destination: '/profile',
+                permanent: true,
+            },
+        };
     return fetchUser(req.headers.cookie || '')
         .then(user => {
             if (!user.data) {
@@ -359,4 +380,4 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
         });
 };
 
-export default Profile;
+export default Section;

@@ -37,3 +37,39 @@
     cursor: pointer;
     background: none;
 }
+
+@keyframes button-anim {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    &:hover {
+        background-color: #f66a0f;
+    }
+    &::after {
+        content: '';
+        display: block;
+        width: 1.2em;
+        height: 1.2em;
+        position: absolute;
+        left: calc(50% - 0.75em);
+        top: calc(50% - 0.75em);
+        border: 0.15em solid transparent;
+        border-right-color: white;
+        border-radius: 50%;
+        animation: button-anim 0.7s linear infinite;
+        opacity: 0;
+    }
+}
+.spinner.loading {
+    color: transparent;
+}
+
+.spinner.loading::after {
+    opacity: 1;
+}
