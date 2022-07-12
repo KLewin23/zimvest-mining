@@ -20,6 +20,64 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
         }
     });
 
+    // const nav = [
+    //     { title: 'Home', link: '/' },
+    //     { title: 'About Us', link: '/about' },
+    //     {
+    //         title: 'Marketplace',
+    //         subList: [
+    //             { title: 'Buy/Sell Minerals', link: '/buy-or-sell-minerals' },
+    //             { title: 'Buy/Invest', link: '/buy-or-invest' },
+    //             { title: 'Sell your mine', link: '/sell-mine' },
+    //             { title: 'Seeking JV partner', link: '/seeking-jv-partner' },
+    //         ],
+    //     },
+    //     {
+    //         title: 'Minerals and Metals',
+    //         subList: [
+    //             { title: 'Mining Overview', link: '/mining-overview' },
+    //             {
+    //                 title: 'Precious Metals',
+    //                 link: '/precious-metals',
+    //             },
+    //             {
+    //                 title: 'Base Metals',
+    //                 link: '/base-metals',
+    //             },
+    //             {
+    //                 title: 'Minor Metals',
+    //                 link: '/minor-metals',
+    //             },
+    //             {
+    //                 title: 'Bulk Metals',
+    //                 link: '/bulk-metals',
+    //             },
+    //             {
+    //                 title: 'Precious Stones',
+    //                 link: '/precious-stones',
+    //             },
+    //             {
+    //                 title: 'Semi-Precious Stones',
+    //                 link: '/semi-precious-stones',
+    //             },
+    //             {
+    //                 title: 'Ferro Alloys',
+    //                 link: '/ferro-alloys',
+    //             },
+    //             {
+    //                 title: 'Rare Earth',
+    //                 link: '/rare-earth',
+    //             },
+    //             {
+    //                 title: 'Fertilisers',
+    //                 link: '/fertilisers',
+    //             },
+    //         ],
+    //     },
+    //     { title: 'Market Prices', link: '/market-prices' },
+    //     { title: 'Vacancies', link: '/vacancies' },
+    // ];
+
     return (
         <div className={styles.main}>
             {windowWidth < 1120 ? (
@@ -46,7 +104,6 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                         <p>Marketplace</p>
                         <p>Minerals&nbsp;and&nbsp;Metals</p>
                         <Link href={'/market-prices'}>Market&nbsp;Prices</Link>
-                        <p>Service&nbsp;Providers</p>
                         <Link href={'/vacancies'}>Vacancies</Link>
                     </div>
                 </>
@@ -63,7 +120,6 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                     <h4>Marketplace</h4>
                     <h4>Minerals&nbsp;and&nbsp;Metals</h4>
                     <Link href={'/market-prices'}>Market&nbsp;Prices</Link>
-                    <h4>Service&nbsp;Providers</h4>
                     <Link href={'/vacancies'}>Vacancies</Link>
                 </nav>
             ) : null}

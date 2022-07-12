@@ -6,12 +6,12 @@ import { User } from './utils';
 import Sidebar from './Sidebar';
 import styles from '../styles/components/Page.module.scss';
 
-interface Props {
+type Props = {
     children: React.ReactNode;
     user?: User;
     withSideBar?: boolean;
     withCurrencyWidget?: boolean;
-}
+};
 
 const PageLayout = ({ children, user, withSideBar, withCurrencyWidget }: Props): JSX.Element => {
     return (

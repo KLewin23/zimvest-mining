@@ -1,0 +1,53 @@
+@use 'index.module';
+
+.main {
+    width: 100%;
+    .banner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        max-height: 350px;
+        > div {
+            width: 100%;
+        }
+        .title {
+            position: absolute;
+            @include index.flex-col;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            left: 50%;
+            top: 50%;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            p {
+                text-align: center;
+            }
+        }
+        .image {
+            filter: brightness(0.3);
+            z-index: 10;
+        }
+    }
+    .content {
+        @include index.flex-col;
+        padding: 3rem;
+        gap: 3rem;
+        section {
+            @include index.flex-col;
+            h2 {
+                font-weight: bold;
+            }
+            gap: 1rem;
+            max-width: 1200px;
+            margin: auto;
+            ul {
+                list-style-type: '- ';
+                li {
+                    margin-block: 1rem;
+                }
+            }
+        }
+    }
+}
