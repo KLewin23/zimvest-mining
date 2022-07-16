@@ -8,13 +8,20 @@ interface CheckboxProps {
     onClick: () => void;
     children?: React.ReactNode;
     error?: boolean;
+    checkColor?: string;
+    backgroundColor?: string;
+    borderColor?: string;
 }
 
-const Checkbox = ({ label, checked, onClick, children, error }: CheckboxProps): JSX.Element => {
+const Checkbox = ({ label, checked, onClick, children, error, checkColor, backgroundColor, borderColor }: CheckboxProps): JSX.Element => {
     return (
         <div className={styles.main}>
-            <button type={'button'} style={{ borderColor: error ? '#ec4c4c' : ' #d9d9d9' }} onClick={() => onClick()}>
-                <MdCheck color={checked ? 'black' : 'transparent'} />
+            <button
+                type={'button'}
+                style={{ borderColor: error ? '#ec4c4c' : borderColor || '#d9d9d9', backgroundColor: backgroundColor || 'white' }}
+                onClick={() => onClick()}
+            >
+                <MdCheck color={checked ? checkColor || 'black' : 'transparent'} />
             </button>
             {label ? <h4>{label}</h4> : children || ''}
         </div>

@@ -2,12 +2,18 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import Page from '../../components/Page';
 import BannerPage from '../../components/BannerPage';
 import { ServiceProvider1 } from '../../public';
 import styles from '../../styles/mining-guidlines.module.scss';
+import { getUser, User } from '../../components/utils';
 
-const Index = (): JSX.Element => {
+interface Props {
+    user?: User;
+}
+
+const Index = ({ user }: Props): JSX.Element => {
     return (
         <>
             <Head>
@@ -16,7 +22,7 @@ const Index = (): JSX.Element => {
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
 
-            <Page>
+            <Page user={user}>
                 <BannerPage heading={'Mining Guidelines'} subHeading={'Learn more about best practices in the mining community'}>
                     <section className={styles.boxList}>
                         <div>
@@ -33,6 +39,10 @@ const Index = (): JSX.Element => {
             </Page>
         </>
     );
+};
+
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+    return getUser<Props>(req, { props: {} });
 };
 
 export default Index;

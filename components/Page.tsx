@@ -2,7 +2,7 @@ import React from 'react';
 import { TickerTape } from 'react-ts-tradingview-widgets';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
-import { User } from './utils';
+import type { User } from './utils';
 import Sidebar from './Sidebar';
 import styles from '../styles/components/Page.module.scss';
 

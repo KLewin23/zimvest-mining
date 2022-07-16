@@ -7,7 +7,6 @@
     padding-block: 3rem;
     gap: 10.625rem;
     justify-content: center;
-
     > div {
         @include index.flex-col;
     }

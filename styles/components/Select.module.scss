@@ -1,0 +1,47 @@
+@use 'index.module';
+.main {
+    position: relative;
+    @include index.flex-row;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(229, 229, 229, 0.4);
+    border-radius: 5px;
+    height: 40px;
+    color: #bbbbbb;
+    flex-grow: 1;
+    width: max-content;
+    p {
+        text-align: left;
+        flex-grow: 1;
+    }
+    span {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        aspect-ratio: 1;
+    }
+    button {
+        background: none;
+        border: none;
+        height: 100%;
+        cursor: pointer;
+        aspect-ratio: 1;
+    }
+    > div {
+        position: absolute;
+        background-color: white;
+        top: calc(100% + 3px);
+        border: #e5e5e5;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        transition: 0.2s ease-in-out;
+        min-width: 100%;
+        > option {
+            padding: 0.6rem 0.5rem;
+            cursor: pointer;
+            &:hover {
+                background-color: #f5f5f5;
+            }
+        }
+    }
+}

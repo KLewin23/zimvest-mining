@@ -8,7 +8,62 @@
         transform: rotate(360deg);
     }
 }
-
+.changeImageBox {
+    .dragBox {
+        display: grid;
+        place-items: center;
+        background-color: #e5e5e5;
+        width: 30vw;
+        min-width: 300px;
+        height: 30vh;
+        border: 3px dashed #a6a6a6;
+        .center {
+            display: grid;
+            place-items: center;
+            button {
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+        }
+        .imageFrame {
+            position: relative;
+            display: block;
+            height: 20vh;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+    }
+    .controls {
+        @include index.flex-row;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        button {
+            @include index.button-base;
+            width: fit-content;
+            padding-inline: 2rem;
+            &:first-child {
+                background-color: white;
+                color: black;
+                border: 1px solid #e5e5e5;
+                transition: background-color .2s ease-in-out;
+                &:hover {
+                    background-color: #f5f5f5;
+                }
+            }
+            &:last-child {
+                color: white;
+                border: none;
+                background-color: #f49232;
+                transition: background-color .2s ease-in-out;
+                &:hover {
+                    background-color: #f66a0f;
+                }
+            }
+        }
+    }
+}
 .main {
     @include index.flex-col;
     align-items: center;

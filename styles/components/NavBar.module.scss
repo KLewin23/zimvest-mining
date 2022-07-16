@@ -1,3 +1,4 @@
+@use 'index.module';
 .main {
     position: relative;
     display: flex;
@@ -17,16 +18,47 @@
         display: flex;
         flex-direction: row;
         gap: 2rem;
+        align-items: center;
+        height: 100%;
+        > a {
+            @include index.bottom-border-hover;
+        }
+        .dropLink {
+            position: relative;
+            display: grid;
+            place-items: center;
+            height: 100%;
+            > h4 {
+                @include index.bottom-border-hover;
+                height: 20px;
+                line-height: 20px;
+                z-index: 20;
+            }
+            > div {
+                position: absolute;
+                @include index.flex-col;
+                background-color: white;
+                border-radius: 5px;
+                top: calc(50% + 20px);
+                transition: 0.2s ease-in-out opacity;
+                width: max-content;
+                word-break: keep-all;
+                border: 1px solid rgba(0, 0, 0, 0.15);
+                a,
+                h4 {
+                    height: min-content;
+                    padding-block: 0.8rem;
+                    text-align: center;
+                    word-break: keep-all;
+                    padding-inline: 0.8rem;
+                    &:hover {
+                        background-color: #e9ecef;
+                    }
+                }
+            }
+        }
         a {
             font-size: 0.875rem;
-        }
-        > * {
-            cursor: pointer;
-            border-bottom: 1px solid transparent;
-            transition: border-bottom-color 0.2s ease-in-out;
-            &:hover {
-                border-bottom: 1px solid black;
-            }
         }
     }
     .endContent {

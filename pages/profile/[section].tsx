@@ -2,9 +2,10 @@ import axios from 'axios';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaWhatsapp, FaTwitter, FaGlobe } from 'react-icons/fa';
+import { FaWhatsapp, FaTwitter, FaGlobe, FaImage } from 'react-icons/fa';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { MdOutlineFileDownload, MdFacebook, MdInfoOutline } from 'react-icons/md';
 import { Fake } from '../../public';
@@ -12,7 +13,8 @@ import Page from '../../components/Page';
 import styles from '../../styles/profile.module.scss';
 import Collapse from '../../components/Collapse';
 import TestProduct from '../../public/testProduct.png';
-import { fetchUser, User, userApiUrl } from '../../components/utils';
+import { getUser, User, userApiUrl } from '../../components/utils';
+import Modal from '../../components/Modal';
 
 interface Props {
     user?: User;
@@ -44,6 +46,33 @@ const Section = ({ user }: Props): JSX.Element => {
             : '',
     );
     const [apiRequestSent, setApiRequestSent] = useState(false);
+    const [imageModal, setImageModal] = useState(false);
+    const [imageUploadUrl, setImageUploadUrl] = useState('');
+    const [profileImage, setProfileImage] = useState('');
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        acceptedFiles.forEach(file => {
+            const reader = new FileReader();
+
+            reader.onabort = () => null;
+            reader.onerror = () => null;
+            // reader.onabort = () => console.log('file reading was aborted');
+            // reader.onerror = () => console.log('file reading has failed');
+            reader.onload = () => {
+                // Do whatever you want with the file contents
+                const binaryStr = reader.result;
+                setProfileImage((binaryStr as string) || '');
+            };
+            reader.readAsDataURL(file);
+        });
+    }, []);
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+        accept: {
+            'image/png': ['.png'],
+            'image/jpeg': ['.jpeg'],
+        },
+        maxFiles: 1,
+        onDrop,
+    });
     const {
         register,
         //   formState: { errors },
@@ -73,7 +102,6 @@ const Section = ({ user }: Props): JSX.Element => {
             price: '$5000',
         },
     ];
-
     const myProducts = [
         {
             name: 'Mine crusher',
@@ -123,6 +151,13 @@ const Section = ({ user }: Props): JSX.Element => {
             });
     };
 
+    const uploadFile = async () => {
+        const form = new FormData();
+        form.append('file', acceptedFiles[0], acceptedFiles[0].name);
+        Array.isArray(imageUploadUrl);
+        // const image = await axios.post(imageUploadUrl, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+    };
+
     return (
         <>
             <Head>
@@ -131,6 +166,33 @@ const Section = ({ user }: Props): JSX.Element => {
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
             <Page user={user}>
+                <Modal open={imageModal}>
+                    <div className={styles.changeImageBox}>
+                        <div {...getRootProps()} className={styles.dragBox}>
+                            <input type={'file'} {...getInputProps()} id={'myFile'} name={'file'} />
+                            {profileImage === '' ? (
+                                <div className={styles.center}>
+                                    <button type={'button'}>
+                                        <FaImage size={100} color={'white'} />
+                                        <p>Add Image</p>
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className={styles.imageFrame}>
+                                    <Image src={profileImage} layout={'fill'} />
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles.controls}>
+                            <button type={'button'} onClick={() => setImageModal(false)}>
+                                Cancel
+                            </button>
+                            <button type={'button'} onClick={() => uploadFile()}>
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
                 <div className={styles.main}>
                     <Collapse
                         title={'Account'}
@@ -139,13 +201,21 @@ const Section = ({ user }: Props): JSX.Element => {
                     >
                         <form onSubmit={handleSubmit(save)} className={styles.account}>
                             <div className={styles.layer1}>
-                                <Image src={Fake} layout={'fixed'} height={88} width={88} className={styles.profilePic} />
+                                <Image src={profileImage || Fake} layout={'fixed'} height={88} width={88} className={styles.profilePic} />
                                 <div>
                                     <h2>
                                         {user?.firstName} {user?.lastName}
                                     </h2>
                                     <h4>{user?.email}</h4>
-                                    <button type={'button'} className={styles.changePhoto}>
+                                    <button
+                                        type={'button'}
+                                        onClick={async () => {
+                                            setImageUploadUrl('');
+                                            setImageModal(true);
+                                            setImageUploadUrl((await axios.post(`${userApiUrl}/image/upload`)).data.uploadURL);
+                                        }}
+                                        className={styles.changePhoto}
+                                    >
                                         Change photo
                                     </button>
                                 </div>
@@ -351,33 +421,7 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
                 permanent: true,
             },
         };
-    return fetchUser(req.headers.cookie || '')
-        .then(user => {
-            if (!user.data) {
-                return {
-                    redirect: {
-                        destination: '/login',
-                        permanent: true,
-                    },
-                };
-            }
-            return {
-                props: { user: user.data },
-            };
-        })
-        .catch(e => {
-            if (e.response.status === 403) {
-                return {
-                    redirect: {
-                        destination: '/login',
-                        permanent: true,
-                    },
-                };
-            }
-            return {
-                props: {},
-            };
-        });
+    return getUser<Props>(req, { redirect: { destination: '/login', permanent: true } });
 };
 
 export default Section;

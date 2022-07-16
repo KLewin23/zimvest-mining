@@ -1,5 +1,8 @@
 @use 'components/index.module';
 .boxList {
+    h4 {
+        text-transform: capitalize;
+    }
     > div {
         @include index.flex-col;
         align-items: center;

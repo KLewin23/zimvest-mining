@@ -6,6 +6,10 @@ const nextConfig = {
                 source: '/profile',
                 destination: '/profile/base',
             },
+            {
+                source: '/marketplace',
+                destination: '/marketplace/base',
+            },
         ];
     },
     reactStrictMode: true,

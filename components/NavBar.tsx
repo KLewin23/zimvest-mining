@@ -3,80 +3,48 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { MdPerson, MdShoppingCart } from 'react-icons/md';
+import { FaCaretDown } from 'react-icons/fa';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
 import { User, useWindowWidth, useEventListener } from './utils';
+
+interface Tab {
+    title: string;
+    link: string;
+}
+
+type NavTabs = Array<Tab | { title: string; subList: Array<Tab> }>;
 
 const NavBar = ({ user }: { user?: User }): JSX.Element => {
     const windowWidth = useWindowWidth();
     const router = useRouter();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [menu, setMenu] = useState(false);
+    const [profileMenu, setProfileMenu] = useState(false);
+    const [tabMenu, setTabMenu] = useState('');
     const menuRef = useRef<HTMLButtonElement>(null);
 
     useEventListener('click', e => {
         if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-            setMenu(false);
+            setProfileMenu(false);
         }
     });
 
-    // const nav = [
-    //     { title: 'Home', link: '/' },
-    //     { title: 'About Us', link: '/about' },
-    //     {
-    //         title: 'Marketplace',
-    //         subList: [
-    //             { title: 'Buy/Sell Minerals', link: '/buy-or-sell-minerals' },
-    //             { title: 'Buy/Invest', link: '/buy-or-invest' },
-    //             { title: 'Sell your mine', link: '/sell-mine' },
-    //             { title: 'Seeking JV partner', link: '/seeking-jv-partner' },
-    //         ],
-    //     },
-    //     {
-    //         title: 'Minerals and Metals',
-    //         subList: [
-    //             { title: 'Mining Overview', link: '/mining-overview' },
-    //             {
-    //                 title: 'Precious Metals',
-    //                 link: '/precious-metals',
-    //             },
-    //             {
-    //                 title: 'Base Metals',
-    //                 link: '/base-metals',
-    //             },
-    //             {
-    //                 title: 'Minor Metals',
-    //                 link: '/minor-metals',
-    //             },
-    //             {
-    //                 title: 'Bulk Metals',
-    //                 link: '/bulk-metals',
-    //             },
-    //             {
-    //                 title: 'Precious Stones',
-    //                 link: '/precious-stones',
-    //             },
-    //             {
-    //                 title: 'Semi-Precious Stones',
-    //                 link: '/semi-precious-stones',
-    //             },
-    //             {
-    //                 title: 'Ferro Alloys',
-    //                 link: '/ferro-alloys',
-    //             },
-    //             {
-    //                 title: 'Rare Earth',
-    //                 link: '/rare-earth',
-    //             },
-    //             {
-    //                 title: 'Fertilisers',
-    //                 link: '/fertilisers',
-    //             },
-    //         ],
-    //     },
-    //     { title: 'Market Prices', link: '/market-prices' },
-    //     { title: 'Vacancies', link: '/vacancies' },
-    // ];
+    const nav: NavTabs = [
+        { title: 'Home', link: '/' },
+        { title: 'About Us', link: '/about' },
+        {
+            title: 'Marketplace',
+            subList: [
+                { title: 'Products', link: '/marketplace/products' },
+                { title: 'Mines', link: '/marketplace/mines' },
+                { title: 'Services', link: '/marketplace/services' },
+                { title: 'JV Opportunities', link: '/jv-opportunities' },
+            ],
+        },
+        { title: 'Mining Overview', link: '/mining-overview' },
+        { title: 'Market Prices', link: '/market-prices' },
+        { title: 'Vacancies', link: '/vacancies' },
+    ];
 
     return (
         <div className={styles.main}>
@@ -115,12 +83,49 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
             </Link>
             {windowWidth >= 1120 ? (
                 <nav>
-                    <Link href={'/'}>Home</Link>
-                    <Link href={'/about'}>About&nbsp;Us</Link>
-                    <h4>Marketplace</h4>
-                    <h4>Minerals&nbsp;and&nbsp;Metals</h4>
-                    <Link href={'/market-prices'}>Market&nbsp;Prices</Link>
-                    <Link href={'/vacancies'}>Vacancies</Link>
+                    {nav.map(tab => {
+                        if ('link' in tab) {
+                            return (
+                                <Link key={tab.title} href={tab.link}>
+                                    {tab.title}
+                                </Link>
+                            );
+                        }
+                        return (
+                            <div
+                                key={tab.title}
+                                className={styles.dropLink}
+                                onMouseLeave={e => {
+                                    const target: Element = e.target as Element;
+                                    if (target.id === `${tab.title}-drop`) return;
+                                    setTabMenu('');
+                                }}
+                            >
+                                <h4
+                                    id={`${tab.title}-title`}
+                                    onMouseEnter={e => {
+                                        const target: Element = e.target as Element;
+                                        if (target.id !== `${tab.title}-title`) return;
+                                        setTabMenu(tab.title);
+                                    }}
+                                >
+                                    {tab.title} <FaCaretDown />
+                                </h4>
+                                <div
+                                    style={{
+                                        opacity: tabMenu === tab.title ? 1 : 0,
+                                        pointerEvents: tabMenu === tab.title ? 'all' : 'none',
+                                    }}
+                                >
+                                    {tab.subList.map(subTab => (
+                                        <Link key={subTab.title} href={subTab.link}>
+                                            {subTab.title}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </nav>
             ) : null}
             <div className={styles.endContent}>
@@ -132,7 +137,7 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                         if (!user) {
                             return router.push('/login');
                         }
-                        return setMenu(true);
+                        return setProfileMenu(true);
                     }}
                 >
                     <MdPerson size={25} />
@@ -140,15 +145,19 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                     <div
                         id={'menu'}
                         className={styles.menu}
-                        style={menu ? { top: '110%', opacity: 1, pointerEvents: 'all' } : { top: '90%', opacity: 0, pointerEvents: 'none' }}
+                        style={
+                            profileMenu
+                                ? { top: '110%', opacity: 1, pointerEvents: 'all' }
+                                : { top: '90%', opacity: 0, pointerEvents: 'none' }
+                        }
                     >
                         <Link href={'/profile'}>
                             <h4>Profile</h4>
                         </Link>
-                        <Link href={'/products'}>
+                        <Link href={'/profile/products'}>
                             <h4>My Products</h4>
                         </Link>
-                        <Link href={'/wishlist'}>
+                        <Link href={'/profile/wishlist'}>
                             <h4>Wishlist</h4>
                         </Link>
                         <Link href={'/logout'}>
