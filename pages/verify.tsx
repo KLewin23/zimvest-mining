@@ -3,9 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import axios from 'axios';
 import { GetServerSidePropsContext } from 'next';
-import Page from '../components/Page';
 import styles from '../styles/auth.module.scss';
-import { userApiUrl } from '../components/utils';
+import { userApiUrl, Page } from '../components';
 
 const Verify = ({ userName, error }: { userName?: string; error: string }): JSX.Element => {
     return (

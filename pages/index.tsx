@@ -7,7 +7,7 @@ import { Carousel } from 'react-responsive-carousel';
 import Page from '../components/Page';
 import styles from '../styles/index.module.scss';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { fetchUser, User } from '../components/utils';
+import { fetchUser, User, Advert } from '../components';
 import landscapeBanner1 from '../public/banner/zimvest_web banners_1024x500.jpg';
 import landscapeBanner2 from '../public/banner/zimvest_web banners_1024x5002.jpg';
 import landscapeBanner3 from '../public/banner/zimvest_web banners_1024x5004.jpg';
@@ -16,7 +16,6 @@ import landscapeBanner5 from '../public/banner/zimvest_web banners_1024x5006.jpg
 import landscapeBanner6 from '../public/banner/zimvest_web banners_1024x5007.jpg';
 import landscapeBanner7 from '../public/banner/zimvest_web banners_1024x5008.jpg';
 import landscapeBanner8 from '../public/banner/zimvest_web banners_1024x5009.jpg';
-import Advert from '../components/Advert';
 
 interface Props {
     user?: User;

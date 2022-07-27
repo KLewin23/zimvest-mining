@@ -9,12 +9,9 @@ import { FaWhatsapp, FaTwitter, FaGlobe, FaImage } from 'react-icons/fa';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { MdOutlineFileDownload, MdFacebook, MdInfoOutline } from 'react-icons/md';
 import { Fake } from '../../public';
-import Page from '../../components/Page';
 import styles from '../../styles/profile.module.scss';
-import Collapse from '../../components/Collapse';
 import TestProduct from '../../public/testProduct.png';
-import { getUser, User, userApiUrl } from '../../components/utils';
-import Modal from '../../components/Modal';
+import { getUser, userApiUrl, User, Modal, Collapse, Page } from '../../components';
 
 interface Props {
     user?: User;

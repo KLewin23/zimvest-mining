@@ -4,11 +4,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
-import Page from '../components/Page';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
-import { userApiUrl } from '../components/utils';
-import Checkbox from '../components/Checkbox';
+import { userApiUrl, Checkbox, Page } from '../components';
 
 interface FormValues {
     'First Name': string;

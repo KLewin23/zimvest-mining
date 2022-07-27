@@ -1,9 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import Page from '../../components/Page';
-import BannerPage from '../../components/BannerPage';
-import { getUser, User } from '../../components/utils';
+import { getUser, User, BannerPage, Page } from '../../components';
 
 interface Props {
     user?: User;

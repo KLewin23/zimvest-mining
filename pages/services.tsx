@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
-import Page from '../components/Page';
+import { Page } from '../components';
 
 const Services = (): JSX.Element => {
     return (

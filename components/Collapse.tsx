@@ -1,7 +1,7 @@
 import React, { cloneElement, useEffect, useRef, useState } from 'react';
 import { MdExpandLess } from 'react-icons/md';
 import styles from '../styles/components/Collapse.module.scss';
-import { useEventListener } from './utils';
+import { useEventListener } from './hooks';
 
 interface Props {
     title: string;

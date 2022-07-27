@@ -3,11 +3,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import Page from '../../components/Page';
-import BannerPage from '../../components/BannerPage';
 import { ServiceProvider1 } from '../../public';
 import styles from '../../styles/mining-guidlines.module.scss';
-import { getUser, User } from '../../components/utils';
+import { getUser, User, BannerPage, Page } from '../../components';
 
 interface Props {
     user?: User;

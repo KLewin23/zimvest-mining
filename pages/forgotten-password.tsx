@@ -3,10 +3,9 @@ import axios from 'axios';
 import Head from 'next/head';
 import Image from 'next/image';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import Page from '../components/Page';
 import styles from '../styles/auth.module.scss';
 import { Logo } from '../public';
-import { userApiUrl } from '../components/utils';
+import { userApiUrl, Page } from '../components';
 
 interface FormValues {
     email: string;

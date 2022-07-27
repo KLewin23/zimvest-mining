@@ -6,7 +6,8 @@ import { MdPerson, MdShoppingCart } from 'react-icons/md';
 import { FaCaretDown } from 'react-icons/fa';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
-import { User, useWindowWidth, useEventListener } from './utils';
+import { User } from './types';
+import { useWindowWidth, useEventListener } from './hooks';
 
 interface Tab {
     title: string;

@@ -36,6 +36,7 @@
         border: 1px solid rgba(0, 0, 0, 0.15);
         transition: 0.2s ease-in-out;
         min-width: 100%;
+        z-index: 500;
         > option {
             padding: 0.6rem 0.5rem;
             cursor: pointer;

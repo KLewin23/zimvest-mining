@@ -6,11 +6,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext } from 'next';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import Page from '../components/Page';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
-import Checkbox from '../components/Checkbox';
-import { fetchUser, userApiUrl } from '../components/utils';
+import { fetchUser, userApiUrl, Checkbox, Page } from '../components';
 
 // TODO maybe make this a sort of client side rendered component to make switching between login and signup smoother
 

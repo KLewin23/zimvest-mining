@@ -2,9 +2,9 @@ import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { MdOutlineExpandLess, MdSearch } from 'react-icons/md';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import Checkbox from './Checkbox';
-import type { ItemSelectorTab } from './utils';
+import type { ItemSelectorTab } from '.';
 import styles from '../styles/components/ItemSelector.module.scss';
-import { useEventListener } from './utils';
+import { useEventListener } from './hooks';
 
 interface Props {
     itemSelectorLayout: ItemSelectorTab[];
@@ -65,11 +65,11 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                                 <Controller
                                     control={control}
                                     defaultValue={false}
-                                    name={
+                                    name={`${section.title}.${
                                         subItem === 'Screening Equipment' && section.title === 'Services'
                                             ? 'Screening Equipment Service'
                                             : subItem
-                                    }
+                                    }`}
                                     rules={{ validate: { isTrue: value => value } }}
                                     render={({ field }) => (
                                         <Checkbox

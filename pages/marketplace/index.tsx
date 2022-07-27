@@ -1,8 +1,8 @@
 import React from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
-import type { Request } from '../../components/types';
-import { Product, getUser, User, getItems, Marketplace, ItemSelectorTab } from '../../components';
+import { Request } from '../../components/types';
+import { getItems, getUser, ItemSelectorTab, Marketplace, Product, User } from '../../components';
 
 interface Props {
     user?: User;
@@ -62,11 +62,11 @@ const extendedSidebarLayout: ItemSelectorTab[] = [
     },
 ];
 
-const MarketplaceMain = ({ user, products }: Props): JSX.Element => {
+const Products = ({ user, products }: Props): JSX.Element => {
     return <Marketplace pageName={'product'} user={user} items={products} sideBarLayout={extendedSidebarLayout} />;
 };
 
-export default MarketplaceMain;
+export default Products;
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
     const user = await getUser<Props>(req, { props: {} });

@@ -1,8 +1,8 @@
 import React from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
-import type { Request } from '../../components/types';
-import { Product, getUser, User, getItems, Marketplace, ItemSelectorTab } from '../../components';
+import { FaCogs, FaSnowplow } from 'react-icons/fa';
+import { Request } from '../../../components/types';
+import { getItems, getUser, ItemSelectorTab, Marketplace, Product, User } from '../../../components';
 
 interface Props {
     user?: User;
@@ -33,40 +33,13 @@ const extendedSidebarLayout: ItemSelectorTab[] = [
         ],
         tabDefaultState: true,
     },
-    {
-        title: 'Services',
-        icon: FaBolt,
-        subList: [
-            'Mining Contractors',
-            'Chemical Providers',
-            'Logistics',
-            'Lab Testing Services',
-            'Telecommunications',
-            'Banking and Insurance',
-            'Screening Equipment',
-            'Mining Equipment',
-        ],
-        tabDefaultState: false,
-    },
-    {
-        title: 'Metals',
-        icon: FaHive,
-        subList: ['Base Metals', 'Precious Metals', 'Minor Metals', 'Bulk Metals', 'Semi Precious Stones', 'Ferro Alloys', 'Rare Earth'],
-        tabDefaultState: false,
-    },
-    {
-        title: 'Fertilizers',
-        icon: FaEnvira,
-        subList: ['Phosphate', 'Potash', 'Nitrogen', 'DAP', 'Map', 'SSP', 'TSP', 'Urea'],
-        tabDefaultState: false,
-    },
 ];
 
-const MarketplaceMain = ({ user, products }: Props): JSX.Element => {
+const Mines = ({ user, products }: Props): JSX.Element => {
     return <Marketplace pageName={'product'} user={user} items={products} sideBarLayout={extendedSidebarLayout} />;
 };
 
-export default MarketplaceMain;
+export default Mines;
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
     const user = await getUser<Props>(req, { props: {} });

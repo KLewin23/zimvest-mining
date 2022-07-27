@@ -1,7 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
-import Page from '../components/Page';
-import BannerPage from '../components/BannerPage';
+import { BannerPage, Page } from '../components';
 
 const About = (): JSX.Element => {
     return (

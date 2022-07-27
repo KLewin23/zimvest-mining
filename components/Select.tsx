@@ -2,7 +2,7 @@
 import React, { cloneElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { FaCaretDown } from 'react-icons/fa';
 import styles from '../styles/components/Select.module.scss';
-import { useEventListener } from './utils';
+import { useEventListener } from './hooks';
 
 interface Props {
     icon?: JSX.Element;
