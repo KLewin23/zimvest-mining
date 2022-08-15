@@ -6,18 +6,56 @@ body {
     margin: 0;
     font-family: 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
         Helvetica Neue, sans-serif;
+    top: 0 !important;
+    overflow-x: hidden;
 }
 
 body > div {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100vh;
 }
 
 button {
     font-family: 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
         Helvetica Neue, sans-serif;
+}
+.goog-te-banner {
+    display: none !important;
+}
+.goog-te-banner-frame {
+    display: none !important;
+    position: absolute !important;
+    top: 0 !important;
+}
+
+#google_translate_element {
+    overflow: hidden;
+    > div {
+        content: '';
+        font-size: 0;
+        span {
+            display: none;
+        }
+        select {
+            //position: absolute;
+            border: none;
+            border-radius: 5px;
+            background: #f49232;
+            color: rgb(255, 255, 255);
+            outline: none !important;
+            font-family: 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+                Helvetica Neue, sans-serif;
+            appearance:none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            width: min-content;
+        }
+        select > option {
+            padding: .3rem;
+            color: white !important;
+        }
+    }
 }
 
 /*::-webkit-scrollbar {*/
@@ -72,12 +110,6 @@ h2 {
 
 h3 {
     font-size: 1.25rem; /* 20px */
-    margin: 0;
-    font-weight: unset;
-}
-
-h4 {
-    font-size: 1.125rem; /* 18px */
     margin: 0;
     font-weight: unset;
 }

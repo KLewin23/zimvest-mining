@@ -22,6 +22,9 @@
     },
     "plugins": ["react", "@typescript-eslint", "switch-case"],
     "rules": {
+        "camelcase": ["error", {
+            "allow": ["image_id"]
+        }],
         "@typescript-eslint/no-use-before-define": ["error"],
         "prettier/prettier": "error",
         "indent": "off",

@@ -6,7 +6,7 @@ import { GetServerSidePropsContext } from 'next';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from '../styles/auth.module.scss';
 import { Logo } from '../public';
-import { userApiUrl, Page } from '../components';
+import { Page, userApiUrl } from '../components';
 
 interface FormValues {
     'New Password': string;
@@ -22,8 +22,10 @@ const ForgottenPassword = ({ code }: { code: string }): JSX.Element => {
         setError,
     } = useForm<FormValues>();
     const [passwordChanged, setPasswordChanged] = useState(false);
+    const [changePasswordSent, setChangePasswordSent] = useState(false);
 
     const passwordReset: SubmitHandler<FormValues> = async data => {
+        setChangePasswordSent(true);
         axios
             .put(`${userApiUrl}/user/reset-password`, {
                 passwordResetToken: code,
@@ -31,8 +33,10 @@ const ForgottenPassword = ({ code }: { code: string }): JSX.Element => {
             })
             .then(() => {
                 setPasswordChanged(true);
+                setChangePasswordSent(false);
             })
             .catch(e => {
+                setChangePasswordSent(false);
                 if (e.response.status === 403 || e.response.status === 400) {
                     return setError('New Password', { type: '403' });
                 }
@@ -109,7 +113,7 @@ const ForgottenPassword = ({ code }: { code: string }): JSX.Element => {
                                     </label>
                                     <h4 className={styles.errorMessage}>{errorMessage() || ''}</h4>
                                 </div>
-                                <button type={'submit'} className={styles.zim_button}>
+                                <button type={'submit'} className={`${styles.zim_button} ${changePasswordSent ? styles.loading : ''}`}>
                                     Reset Password
                                 </button>
                             </form>

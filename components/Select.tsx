@@ -8,7 +8,7 @@ interface Props {
     icon?: JSX.Element;
     title: string;
     children: ReactNode;
-    selectedOption: string;
+    selectedOption?: string;
     onClick: (selectedOption: string) => void;
 }
 
@@ -34,8 +34,8 @@ const Select = ({ icon, title, children, selectedOption, onClick }: Props): JSX.
 
     return (
         <div ref={selectRef} className={styles.main} style={{ minWidth: `${minWidth}px` }}>
-            <span>{icon}</span>
-            <p>{selectedOption || title}</p>
+            {icon ? <span>{icon}</span> : null}
+            <p style={{ paddingLeft: icon ? 0 : '1rem' }}>{selectedOption || title}</p>
             <button type={'button'} onClick={() => setOpen(!open)}>
                 <FaCaretDown color={'#bbbbbb'} />
             </button>
@@ -51,6 +51,7 @@ const Select = ({ icon, title, children, selectedOption, onClick }: Props): JSX.
                             onClick(child.props.children);
                             setOpen(false);
                         },
+                        key: child.props.children,
                     });
                 })}
             </div>

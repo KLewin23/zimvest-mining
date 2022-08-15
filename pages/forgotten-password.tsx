@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import Image from 'next/image';
+import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import styles from '../styles/auth.module.scss';
 import { Logo } from '../public';
-import { userApiUrl, Page } from '../components';
+import styles from '../styles/auth.module.scss';
+import { Page, userApiUrl } from '../components';
 
 interface FormValues {
     email: string;
@@ -18,16 +18,19 @@ const ForgottenPassword = (): JSX.Element => {
         formState: { errors },
     } = useForm<FormValues>();
     const [passwordResetComplete, setPasswordResetComplete] = useState(false);
+    const [resetReqeustLoading, setResetReqeustLoading] = useState(false);
 
     const passwordReset: SubmitHandler<FormValues> = async data => {
+        setResetReqeustLoading(true);
         axios
             .put(`${userApiUrl}/user/reset-password`, {
                 email: data.email,
             })
             .then(() => {
                 setPasswordResetComplete(true);
+                setResetReqeustLoading(false);
             })
-            .catch(() => null);
+            .catch(() => setResetReqeustLoading(false));
     };
 
     const errorMessage = () => {
@@ -69,7 +72,7 @@ const ForgottenPassword = (): JSX.Element => {
                                     </label>
                                     <h4 className={styles.errorMessage}>{errorMessage() || ''}</h4>
                                 </div>
-                                <button type={'submit'} className={styles.zim_button}>
+                                <button type={'submit'} className={`${styles.zim_button} ${resetReqeustLoading ? styles.loading : ''}`}>
                                     Reset Password
                                 </button>
                             </form>

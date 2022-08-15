@@ -47,10 +47,8 @@
     }
 }
 
-.spinner {
-    &:hover {
-        background-color: #f66a0f;
-    }
+@mixin spinner($color) {
+    position: relative;
     &::after {
         content: '';
         display: block;
@@ -60,20 +58,19 @@
         left: calc(50% - 0.75em);
         top: calc(50% - 0.75em);
         border: 0.15em solid transparent;
-        border-right-color: white;
+        border-right-color: $color;
         border-radius: 50%;
         animation: button-anim 0.7s linear infinite;
         opacity: 0;
     }
-}
-.spinner.loading {
-    color: transparent;
-}
+    &.loading {
+        color: transparent !important;
+    }
 
-.spinner.loading::after {
-    opacity: 1;
+    &.loading::after {
+        opacity: 1;
+    }
 }
-
 
 @mixin bottom-border-hover {
     cursor: pointer;

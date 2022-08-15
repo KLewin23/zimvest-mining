@@ -1,14 +1,14 @@
+import { MdOutlineExpandLess } from 'react-icons/md';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { MdOutlineExpandLess, MdSearch } from 'react-icons/md';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import Checkbox from './Checkbox';
 import type { ItemSelectorTab } from '.';
-import styles from '../styles/components/ItemSelector.module.scss';
 import { useEventListener } from './hooks';
+import styles from '../styles/components/ItemSelector.module.scss';
 
 interface Props {
     itemSelectorLayout: ItemSelectorTab[];
-    onChange: (data: FieldValues) => void;
+    onChange?: (data: FieldValues) => void;
 }
 
 const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
@@ -37,13 +37,9 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
 
     return (
         <div className={styles.productSearch}>
-            <div className={styles.search}>
-                <MdSearch size={24} color={'#95979C'} />
-                <input type={'text'} placeholder={'Search Products'} />
-            </div>
             <div className={styles.list} ref={tabList}>
                 {itemSelectorLayout.map((section, sectionIndex) => (
-                    <section>
+                    <section key={section.title}>
                         <div>
                             <section.icon size={24} color={'#ED7830'} />
                             <p>{section.title}</p>
@@ -63,6 +59,11 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                         <div style={{ height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex]}px` : 0 }}>
                             {section.subList.map(subItem => (
                                 <Controller
+                                    key={`${section.title}.${
+                                        subItem === 'Screening Equipment' && section.title === 'Services'
+                                            ? 'Screening Equipment Service'
+                                            : subItem
+                                    }`}
                                     control={control}
                                     defaultValue={false}
                                     name={`${section.title}.${
@@ -76,6 +77,7 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                                             checked={field.value}
                                             onClick={() => {
                                                 field.onChange(!field.value);
+                                                if (!onChange) return;
                                                 onChange(getValues());
                                             }}
                                             backgroundColor={field.value ? '#ED7830' : 'white'}
@@ -96,3 +98,8 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
 };
 
 export default ItemSelector;
+
+//    {/*<div className={styles.search} style={{ visibility: 'hidden' }}>*/}
+//             {/*    <MdSearch size={24} color={'#95979C'} />*/}
+//             {/*    <input type={'text'} placeholder={'Search Products'} />*/}
+//             {/*</div>*/}

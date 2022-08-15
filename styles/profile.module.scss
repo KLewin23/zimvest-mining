@@ -16,7 +16,6 @@
         width: 30vw;
         min-width: 300px;
         height: 30vh;
-        border: 3px dashed #a6a6a6;
         .center {
             display: grid;
             place-items: center;
@@ -35,35 +34,48 @@
             overflow: hidden;
         }
     }
+    > p {
+        color: #ec4c4c;
+        padding-block: 1rem 0.5rem;
+        text-align: center;
+    }
     .controls {
-        @include index.flex-row;
-        justify-content: space-between;
         padding: 1rem 2rem;
         button {
-            @include index.button-base;
             width: fit-content;
-            padding-inline: 2rem;
-            &:first-child {
-                background-color: white;
-                color: black;
-                border: 1px solid #e5e5e5;
-                transition: background-color .2s ease-in-out;
-                &:hover {
-                    background-color: #f5f5f5;
-                }
+        }
+    }
+}
+
+.controls {
+    @include index.flex-row;
+    justify-content: space-between;
+
+    button {
+        @include index.button-base;
+        padding-inline: 2rem;
+        @include index.spinner(white);
+        &:first-child {
+            background-color: white;
+            color: black;
+            border: 1px solid #e5e5e5;
+            transition: background-color 0.2s ease-in-out;
+            &:hover {
+                background-color: #f5f5f5;
             }
-            &:last-child {
-                color: white;
-                border: none;
-                background-color: #f49232;
-                transition: background-color .2s ease-in-out;
-                &:hover {
-                    background-color: #f66a0f;
-                }
+        }
+        &:last-child {
+            color: white;
+            border: none;
+            background-color: #f49232;
+            transition: background-color 0.2s ease-in-out;
+            &:hover {
+                background-color: #f66a0f;
             }
         }
     }
 }
+
 .main {
     @include index.flex-col;
     align-items: center;
@@ -103,7 +115,7 @@
                 width: 200px;
                 min-width: 100px;
                 transition: color 0.2s linear;
-                @extend .spinner;
+                @include index.spinner(white);
             }
         }
     }
@@ -176,12 +188,31 @@
             gap: 1.5625rem;
             .text {
                 flex-grow: 1;
+                h3 {
+                    text-transform: capitalize;
+                }
+            }
+            .buttons {
+                gap: 0.3rem;
+                .addToCart {
+                    @include index.spinner(white);
+                    transition: background-color .2s ease-in-out;
+                    &:hover {
+                        background-color: #f66a0f;
+                    }
+                }
+                .productsRemove {
+                    @include index.spinner(black);
+                    transition: background-color .2s ease-in-out;
+                    &:hover {
+                        background-color: #f5f5f5;
+                    }
+                }
             }
             > div {
                 @include index.flex-col;
                 justify-content: space-between;
                 padding-block: 1rem;
-
                 button {
                     @include index.bare-button;
                     border-radius: 5px;
@@ -225,6 +256,34 @@
     width: fit-content;
     cursor: pointer;
     height: fit-content;
+}
+
+.createProduct {
+    position: relative;
+    @include index.flex-col;
+    gap: 1rem;
+    min-width: 300px;
+    align-items: flex-start;
+    input {
+        @include index.input;
+        width: 100%;
+    }
+    > label,.label {
+        @include index.flex-col;
+        gap: 0.2rem;
+        width: 100%;
+        text-transform: capitalize;
+        > div {
+            width: 100%;
+        }
+    }
+    .controls {
+        padding: .3rem .5rem;
+        width: 100%;
+        button {
+            width: 110px;
+        }
+    }
 }
 
 @media only screen and (max-width: 1119px) {

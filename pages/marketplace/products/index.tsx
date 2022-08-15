@@ -1,12 +1,15 @@
 import React from 'react';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
-import { Request } from '../../components/types';
-import { getItems, getUser, ItemSelectorTab, Marketplace, Product, User } from '../../components';
+import { Collection, Joined } from '../../../components/types';
+import { getItems, getUserInfo, ItemSelectorTab, Marketplace, MarketplaceProduct, User } from '../../../components';
+import { getWishlist } from '../../../components/utils';
 
 interface Props {
     user?: User;
-    products?: Request<Product>[];
+    products: Joined<MarketplaceProduct>[];
+    cartCount?: number;
+    wishlist?: Collection;
 }
 
 const extendedSidebarLayout: ItemSelectorTab[] = [
@@ -62,19 +65,31 @@ const extendedSidebarLayout: ItemSelectorTab[] = [
     },
 ];
 
-const Products = ({ user, products }: Props): JSX.Element => {
-    return <Marketplace pageName={'product'} user={user} items={products} sideBarLayout={extendedSidebarLayout} />;
+const Products = ({ user, products, cartCount, wishlist }: Props): JSX.Element => {
+    return (
+        <Marketplace
+            pageName={'product'}
+            user={user}
+            items={products}
+            sideBarLayout={extendedSidebarLayout}
+            cartCount={cartCount || 0}
+            wishlist={wishlist}
+        />
+    );
 };
 
 export default Products;
 
-export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-    const user = await getUser<Props>(req, { props: {} });
-    const products = await getItems('product', 1, 'Popularity', []);
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+    const user = await getUserInfo(req, null);
+    const products = await getItems<MarketplaceProduct>('product', 1, 'Popularity', []);
+    const wishlist = await getWishlist({ headers: { cookie: req.headers.cookie || '' } }, 'product');
+
     return {
         props: {
-            ...user.props,
             products,
+            ...(user && 'props' in user ? user.props : {}),
+            wishlist: wishlist || { products: [], mines: [] },
         },
     };
 };

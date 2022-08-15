@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SubmitHandler, useForm, Controller } from 'react-hook-form';
+import React, { useState } from 'react';
+import { GetServerSidePropsContext } from 'next';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
-import { userApiUrl, Checkbox, Page } from '../components';
+import { Checkbox, getUserInfo, Page, userApiUrl } from '../components';
 
 interface FormValues {
     'First Name': string;
@@ -216,6 +217,18 @@ const SignUp = (): JSX.Element => {
             </Page>
         </>
     );
+};
+
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+    const userInfo = await getUserInfo(req, null);
+    return userInfo !== null
+        ? {
+              redirect: {
+                  destination: '/',
+                  permanent: true,
+              },
+          }
+        : { props: {} };
 };
 
 export default SignUp;

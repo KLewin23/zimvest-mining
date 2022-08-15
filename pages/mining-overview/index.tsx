@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { ServiceProvider1 } from '../../public';
 import styles from '../../styles/mining-guidlines.module.scss';
-import { getUser, User, BannerPage, Page } from '../../components';
+import { getUserInfo, User, BannerPage, Page } from '../../components';
 
 interface Props {
     user?: User;
+    cartCount?: number;
 }
 
-const Index = ({ user }: Props): JSX.Element => {
+const Index = ({ user, cartCount }: Props): JSX.Element => {
     return (
         <>
             <Head>
@@ -20,7 +21,7 @@ const Index = ({ user }: Props): JSX.Element => {
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
 
-            <Page user={user}>
+            <Page user={user} cartCount={cartCount}>
                 <BannerPage heading={'Mining Guidelines'} subHeading={'Learn more about best practices in the mining community'}>
                     <section className={styles.boxList}>
                         <div>
@@ -40,7 +41,7 @@ const Index = ({ user }: Props): JSX.Element => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
-    return getUser<Props>(req, { props: {} });
+    return getUserInfo(req, { props: {} });
 };
 
 export default Index;

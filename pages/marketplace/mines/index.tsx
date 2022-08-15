@@ -1,53 +1,63 @@
 import React from 'react';
-import { GetServerSidePropsContext } from 'next';
-import { FaCogs, FaSnowplow } from 'react-icons/fa';
-import { Request } from '../../../components/types';
-import { getItems, getUser, ItemSelectorTab, Marketplace, Product, User } from '../../../components';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { FaHive } from 'react-icons/fa';
+import { Collection, Joined, MarketplaceMine } from '../../../components/types';
+import { getItems, getUserInfo, ItemSelectorTab, Marketplace, User } from '../../../components';
+import { getWishlist } from '../../../components/utils';
 
 interface Props {
     user?: User;
-    products?: Request<Product>[];
+    mines?: Joined<MarketplaceMine>[];
+    cartCount?: number;
+    wishlist?: Collection;
 }
 
-const extendedSidebarLayout: ItemSelectorTab[] = [
+const sidebarItems: ItemSelectorTab[] = [
     {
-        title: 'Machinery',
-        icon: FaSnowplow,
-        subList: ['Mining Drills', 'Blasting Tools', 'Earth Movers', 'Crushing Equipment', 'Screening Equipment'],
-        tabDefaultState: true,
-    },
-    {
-        title: 'Consumables',
-        icon: FaCogs,
+        title: 'Materials',
+        icon: FaHive,
         subList: [
-            'Bearings',
-            'Idler Rollers',
-            'Conveyors',
-            'Drill bits',
-            'Mining Horse',
-            'Valves',
-            'PPE',
-            'Spare Parts',
-            'Cable Hooks',
-            'Other Service Providers',
+            'Gold',
+            'Silver',
+            'Platinum',
+            'Palladium',
+            'Rhodium',
+            'Copper',
+            'Lead',
+            'Tin',
+            'Nickel',
+            'Zinc',
+            'Iron',
+            'Chromium',
+            'Other',
         ],
         tabDefaultState: true,
     },
 ];
 
-const Mines = ({ user, products }: Props): JSX.Element => {
-    return <Marketplace pageName={'product'} user={user} items={products} sideBarLayout={extendedSidebarLayout} />;
-};
+const Mines = ({ user, mines, cartCount, wishlist }: Props): JSX.Element => (
+    <Marketplace
+        pageName={'mine'}
+        user={user}
+        wishlist={wishlist}
+        items={mines}
+        sideBarLayout={sidebarItems}
+        cartCount={cartCount || 0}
+        itemSubText={item => `[${item.material}]`}
+    />
+);
 
 export default Mines;
 
-export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-    const user = await getUser<Props>(req, { props: {} });
-    const products = await getItems('product', 1, 'Popularity', []);
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+    const user = await getUserInfo(req, null);
+    const mines = await getItems<MarketplaceMine>('mine', 1, 'Popularity', []);
+    const wishlist = await getWishlist({ headers: { cookie: req.headers.cookie || '' } }, 'mine');
     return {
         props: {
-            ...user.props,
-            products,
+            ...(user && 'props' in user ? user?.props : {}),
+            mines,
+            wishlist: wishlist || undefined,
         },
     };
 };

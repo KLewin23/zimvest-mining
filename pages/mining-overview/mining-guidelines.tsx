@@ -1,13 +1,14 @@
 import React from 'react';
 import Head from 'next/head';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { getUser, User, BannerPage, Page } from '../../components';
+import { BannerPage, getUserInfo, Page, User } from '../../components';
 
 interface Props {
     user?: User;
+    cartCount?: number;
 }
 
-const MiningGuidelines = ({ user }: Props): JSX.Element => {
+const MiningGuidelines = ({ user, cartCount }: Props): JSX.Element => {
     return (
         <>
             <Head>
@@ -16,7 +17,7 @@ const MiningGuidelines = ({ user }: Props): JSX.Element => {
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
 
-            <Page user={user}>
+            <Page user={user} cartCount={cartCount}>
                 <BannerPage heading={'Mining Guidelines'} subHeading={'Learn more about best practices in the mining community'}>
                     <section>
                         <h2>Accessing mineral rights and opportunities in Zimbabwe</h2>
@@ -88,7 +89,7 @@ const MiningGuidelines = ({ user }: Props): JSX.Element => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
-    return getUser<Props>(req, { props: {} });
+    return getUserInfo(req, { props: {} });
 };
 
 export default MiningGuidelines;

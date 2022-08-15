@@ -130,7 +130,7 @@
     color: white;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out, color 0.2s linear;
-    @extend .spinner
+    @include index.spinner(white)
 }
 
 .verify {
@@ -146,5 +146,6 @@
 
 .forgottenPassword {
     @extend .box;
-    width: 400px;
+    width: 500px;
+    align-items: center;
 }

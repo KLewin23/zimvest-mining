@@ -1,8 +1,14 @@
 import React from 'react';
 import Head from 'next/head';
-import { BannerPage, Page } from '../components';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { BannerPage, getUserInfo, Page, User } from '../components';
 
-const About = (): JSX.Element => {
+interface Props {
+    user?: User;
+    cartCount?: number;
+}
+
+const About = ({ user, cartCount }: Props): JSX.Element => {
     return (
         <>
             <Head>
@@ -11,7 +17,7 @@ const About = (): JSX.Element => {
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
 
-            <Page>
+            <Page user={user} cartCount={cartCount}>
                 <BannerPage
                     heading={'About Us'}
                     subHeading={'Our platform connects people within the mining industry from the ground up and from the top down.'}
@@ -54,6 +60,10 @@ const About = (): JSX.Element => {
             </Page>
         </>
     );
+};
+
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
+    return getUserInfo(req, { props: {} });
 };
 
 export default About;

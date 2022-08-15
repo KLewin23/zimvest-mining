@@ -16,7 +16,7 @@ const Collapse = ({ title, open, children, onClick }: Props): JSX.Element => {
 
     useEffect(() => {
         setCollapseSize(collapse?.current?.scrollHeight || 0);
-    }, []);
+    }, [children]);
 
     useEventListener('resize', () => {
         setCollapseSize(collapse?.current?.scrollHeight || 0);

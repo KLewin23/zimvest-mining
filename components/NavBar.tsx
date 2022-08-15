@@ -7,7 +7,7 @@ import { FaCaretDown } from 'react-icons/fa';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
 import { User } from './types';
-import { useWindowWidth, useEventListener } from './hooks';
+import { useEventListener, useWindowWidth } from './hooks';
 
 interface Tab {
     title: string;
@@ -16,7 +16,12 @@ interface Tab {
 
 type NavTabs = Array<Tab | { title: string; subList: Array<Tab> }>;
 
-const NavBar = ({ user }: { user?: User }): JSX.Element => {
+interface Props {
+    user?: User;
+    cartCount?: number;
+}
+
+const NavBar = ({ user, cartCount }: Props): JSX.Element => {
     const windowWidth = useWindowWidth();
     const router = useRouter();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -40,11 +45,11 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                 { title: 'Mines', link: '/marketplace/mines' },
                 { title: 'Services', link: '/marketplace/services' },
                 { title: 'JV Opportunities', link: '/jv-opportunities' },
+                { title: 'Vacancies', link: '/marketplace/vacancies' },
             ],
         },
         { title: 'Mining Overview', link: '/mining-overview' },
         { title: 'Market Prices', link: '/market-prices' },
-        { title: 'Vacancies', link: '/vacancies' },
     ];
 
     return (
@@ -142,7 +147,7 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                     }}
                 >
                     <MdPerson size={25} />
-                    <h4>{user ? `${user.firstName} ${user.lastName}` : 'Login / Sign Up'}</h4>
+                    <h4>{user ? `${user.first_name} ${user.last_name}` : 'Login / Sign Up'}</h4>
                     <div
                         id={'menu'}
                         className={styles.menu}
@@ -166,10 +171,15 @@ const NavBar = ({ user }: { user?: User }): JSX.Element => {
                         </Link>
                     </div>
                 </button>
-                <div>
-                    <MdShoppingCart size={25} />
-                    <h4>Cart</h4>
-                </div>
+                {user ? (
+                    <Link href={'/profile/cart'}>
+                        <div className={styles.cart}>
+                            <MdShoppingCart size={25} />
+                            <h4>Cart</h4>
+                            <div>{cartCount}</div>
+                        </div>
+                    </Link>
+                ) : null}
             </div>
         </div>
     );

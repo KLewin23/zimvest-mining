@@ -1,4 +1,5 @@
 import { IconType } from 'react-icons';
+import { Redirect } from 'next/types';
 
 export interface ProductSideBarValues {
     Machinery: {
@@ -61,32 +62,32 @@ export interface ItemSelectorTab {
 export interface User {
     id: number;
     email?: string;
-    firstName?: string;
-    lastName?: string;
-    phoneNumber?: string;
-    province?: string;
-    district?: string;
+    first_name?: string;
+    last_name?: string;
+    phone_number?: string;
+    location?: string;
     facebook?: string;
     whatsapp?: string;
     twitter?: string;
-    companyType?: string;
-    companyName?: string;
-    companyWebsite?: string;
-    preferredCurrency?: string;
-    isServiceProvider?: boolean;
-    isInvestor?: boolean;
-    image?: string; // make string and pull url
+    company_type?: string;
+    company_name?: string;
+    company_website?: string;
+    preferred_currency?: string;
+    is_service_provider?: boolean;
+    is_investor?: boolean;
+    image_id?: string;
     role?: string;
 }
 
-export interface Product {
+export type MarketplacePage = 'product' | 'mine' | 'service' | 'vacancy';
+
+export interface MarketplaceProduct {
     id: number;
-    supplierId: number;
-    name: number;
+    title: string;
     category: string;
     sub_category: string;
     price: number;
-    imageId?: number; // TODO change to the image url
+    image_id?: string;
     description: string;
     views: number;
     reserved: boolean;
@@ -94,16 +95,95 @@ export interface Product {
     updatedAt: string;
 }
 
-export type MarketplacePage = 'product' | 'mine' | 'service';
+export interface MarketplaceMine {
+    id: number;
+    title: string;
+    price: number;
+    material: string;
+}
 
-export type MarketplaceType = Product | Mine;
+export interface MarketplaceVacancy {
+    id: number;
+    title: string;
+    salary: number;
+    image_id: string;
+}
 
-export type Request<T extends MarketplaceType> = T & {
+export type MarketplaceType = MarketplaceProduct | MarketplaceMine | MarketplaceVacancy;
+
+export type Joined<T extends MarketplaceType> = T & {
     supplier: Partial<User>;
 };
 
-export interface Mine {
-    id: number;
-    name: number;
-    price: number;
+export interface UserInfo {
+    user: User;
+    cartCount: number;
 }
+
+export type ServerResponse<P> = { props: P | Promise<P> } | { redirect: Redirect };
+
+interface CollectionItem {
+    id: number;
+    title: string;
+    price: number;
+    image_id: string;
+    supplier: {
+        email: string;
+    };
+}
+
+export type Collection = {
+    products: (CollectionItem & {
+        ProductCollection: {
+            quantity: number;
+        };
+    })[];
+    mines: CollectionItem[];
+};
+
+export interface AccountFormValues {
+    'First Name': string;
+    'Last Name': string;
+    Email: string;
+    'Phone number': string;
+    'Company Name': string;
+    Location: string;
+    'Facebook Url': string;
+    'WhatsApp Url': string;
+    'Twitter Handle': string;
+    'Website Url': string;
+}
+
+export type UserProducts = {
+    title: string;
+    price: number;
+    image_id: string;
+    views: number;
+}[];
+
+interface MineItem {
+    material: string;
+    address: string;
+    location: string;
+    country: string;
+    hectares: number;
+    registration_up_to_date: boolean;
+    seeking_buyer: boolean;
+    seeking_investor: boolean;
+    image_id: string;
+}
+
+export type BasicItemResponse = {
+    id: number;
+    title: string;
+    created_date: string;
+    supplier: {
+        phone_number: string;
+        email: string;
+        twitter?: string;
+        facebook?: string;
+        whatsapp?: string;
+    };
+} & ({ salary: number } | { price: number });
+
+export type MineItemResponse = BasicItemResponse & MineItem;

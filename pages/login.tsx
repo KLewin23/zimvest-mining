@@ -5,12 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext } from 'next';
+import { useGoogleLogin } from '@react-oauth/google';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
-import { fetchUser, userApiUrl, Checkbox, Page } from '../components';
-
-// TODO maybe make this a sort of client side rendered component to make switching between login and signup smoother
+import { Checkbox, getUserInfo, Page, userApiUrl } from '../components';
 
 interface FormValues {
     email: string;
@@ -26,6 +25,30 @@ const Login = (): JSX.Element => {
     } = useForm<FormValues>();
     const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: async tokenResponse => {
+            axios
+                .post(
+                    `${userApiUrl}/session/google`,
+                    {
+                        token: tokenResponse.access_token,
+                    },
+                    { withCredentials: true },
+                )
+                .then(async () => {
+                    await router.push('/');
+                })
+                .catch(e => null);
+        },
+    });
+
+    // access_token: "ya29.A0AVA9y1stLeA0dxn2S9NrIob-81LDYjGj_WTmdHh8oXzbYSnt0dCjpV48hChG8SZ-r-pImJrZzxxuroqq-uqiGo4Boj_cSQp5nSde7rAkyZt6I8RxKM2SIrM12ByjDYuXCmWwLFrFmDQrnR2eUyC2Kd78axa9aCgYKATASATASFQE65dr8ffHyprOkJ2EMMKxuJM1xCw0163"
+    // authuser: "0"
+    // expires_in: 3599
+    // prompt: "consent"
+    // scope: "email profile openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+    // token_type: "Bearer"
 
     const login: SubmitHandler<FormValues> = data => {
         axios
@@ -113,7 +136,7 @@ const Login = (): JSX.Element => {
                             <button type={'submit'} className={styles.zim_button}>
                                 Login
                             </button>
-                            <button type={'button'} className={styles.googleButton}>
+                            <button type={'button'} className={styles.googleButton} onClick={() => googleLogin()}>
                                 <Image src={GoogleIcon} />
                                 Log in with Google
                             </button>
@@ -130,22 +153,15 @@ const Login = (): JSX.Element => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-    return fetchUser(req.headers.cookie || '')
-        .then(user => {
-            if (user.data) {
-                return {
-                    redirect: '/',
-                };
-            }
-            return {
-                props: {},
-            };
-        })
-        .catch(() => {
-            return {
-                props: {},
-            };
-        });
+    const userInfo = await getUserInfo(req, null);
+    return userInfo !== null
+        ? {
+              redirect: {
+                  destination: '/',
+                  permanent: true,
+              },
+          }
+        : { props: {} };
 };
 
 export default Login;

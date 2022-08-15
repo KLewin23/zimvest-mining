@@ -17,13 +17,13 @@
             background: none;
             font-size: 1rem;
             border: none;
-            min-width: 150px;
             height: 16px;
             width: 252px;
         }
     }
     .list {
         @include index.flex-col;
+        min-width:  252px;
         > section {
             @include index.flex-col;
             gap: 1rem;
@@ -59,4 +59,8 @@
             }
         }
     }
+}
+
+@media only screen and (max-width: 1119px) {
+
 }

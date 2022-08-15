@@ -7,7 +7,7 @@ import { Carousel } from 'react-responsive-carousel';
 import Page from '../components/Page';
 import styles from '../styles/index.module.scss';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { fetchUser, User, Advert } from '../components';
+import { Advert, getUserInfo, User } from '../components';
 import landscapeBanner1 from '../public/banner/zimvest_web banners_1024x500.jpg';
 import landscapeBanner2 from '../public/banner/zimvest_web banners_1024x5002.jpg';
 import landscapeBanner3 from '../public/banner/zimvest_web banners_1024x5004.jpg';
@@ -19,9 +19,10 @@ import landscapeBanner8 from '../public/banner/zimvest_web banners_1024x5009.jpg
 
 interface Props {
     user?: User;
+    cartCount?: number;
 }
 
-const Home: NextPage<Props> = ({ user }: Props) => {
+const Home: NextPage<Props> = ({ user, cartCount }: Props) => {
     return (
         <>
             <Head>
@@ -29,8 +30,7 @@ const Home: NextPage<Props> = ({ user }: Props) => {
                 <meta name={'description'} content={'Zimvest Home'} />
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
-
-            <Page user={user} withCurrencyWidget withSideBar>
+            <Page user={user} withCurrencyWidget withSideBar cartCount={cartCount}>
                 <div className={styles.main}>
                     <div className={styles.banner}>
                         <Carousel showArrows showThumbs={false} showIndicators={false} showStatus={false} infiniteLoop autoPlay>
@@ -68,22 +68,7 @@ const Home: NextPage<Props> = ({ user }: Props) => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-    return fetchUser(req.headers.cookie || '')
-        .then(user => {
-            if (user.data) {
-                return {
-                    props: { user: user.data },
-                };
-            }
-            return {
-                props: {},
-            };
-        })
-        .catch(() => {
-            return {
-                props: {},
-            };
-        });
+    return getUserInfo(req, { props: {} });
 };
 
 export default Home;

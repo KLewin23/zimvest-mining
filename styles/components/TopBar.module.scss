@@ -15,10 +15,10 @@
         margin: auto;
         justify-content: space-between;
         flex-grow: 1;
-        >div {
+        > div {
             gap: 1rem;
-            >div {
-                gap: .25rem;
+            > div {
+                gap: 0.25rem;
             }
         }
     }
@@ -26,6 +26,10 @@
 
 @media only screen and (max-width: 1119px) {
     .main {
+        > div {
+            justify-content: flex-start;
+            padding-inline: 2rem;
+        }
         padding-inline: 2rem;
     }
 }
