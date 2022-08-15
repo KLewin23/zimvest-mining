@@ -39,7 +39,7 @@ const Login = (): JSX.Element => {
                 .then(async () => {
                     await router.push('/');
                 })
-                .catch(e => null);
+                .catch(() => null);
         },
     });
 

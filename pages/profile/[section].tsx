@@ -15,6 +15,7 @@ import { Collapse, getUserInfo, Modal, Page, User, userApiUrl } from '../../comp
 import { getCart, getProducts, getWishlist } from '../../components/utils';
 import type { AccountFormValues, Collection, MarketplacePage, UserProducts } from '../../components/types';
 import Select from '../../components/Select';
+import { extendedSidebarLayout } from '../../components/data';
 
 interface Props {
     user: User;
@@ -51,7 +52,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
     const [profileImage, setProfileImage] = useState('');
     const [imageError, setImageError] = useState('');
     const [imageId, setImageId] = useState(user.image_id);
-    const [createProductModal, setCreateProductModal] = useState(false);
+    const [createProductModal, setCreateProductModal] = useState(true);
     const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach(file => {
             const reader = new FileReader();
@@ -103,6 +104,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
     });
     const { register: registerAdd, control, watch } = useForm<ItemForm>();
     const type = watch('Type');
+    const category = watch('Category');
 
     const uploadImage = useMutation(
         () => {
@@ -420,16 +422,42 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                             <>
                                 <div className={styles.label}>
                                     <p>Category</p>
-                                    <Select title={'Category'} onClick={() => null}>
-                                        <option>idk</option>
-                                    </Select>
+                                    <Controller
+                                        name={'Category'}
+                                        control={control}
+                                        rules={{ validate: { isTrue: value => value } }}
+                                        render={({ field }) => (
+                                            <Select title={'Category'} selectedOption={field.value} onClick={el => field.onChange(el)}>
+                                                {extendedSidebarLayout.map(i => (
+                                                    <option>{i.title}</option>
+                                                ))}
+                                            </Select>
+                                        )}
+                                    />
                                 </div>
-                                <div className={styles.label}>
-                                    <p>Sub-Category</p>
-                                    <Select title={'Sub-Category'} onClick={() => null}>
-                                        <option>idk</option>
-                                    </Select>
-                                </div>
+                                {category !== undefined ? (
+                                    <div className={styles.label}>
+                                        <p>Sub-Category</p>
+                                        <Controller
+                                            name={'SubCategory'}
+                                            control={control}
+                                            rules={{ validate: { isTrue: value => value } }}
+                                            render={({ field }) => (
+                                                <Select
+                                                    title={'Sub Category'}
+                                                    selectedOption={field.value}
+                                                    onClick={el => field.onChange(el)}
+                                                >
+                                                    {(
+                                                        extendedSidebarLayout.find(i => i.title === category) || { subList: [''] }
+                                                    ).subList.map(e => (
+                                                        <option>{e}</option>
+                                                    ))}
+                                                </Select>
+                                            )}
+                                        />
+                                    </div>
+                                ) : null}
                             </>
                         ) : null}
                         <div className={styles.controls}>
