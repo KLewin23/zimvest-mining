@@ -1,6 +1,22 @@
 import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
 import { ItemSelectorTab } from './types';
 
+export const metals = [
+    'Gold',
+    'Silver',
+    'Platinum',
+    'Palladium',
+    'Rhodium',
+    'Copper',
+    'Lead',
+    'Tin',
+    'Nickel',
+    'Zinc',
+    'Iron',
+    'Chromium',
+    'Other',
+];
+
 export const extendedSidebarLayout: ItemSelectorTab[] = [
     {
         title: 'Machinery',

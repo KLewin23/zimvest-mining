@@ -3,6 +3,7 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaHive } from 'react-icons/fa';
 import { Collection, Joined, MarketplaceMine } from '../../../components/types';
 import { getItems, getUserInfo, ItemSelectorTab, Marketplace, User } from '../../../components';
+import { metals } from '../../../components/data';
 import { getWishlist } from '../../../components/utils';
 
 interface Props {
@@ -16,21 +17,7 @@ const sidebarItems: ItemSelectorTab[] = [
     {
         title: 'Materials',
         icon: FaHive,
-        subList: [
-            'Gold',
-            'Silver',
-            'Platinum',
-            'Palladium',
-            'Rhodium',
-            'Copper',
-            'Lead',
-            'Tin',
-            'Nickel',
-            'Zinc',
-            'Iron',
-            'Chromium',
-            'Other',
-        ],
+        subList: metals,
         tabDefaultState: true,
     },
 ];

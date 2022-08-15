@@ -15,7 +15,7 @@ import { Collapse, getUserInfo, Modal, Page, User, userApiUrl } from '../../comp
 import { getCart, getProducts, getWishlist } from '../../components/utils';
 import type { AccountFormValues, Collection, MarketplacePage, UserProducts } from '../../components/types';
 import Select from '../../components/Select';
-import { extendedSidebarLayout } from '../../components/data';
+import { extendedSidebarLayout, metals } from '../../components/data';
 
 interface Props {
     user: User;
@@ -102,7 +102,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
             'Website Url': user?.company_website,
         },
     });
-    const { register: registerAdd, control, watch } = useForm<ItemForm>();
+    const { register: registerAdd, control, watch, reset, handleSubmit: handleItemSubmit } = useForm<ItemForm>();
     const type = watch('Type');
     const category = watch('Category');
 
@@ -122,7 +122,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         { onSuccess: () => setImageModal(false) },
     );
 
-    const save = (data: AccountFormValues) => {
+    const updateAccount = (data: AccountFormValues) => {
         setApiRequestSent(true);
         axios
             .put(
@@ -184,6 +184,21 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         {
             initialData: initialWishlist,
         },
+    );
+
+    const createListing = useMutation(
+        (vars: ItemForm) =>
+            axios.post(
+                `${userApiUrl}/listing/${vars.Type}`,
+                {
+                    title: vars.Title,
+                    category: vars.Type === 'mine' ? 'material' : vars.Category,
+                    price: vars.Price,
+                    subCategory: vars.SubCategory,
+                },
+                { withCredentials: true },
+            ),
+        { onSuccess: () => setCreateProductModal(false) },
     );
 
     const createItem = (
@@ -380,7 +395,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     </div>
                 </Modal>
                 <Modal open={createProductModal}>
-                    <div className={styles.createProduct}>
+                    <form className={styles.createProduct} onSubmit={handleItemSubmit(vals => createListing.mutate(vals))}>
                         <h2>Create Product</h2>
                         <label htmlFor={'title'}>
                             <p>Title</p>
@@ -392,22 +407,11 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 {...registerAdd('Title', { required: true })}
                             />
                         </label>
-                        <label htmlFor={'price'}>
-                            <p>Price</p>
-                            <input
-                                id={'price'}
-                                type={'text'}
-                                placeholder={'Price'}
-                                // style={{ borderColor: false ? '#EC4C4C' : '#ced4da' }}
-                                {...registerAdd('Price', { required: true })}
-                            />
-                        </label>
                         <div className={styles.label}>
                             <p>Type</p>
                             <Controller
                                 name={'Type'}
                                 control={control}
-                                rules={{ validate: { isTrue: value => value } }}
                                 render={({ field }) => (
                                     <Select title={'Type'} selectedOption={field.value} onClick={el => field.onChange(el)}>
                                         <option>mine</option>
@@ -418,14 +422,25 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 )}
                             />
                         </div>
-                        {type === 'product' || type === 'mine' ? (
+                        {type !== undefined ? (
+                            <label htmlFor={'price'}>
+                                <p>{type === 'product' || type === 'mine' || type === 'service' ? 'Price' : 'Salary'}</p>
+                                <input
+                                    id={'price'}
+                                    type={'text'}
+                                    placeholder={type === 'product' || type === 'mine' ? 'Price' : 'Salary'}
+                                    // style={{ borderColor: false ? '#EC4C4C' : '#ced4da' }}
+                                    {...registerAdd('Price', { required: true })}
+                                />
+                            </label>
+                        ) : null}
+                        {type === 'product' || type === 'service' ? (
                             <>
                                 <div className={styles.label}>
                                     <p>Category</p>
                                     <Controller
                                         name={'Category'}
                                         control={control}
-                                        rules={{ validate: { isTrue: value => value } }}
                                         render={({ field }) => (
                                             <Select title={'Category'} selectedOption={field.value} onClick={el => field.onChange(el)}>
                                                 {extendedSidebarLayout.map(i => (
@@ -441,7 +456,6 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                         <Controller
                                             name={'SubCategory'}
                                             control={control}
-                                            rules={{ validate: { isTrue: value => value } }}
                                             render={({ field }) => (
                                                 <Select
                                                     title={'Sub Category'}
@@ -460,19 +474,31 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 ) : null}
                             </>
                         ) : null}
+                        {type === 'mine' ? (
+                            <div className={styles.label}>
+                                <p>Material</p>
+                                <Controller
+                                    name={'SubCategory'}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select title={'Material'} selectedOption={field.value} onClick={el => field.onChange(el)}>
+                                            {metals.map(i => (
+                                                <option>{i}</option>
+                                            ))}
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+                        ) : null}
                         <div className={styles.controls}>
                             <button type={'button'} onClick={() => setCreateProductModal(false)}>
                                 Cancel
                             </button>
-                            <button
-                                type={'button'}
-                                className={uploadImage.isLoading ? styles.loading : ''}
-                                onClick={() => uploadImage.mutate()}
-                            >
-                                Save
+                            <button type={'submit'} className={createListing.isLoading ? styles.loading : ''}>
+                                Create
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </Modal>
                 <div className={styles.main}>
                     <Collapse
@@ -480,7 +506,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                         open={openedTab === 'Account'}
                         onClick={() => setOpenedTab(openedTab === 'Account' ? '' : 'Account')}
                     >
-                        <form onSubmit={handleSubmit(save)} className={styles.account}>
+                        <form onSubmit={handleSubmit(updateAccount)} className={styles.account}>
                             <div className={styles.layer1}>
                                 <NextImage
                                     src={
@@ -663,7 +689,20 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     >
                         <div className={styles.wishlist}>
                             <h2>Products</h2>
-                            <button type={'button'} className={styles.createButton} onClick={() => setCreateProductModal(true)}>
+                            <button
+                                type={'button'}
+                                className={styles.createButton}
+                                onClick={() => {
+                                    reset({
+                                        Title: '',
+                                        Price: undefined,
+                                        Type: undefined,
+                                        Category: undefined,
+                                        SubCategory: undefined,
+                                    });
+                                    setCreateProductModal(true);
+                                }}
+                            >
                                 Create
                             </button>
                             {userProducts && userProducts.length !== 0 ? (
