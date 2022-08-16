@@ -8,13 +8,26 @@
         @include index.flex-col;
         background-color: white;
         border-radius: 10px;
-        > div {
-            @include index.flex-row;
-            width: 100%;
-            padding: 3rem;
-        }
-        .section1 {
-            justify-content: space-between;
+        height: 100%;
+        padding: 3rem;
+        gap: 1rem;
+    }
+}
+
+.section1 {
+    @include index.flex-row;
+    width: 100%;
+}
+
+.section2 {
+    @include index.flex-col;
+    gap: 1rem;
+    max-width: 700px;
+    text-transform: capitalize;
+    p {
+        text-transform: lowercase;
+        &:first-letter{
+            text-transform: uppercase;
         }
     }
 }
@@ -35,33 +48,38 @@
         @include index.flex-col;
         gap: 1rem;
     }
-    button {
-        @include index.bare-button;
-        border-radius: 0.3125rem;
-        min-width: 9.375rem;
 
-        &:first-child {
-            @include index.button-base;
-            background-color: #f49232;
-            color: white;
-            height: 2.5rem;
-            transition: 0.2s background-color ease-in-out;
-            @include index.spinner(white);
-            &:hover {
-                background-color: #f66a0f;
-            }
-        }
-        &:last-child {
-            background-color: white;
-            color: black;
-            height: 1.875rem;
-            border: 0.0625rem solid #e5e5e5;
-            transition: 0.2s background-color ease-in-out;
-            @include index.spinner(black);
-            &:hover {
-                background-color: #fbfbfb;
-            }
-        }
+}
+
+.button{
+    @include index.bare-button;
+    border-radius: 0.3125rem;
+    min-width: 9.375rem;
+}
+
+.addToCart {
+    @extend .button;
+    @include index.button-base;
+    background-color: #f49232;
+    color: white;
+    height: 2.5rem;
+    transition: 0.2s background-color ease-in-out;
+    padding-inline: 1rem;
+    @include index.spinner(white);
+    &:hover {
+        background-color: #f66a0f;
+    }
+}
+.wishlistButton {
+    @extend .button;
+    background-color: white;
+    color: black;
+    height: 1.875rem;
+    border: 0.0625rem solid #e5e5e5;
+    transition: 0.2s background-color ease-in-out;
+    @include index.spinner(black);
+    &:hover {
+        background-color: #fbfbfb;
     }
 }
 
@@ -87,5 +105,7 @@
 
 .image {
     position: relative;
-    width: 31.25rem;
+    width: 500px;
+    height: fit-content;
+    aspect-ratio: 16 / 9;
 }

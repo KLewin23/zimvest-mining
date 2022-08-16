@@ -98,6 +98,7 @@ export interface MarketplaceProduct {
 export interface MarketplaceMine {
     id: number;
     title: string;
+    image_id?: string;
     price: number;
     material: string;
 }
@@ -114,11 +115,6 @@ export type MarketplaceType = MarketplaceProduct | MarketplaceMine | Marketplace
 export type Joined<T extends MarketplaceType> = T & {
     supplier: Partial<User>;
 };
-
-export interface UserInfo {
-    user: User;
-    cartCount: number;
-}
 
 export type ServerResponse<P> = { props: P | Promise<P> } | { redirect: Redirect };
 
@@ -177,6 +173,8 @@ export type BasicItemResponse = {
     id: number;
     title: string;
     created_date: string;
+    description: string;
+    image_id: string;
     supplier: {
         phone_number: string;
         email: string;

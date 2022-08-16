@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Index = ({ user, vacancies, cartCount }: Props): JSX.Element => (
-    <Marketplace pageName={'vacancy'} user={user} items={vacancies} cartCount={cartCount || 0} />
+    <Marketplace pageName={'vacancy'} user={user} items={vacancies} initialCartCount={cartCount || 0} />
 );
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
     const user = await getUserInfo(req, null);

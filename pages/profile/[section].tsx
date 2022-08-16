@@ -11,11 +11,23 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaGlobe, FaImage, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { MdFacebook, MdInfoOutline, MdOutlineFileDownload } from 'react-icons/md';
 import styles from '../../styles/profile.module.scss';
-import { Collapse, getUserInfo, Modal, Page, User, userApiUrl } from '../../components';
-import { getCart, getProducts, getWishlist } from '../../components/utils';
-import type { AccountFormValues, Collection, MarketplacePage, UserProducts } from '../../components/types';
-import Select from '../../components/Select';
-import { extendedSidebarLayout, metals } from '../../components/data';
+import {
+    AccountFormValues,
+    Collapse,
+    Collection,
+    extendedSidebarLayout,
+    getProducts,
+    getUserInfo,
+    MarketplacePage,
+    metals,
+    Modal,
+    Page,
+    Select,
+    User,
+    userApiUrl,
+    UserProducts,
+} from '../../components';
+import { getCollection } from '../../components/utils';
 
 interface Props {
     user: User;
@@ -31,6 +43,8 @@ interface ItemForm {
     Type: MarketplacePage;
     Category: string;
     SubCategory: string;
+    Image: string;
+    imageName: string;
 }
 
 const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount, userProducts }: Props): JSX.Element => {
@@ -53,33 +67,43 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
     const [imageError, setImageError] = useState('');
     const [imageId, setImageId] = useState(user.image_id);
     const [createProductModal, setCreateProductModal] = useState(true);
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        acceptedFiles.forEach(file => {
-            const reader = new FileReader();
-
-            reader.onabort = () => null;
-            reader.onerror = () => null;
-
-            // reader.onabort = () => console.log('file reading was aborted');
-            // reader.onerror = () => console.log('file reading has failed');
-            reader.onload = () => {
-                // Do whatever you want with the file contents
-                const image = new Image();
-                image.src = reader.result?.toString() || '';
-                image.onload = () => {
-                    if (image.width !== image.height) {
-                        setImageError('Image must be square');
-                        return setProfileImage('');
-                    }
-                    const binaryStr = reader.result;
-                    setImageError('');
-                    return setProfileImage((binaryStr as string) || '');
+    const { register: registerAdd, control, watch, reset, handleSubmit: handleItemSubmit, setValue } = useForm<ItemForm>();
+    const type = watch('Type');
+    const category = watch('Category');
+    const imageName = watch('imageName');
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            acceptedFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onabort = () => null;
+                reader.onerror = () => null;
+                reader.onload = () => {
+                    const image = new Image();
+                    image.src = reader.result?.toString() || '';
+                    image.onload = () => {
+                        if (imageModal && !createProductModal) {
+                            if (image.width !== image.height) {
+                                setImageError('Image must be square');
+                                return setProfileImage('');
+                            }
+                            setImageError('');
+                            return setProfileImage((reader.result as string) || '');
+                        }
+                        if (!imageModal && createProductModal) {
+                            if ((image.width / 16) * 9 !== image.height) {
+                                return setImageError('Image must have aspect ratio 16:9');
+                            }
+                            return setValue('imageName', file.name);
+                        }
+                        return setImageError('Unknown error has occurred');
+                    };
                 };
-            };
-            reader.readAsDataURL(file);
-        });
-    }, []);
-    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+                reader.readAsDataURL(file);
+            });
+        },
+        [createProductModal, imageModal, setValue],
+    );
+    const { acceptedFiles, getRootProps, getInputProps, open } = useDropzone({
         accept: {
             'image/png': ['.png'],
             'image/jpeg': ['.jpeg'],
@@ -87,7 +111,6 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         maxFiles: 1,
         onDrop,
     });
-
     const { register, setError, handleSubmit } = useForm<AccountFormValues>({
         defaultValues: {
             'First Name': user.first_name,
@@ -102,9 +125,6 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
             'Website Url': user?.company_website,
         },
     });
-    const { register: registerAdd, control, watch, reset, handleSubmit: handleItemSubmit } = useForm<ItemForm>();
-    const type = watch('Type');
-    const category = watch('Category');
 
     const uploadImage = useMutation(
         () => {
@@ -174,30 +194,41 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
             ),
     );
 
-    const { data: cart, refetch: refetchCart } = useQuery<Collection>([`Cart`], async () => getCart(), {
-        initialData: initialCart,
-    });
+    const { data: cart, refetch: refetchCart } = useQuery<Collection>(
+        [`Cart`],
+        async () => (await getCollection('CART')) || { products: [], mines: [] },
+        {
+            initialData: initialCart,
+        },
+    );
 
     const { data: wishlist, refetch: refetchWishlist } = useQuery<Collection>(
         [`Wishlist`],
-        async () => (await getWishlist()) || { products: [], mines: [] },
+        async () => (await getCollection('WISHLIST')) || { products: [], mines: [] },
         {
             initialData: initialWishlist,
         },
     );
 
     const createListing = useMutation(
-        (vars: ItemForm) =>
-            axios.post(
-                `${userApiUrl}/listing/${vars.Type}`,
-                {
-                    title: vars.Title,
-                    category: vars.Type === 'mine' ? 'material' : vars.Category,
-                    price: vars.Price,
-                    subCategory: vars.SubCategory,
-                },
-                { withCredentials: true },
-            ),
+        (vars: ItemForm) => {
+            const form = new FormData();
+            form.append('file', acceptedFiles[0]);
+            Array.isArray(imageUploadUrl);
+            return axios.post(imageUploadUrl, form, { headers: { 'Content-Type': 'multipart/form-data' } }).then(({ data }) =>
+                axios.post(
+                    `${userApiUrl}/listing/${vars.Type}`,
+                    {
+                        title: vars.Title,
+                        category: vars.Type === 'mine' ? 'material' : vars.Category,
+                        price: vars.Price,
+                        subCategory: vars.SubCategory,
+                        image_id: data.result.id,
+                    },
+                    { withCredentials: true },
+                ),
+            );
+        },
         { onSuccess: () => setCreateProductModal(false) },
     );
 
@@ -208,11 +239,15 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
     ) => {
         return (
             <div key={title}>
-                {image_id ? (
-                    <NextImage src={`https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${image_id}/public`} />
-                ) : (
-                    <FaImage size={100} color={'#E5E5E5'} />
-                )}
+                <NextImage
+                    width={160}
+                    height={90}
+                    src={
+                        image_id
+                            ? `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${image_id}/public`
+                            : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/2e3a5e35-2fbe-402a-9e5c-f19a60f85900/public'
+                    }
+                />
                 <div className={styles.text}>
                     <h3>{title}</h3>
                     <p>{email}</p>
@@ -244,7 +279,6 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         );
     };
 
-    // TODO add quantity
     const getCartComponent = () => {
         if (!cart || (cart && cart.products.length === 0 && cart.mines.length === 0)) return <h3>You have no items in your cart.</h3>;
         const products = cart.products.map(product =>
@@ -490,6 +524,17 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 />
                             </div>
                         ) : null}
+                        {imageName !== undefined ? <h4>Image: {imageName}</h4> : null}
+                        <button
+                            type={'button'}
+                            onClick={async () => {
+                                setImageUploadUrl((await axios.post(`${userApiUrl}/image/upload`)).data.uploadURL);
+                                open();
+                            }}
+                            className={styles.imageButton}
+                        >
+                            {imageName !== undefined ? 'Change Image' : 'Add Image'}
+                        </button>
                         <div className={styles.controls}>
                             <button type={'button'} onClick={() => setCreateProductModal(false)}>
                                 Cancel
@@ -715,9 +760,12 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                         )}
                                         <div className={styles.text}>
                                             <h3>{item.title}</h3>
-                                            <p>Views: {item.views}</p>
                                             <p>
-                                                <span>{item.price}</span>
+                                                Views: <span>{item.views || 0}</span>
+                                            </p>
+                                            <p>
+                                                Price:
+                                                <span> ${item.price}</span>
                                             </p>
                                         </div>
                                         <div>
@@ -754,8 +802,8 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
             },
         };
 
-    const cart = await getCart({ headers: { cookie: req.headers.cookie || '' } });
-    const wishlist = await getWishlist({ headers: { cookie: req.headers.cookie || '' } });
+    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
+    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } });
     const products = await getProducts({ headers: { cookie: req.headers.cookie || '' } });
     const user = await getUserInfo(req, { redirect: { destination: '/login', permanent: true } });
 
@@ -763,7 +811,7 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
         return user;
     }
 
-    return { props: { cart, userProducts: products, ...user.props, wishlist: wishlist || undefined } };
+    return { props: { cart: cart || undefined, userProducts: products, ...user.props, wishlist: wishlist || undefined } };
 };
 
 export default Section;

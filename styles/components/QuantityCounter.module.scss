@@ -1,0 +1,46 @@
+@use 'index.module';
+
+.main {
+    @include index.flex-row;
+    border-radius: 5px;
+    height: 40px;
+    width: 100%;
+    align-items: center;
+    gap: .5rem;
+    div {
+        @include index.flex-row;
+        height: 40px;
+        width: 140px;
+        * {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            border-top: 1px solid #c4c4c4;
+            border-bottom: 1px solid #c4c4c4;
+            padding: 0;
+        }
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            &:hover {
+                background-color: #fbfbfb;
+            }
+        }
+        > :first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #c4c4c4;
+        }
+        > :last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border: 1px solid #c4c4c4;
+        }
+    }
+}

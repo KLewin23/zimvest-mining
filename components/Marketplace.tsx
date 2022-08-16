@@ -5,16 +5,16 @@ import { FaSortAmountDown } from 'react-icons/fa';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 import { useInView } from 'react-intersection-observer';
-import axios from 'axios';
 import type { Collection, ItemSelectorTab, Joined, MarketplacePage, MarketplaceType, ProductSideBarValues, User } from './types';
 import styles from '../styles/components/Marketplace.module.scss';
-import TestProduct from '../public/testProduct.png';
-import { getItems, getWishlist, useCartCount, userApiUrl } from './utils';
+import { getItems } from './utils';
 import Page from './Page';
 import Select from './Select';
 import ItemSelector from './ItemSelector';
+import { useCart, useWishlist } from './hooks';
+import QuantityCounter from './QuantityCounter';
 
 interface FormValues extends ProductSideBarValues {
     'Sort By': string;
@@ -26,8 +26,8 @@ interface Props<T extends MarketplaceType> {
     sideBarLayout?: ItemSelectorTab[];
     pageName: MarketplacePage;
     itemSubText?: (item: T) => string;
-    cartCount: number;
-    wishlist?: Collection;
+    initialWishlist?: Collection;
+    initialCart?: Collection;
 }
 
 export const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];
@@ -58,8 +58,8 @@ const Marketplace = <T extends MarketplaceType>({
     sideBarLayout,
     pageName,
     itemSubText,
-    cartCount,
-    wishlist: initialWishlist,
+    initialWishlist,
+    initialCart,
 }: Props<T>): JSX.Element => {
     const { ref, inView } = useInView();
     const { query } = useRouter();
@@ -102,7 +102,6 @@ const Marketplace = <T extends MarketplaceType>({
             getNextPageParam: (_, allPages) => allPages.length - 1,
         },
     );
-
     useEffect(() => {
         (async () => {
             if (inView && items) {
@@ -114,29 +113,8 @@ const Marketplace = <T extends MarketplaceType>({
         })();
     }, [fetchNextPage, inView, items, refetchItems]);
 
-    const addToCart = useMutation((id: number) =>
-        axios.post(`${userApiUrl}/collection/CART/${pageName}?id=${id}`, {}, { withCredentials: true }),
-    );
-
-    const { data: wishlist, refetch: refetchWishlist } = useQuery<Collection | null>(
-        [`${pageName}-Wishlist`],
-        async () => getWishlist({}, pageName),
-        {
-            ...(initialWishlist && { initialData: initialWishlist }),
-        },
-    );
-
-    const addToWishlist = useMutation(
-        (id: number) => axios.post(`${userApiUrl}/collection/WISHLIST/${pageName}?id=${id}`, {}, { withCredentials: true }),
-        { onSuccess: () => refetchWishlist() },
-    );
-
-    const removeFromWishlist = useMutation(
-        (id: number) => axios.put(`${userApiUrl}/collection/remove/WISHLIST/${pageName}?id=${id}`, {}, { withCredentials: true }),
-        { onSuccess: () => refetchWishlist() },
-    );
-
-    const { data: cart, refetch: reFetchCartCount } = useCartCount(pageName, cartCount);
+    const { wishlist, addToWishlist, removeFromWishlist } = useWishlist(pageName, initialWishlist);
+    const { cart, addToCart, cartCount, removeFromCart } = useCart(pageName, initialCart);
 
     return (
         <>
@@ -146,7 +124,7 @@ const Marketplace = <T extends MarketplaceType>({
                 <link rel={'icon'} href={'/zimvestFavicon.png'} />
             </Head>
 
-            <Page user={user} withCurrencyWidget withSideBar cartCount={cart}>
+            <Page user={user} withCurrencyWidget withSideBar cartCount={cartCount}>
                 <FormProvider {...formMethods}>
                     <div className={styles.main}>
                         {sideBarLayout ? <ItemSelector itemSelectorLayout={sideBarLayout} /> : null}
@@ -176,7 +154,16 @@ const Marketplace = <T extends MarketplaceType>({
                                     items.pages.map(page => {
                                         return page.map((item: Joined<T>) => (
                                             <div key={`Marketplace-Product-${item.id}`}>
-                                                <Image width={200} height={100} layout={'fixed'} src={TestProduct} />
+                                                <Image
+                                                    width={200}
+                                                    height={100}
+                                                    layout={'fixed'}
+                                                    src={
+                                                        item.image_id
+                                                            ? `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`
+                                                            : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/2e3a5e35-2fbe-402a-9e5c-f19a60f85900/public'
+                                                    }
+                                                />
                                                 <div className={styles.text}>
                                                     <div>
                                                         <Link href={`/marketplace/${pageName}s/${item.id}`}>
@@ -202,17 +189,31 @@ const Marketplace = <T extends MarketplaceType>({
                                                     </p>
                                                 </div>
                                                 <div className={styles.buttons}>
-                                                    <button
-                                                        type={'button'}
-                                                        className={
-                                                            addToCart.variables === item.id && addToCart.isLoading ? styles.loading : ''
-                                                        }
-                                                        onClick={async () => {
-                                                            addToCart.mutate(item.id, { onSuccess: () => reFetchCartCount() });
-                                                        }}
-                                                    >
-                                                        Add to cart
-                                                    </button>
+                                                    {(() => {
+                                                        const cartProduct = cart?.products.find(i => i.id === item.id) || null;
+                                                        return cartProduct && pageName === 'product' ? (
+                                                            <QuantityCounter
+                                                                quantity={cartProduct.ProductCollection.quantity}
+                                                                decreaseQuantity={() => removeFromCart.mutate(cartProduct.id)}
+                                                                increaseQuantity={() => addToCart.mutate(cartProduct.id)}
+                                                            />
+                                                        ) : (
+                                                            <button
+                                                                type={'button'}
+                                                                className={
+                                                                    addToCart.variables === item.id && addToCart.isLoading
+                                                                        ? styles.loading
+                                                                        : ''
+                                                                }
+                                                                onClick={async () => {
+                                                                    addToCart.mutate(item.id);
+                                                                }}
+                                                            >
+                                                                Add to cart
+                                                            </button>
+                                                        );
+                                                    })()}
+
                                                     <button
                                                         onClick={async () => {
                                                             if (!wishlist) return undefined;

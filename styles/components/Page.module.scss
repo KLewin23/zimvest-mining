@@ -14,3 +14,10 @@
     overflow: hidden;
     background-color: #1E222D;
 }
+
+@media only screen and (max-width: 1119px) {
+    .widget {
+        max-height: unset;
+        height: unset;
+    }
+}

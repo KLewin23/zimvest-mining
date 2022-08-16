@@ -1,36 +1,36 @@
 import React from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { BasicItemResponse, Collection, getInCart, getItem, getUserInfo, Item, User } from '../../../components';
+import { Collection, getInCart, getItem, getUserInfo, Item, MineItemResponse, User } from '../../../components';
 import { getCollection } from '../../../components/utils';
 
 interface Props {
     user?: User;
-    product: BasicItemResponse;
+    mine: MineItemResponse;
     cartCount?: number;
     wishlist?: Collection;
-    productsInCart?: number;
+    minesInCart?: number;
 }
 
-const ProductItem = ({ user, product, cartCount, wishlist, productsInCart }: Props): JSX.Element => {
+const MineItem = ({ user, mine, cartCount, wishlist, minesInCart }: Props): JSX.Element => {
     return (
         <Item
-            pageName={'product'}
+            pageName={'mine'}
+            initialItemsInCart={minesInCart}
             user={user}
             initialCartCount={cartCount}
-            initialItemsInCart={productsInCart}
             initialWishlist={wishlist}
-            item={product}
+            item={mine}
         />
     );
 };
 
-export default ProductItem;
+export default MineItem;
 
 export const getServerSideProps = async ({ req, query }: GetServerSidePropsContext) => {
     if (!query.id)
         return {
             redirect: {
-                destination: '/marketplace/products',
+                destination: '/marketplace/mines',
                 permanent: true,
             },
         };
@@ -38,16 +38,16 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
     const id = parseInt(query.id as string, 10);
 
     const user = await getUserInfo(req, { props: {} });
-    const product = await getItem(id, 'product');
-    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'product');
-    const productsInCart = await getInCart('product', id, { headers: { cookie: req.headers.cookie || '' } });
+    const mine = await getItem(id, 'mine');
+    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'mine');
+    const minesInCart = await getInCart('mine', id, { headers: { cookie: req.headers.cookie || '' } });
 
     return {
         props: {
             ...(user && 'props' in user ? user.props : {}),
-            product,
+            mine,
             wishlist,
-            productsInCart: productsInCart.count,
+            minesInCart: minesInCart.count,
         },
     };
 };

@@ -284,6 +284,12 @@
             width: 110px;
         }
     }
+    .imageButton {
+        @include index.button-base;
+        border: none;
+        background-color: #f49232;
+        color: white;
+    }
 }
 
 @media only screen and (max-width: 1119px) {

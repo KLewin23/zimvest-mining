@@ -82,7 +82,7 @@
     justify-content: space-between;
     padding-block: 0.6rem;
     gap: 0.6rem;
-    button {
+    > button {
         @include index.bare-button;
         position: relative;
         border-radius: 5px;
@@ -111,8 +111,12 @@
 }
 
 @media only screen and (max-width: 1020px) {
-    .content {
-        align-items: center;
+    .main {
+        .content {
+            align-items: center;
+            min-width: unset;
+            padding: 2rem;
+        }
     }
     .products {
         align-items: center;
