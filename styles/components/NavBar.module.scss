@@ -23,43 +23,43 @@
         > a {
             @include index.bottom-border-hover;
         }
-        .dropLink {
-            position: relative;
-            display: grid;
-            place-items: center;
-            height: 100%;
-            > h4 {
-                @include index.bottom-border-hover;
-                height: 20px;
-                line-height: 20px;
-                z-index: 20;
-            }
-            > div {
-                position: absolute;
-                @include index.flex-col;
-                background-color: white;
-                border-radius: 5px;
-                top: calc(50% + 20px);
-                transition: 0.2s ease-in-out opacity;
-                width: max-content;
+    }
+    .dropLink {
+        position: relative;
+        display: grid;
+        place-items: center;
+        height: 100%;
+        > h4 {
+            @include index.bottom-border-hover;
+            height: 20px;
+            line-height: 20px;
+            z-index: 20;
+        }
+        > div {
+            position: absolute;
+            @include index.flex-col;
+            background-color: white;
+            border-radius: 5px;
+            top: calc(50% + 20px);
+            transition: 0.2s ease-in-out opacity;
+            width: max-content;
+            word-break: keep-all;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            a,
+            h4 {
+                height: min-content;
+                padding-block: 0.8rem;
+                text-align: center;
                 word-break: keep-all;
-                border: 1px solid rgba(0, 0, 0, 0.15);
-                a,
-                h4 {
-                    height: min-content;
-                    padding-block: 0.8rem;
-                    text-align: center;
-                    word-break: keep-all;
-                    padding-inline: 0.8rem;
-                    &:hover {
-                        background-color: #e9ecef;
-                    }
+                padding-inline: 0.8rem;
+                &:hover {
+                    background-color: #e9ecef;
                 }
             }
         }
-        a {
-            font-size: 0.875rem;
-        }
+    }
+    a {
+        font-size: 0.875rem;
     }
     .endContent {
         display: flex;
@@ -102,7 +102,7 @@
 
 .cart {
     position: relative;
-    >div {
+    > div {
         position: absolute;
         text-align: center;
         height: 13px;
@@ -114,19 +114,6 @@
         border-radius: 50%;
         font-size: 10px;
         line-height: 13px;
-    }
-}
-
-@media only screen and (max-width: 1119px) {
-    .main {
-        padding-inline: 2rem;
-        width: unset;
-        .logo {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
     }
 }
 
@@ -222,7 +209,51 @@
     z-index: 200;
     left: 0;
     gap: 2rem;
-    :first-child {
+    >:first-child {
         margin-top: 2rem;
+    }
+}
+
+.smDropLink {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: fit-content;
+    width: 100%;
+    button {
+        @include index.bare-button;
+        font-weight: 600;
+    }
+    > div {
+        @include index.flex-col;
+        overflow: hidden;
+        gap: 2rem;
+        margin-block: .5rem;
+        background-color: white;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: -1rem;
+        transition: max-height 1s ease-in-out;
+        :first-child{
+            margin-top: 1rem;
+        }
+        :last-child{
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+@media only screen and (max-width: 1119px) {
+    .main {
+        padding-inline: 2rem;
+        width: unset;
+
+        .logo {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
     }
 }

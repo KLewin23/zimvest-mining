@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -73,12 +73,47 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                         <span />
                     </button>
                     <div className={styles.dropdown} style={{ height: dropdownOpen ? ' calc(100vh - 110px)' : 0 }}>
-                        <Link href={'/'}>Home</Link>
-                        <Link href={'/about'}>About&nbsp;Us</Link>
-                        <p>Marketplace</p>
-                        <p>Minerals&nbsp;and&nbsp;Metals</p>
-                        <Link href={'/market-prices'}>Market&nbsp;Prices</Link>
-                        <Link href={'/vacancies'}>Vacancies</Link>
+                        {nav.map(tab => {
+                            if ('link' in tab) {
+                                return (
+                                    <Link key={tab.title} href={tab.link}>
+                                        {tab.title}
+                                    </Link>
+                                );
+                            }
+                            return (
+                                <div key={tab.title} className={styles.smDropLink}>
+                                    <button
+                                        id={`${tab.title}-title-btn`}
+                                        type={'button'}
+                                        onClick={e => {
+                                            const target: Element = e.target as Element;
+                                            if (target.id !== `${tab.title}-title-btn` && target.id !== `${tab.title}-title`)
+                                                return undefined;
+                                            return setTabMenu(
+                                                target.id === `${tabMenu}-title` || target.id === `${tabMenu}-title-btn` ? '' : tab.title,
+                                            );
+                                        }}
+                                    >
+                                        <h4 id={`${tab.title}-title`}>
+                                            {tab.title} <FaCaretDown />
+                                        </h4>
+                                    </button>
+                                    <div
+                                        style={{
+                                            transition: `max-height ${tab.subList.length * 50 < 500 ? 0.2 : 0.4}s linear`,
+                                            maxHeight: tabMenu === tab.title ? `${tab.subList.length * 50}px` : 0,
+                                        }}
+                                    >
+                                        {tab.subList.map(subTab => (
+                                            <Link key={subTab.title} href={subTab.link}>
+                                                {subTab.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </>
             ) : null}
