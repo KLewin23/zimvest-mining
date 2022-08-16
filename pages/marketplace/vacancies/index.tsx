@@ -1,16 +1,14 @@
 import React from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { getItems, getUserInfo, Marketplace, User } from '../../../components';
-import { Joined, MarketplaceVacancy } from '../../../components/types';
+import { getItems, getUserInfo, Joined, Marketplace, MarketplaceVacancy, User } from '../../../components';
 
 interface Props {
     user?: User;
-    cartCount?: number;
     vacancies?: Joined<MarketplaceVacancy>[];
 }
 
-const Index = ({ user, vacancies, cartCount }: Props): JSX.Element => (
-    <Marketplace pageName={'vacancy'} user={user} items={vacancies} initialCartCount={cartCount || 0} />
+const Index = ({ user, vacancies }: Props): JSX.Element => (
+    <Marketplace pageName={'vacancy'} user={user} items={vacancies} initialCart={{ products: [], mines: [] }} />
 );
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
     const user = await getUserInfo(req, null);
