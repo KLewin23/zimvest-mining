@@ -10,7 +10,6 @@ export type {
     MineItemResponse,
     BasicItemResponse,
     AccountFormValues,
-    UserInfo,
     UserProducts,
     MarketplaceMine,
     MarketplaceVacancy,
