@@ -1,13 +1,16 @@
-import React, { useRef, useState } from 'react';
-import Image from 'next/image';
+import axios from 'axios';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { MdPerson, MdShoppingCart } from 'react-icons/md';
+import { useMutation } from 'react-query';
 import { FaCaretDown } from 'react-icons/fa';
+import React, { useRef, useState } from 'react';
+import { MdPerson, MdShoppingCart } from 'react-icons/md';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
 import { User } from './types';
 import { useEventListener, useWindowWidth } from './hooks';
+import { userApiUrl } from './utils';
 
 interface Tab {
     title: string;
@@ -29,6 +32,13 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
     const [tabMenu, setTabMenu] = useState('');
     const menuRef = useRef<HTMLButtonElement>(null);
 
+    const logout = useMutation(() => axios.delete(`${userApiUrl}/session`, { withCredentials: true }), {
+        onSuccess: async () => {
+            setProfileMenu(false);
+            await router.push('/');
+        },
+    });
+
     useEventListener('click', e => {
         if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
             setProfileMenu(false);
@@ -44,7 +54,6 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                 { title: 'Products', link: '/marketplace/products' },
                 { title: 'Mines', link: '/marketplace/mines' },
                 { title: 'Services', link: '/marketplace/services' },
-                { title: 'JV Opportunities', link: '/jv-opportunities' },
                 { title: 'Vacancies', link: '/marketplace/vacancies' },
             ],
         },
@@ -201,12 +210,19 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                         <Link href={'/profile/wishlist'}>
                             <h4>Wishlist</h4>
                         </Link>
-                        <Link href={'/logout'}>
+                        {windowWidth <= 600 ? (
+                            <Link href={'/profile/cart'}>
+                                <h4>Cart</h4>
+                            </Link>
+                        ) : null}
+
+                        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+                        <div onClick={() => logout.mutate()}>
                             <h4>Log out</h4>
-                        </Link>
+                        </div>
                     </div>
                 </button>
-                {user ? (
+                {user && windowWidth > 600 ? (
                     <Link href={'/profile/cart'}>
                         <div className={styles.cart}>
                             <MdShoppingCart size={25} />

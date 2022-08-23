@@ -26,7 +26,8 @@
         min-width:  252px;
         > section {
             @include index.flex-col;
-            gap: 1rem;
+            gap: .8rem;
+            margin-bottom: .3rem;
             > :first-child {
                 @include index.flex-row;
                 align-items: center;
@@ -36,11 +37,16 @@
                 gap: 12px;
                 cursor: pointer;
                 border-bottom: 1px solid #e5e5e5;
-                > p {
-                    flex-grow: 1;
-                }
+
                 button {
                     @include index.bare-button;
+                    @include index.flex-row;
+                    width: 100%;
+                    > p {
+                        flex-grow: 1;
+                        text-align: left;
+                    }
+                    align-items: center;
                     > svg {
                         transition: transform 0.2s ease-in-out;
                     }

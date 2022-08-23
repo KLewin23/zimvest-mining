@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Head from 'next/head';
+import PhoneInput from 'react-phone-number-input';
 // eslint-disable-next-line import/no-named-default
 import { default as NextImage } from 'next/image';
 import { useRouter } from 'next/router';
@@ -9,32 +10,37 @@ import { useDropzone } from 'react-dropzone';
 import React, { useCallback, useState } from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaGlobe, FaImage, FaTwitter, FaWhatsapp } from 'react-icons/fa';
-import { MdFacebook, MdInfoOutline, MdOutlineFileDownload } from 'react-icons/md';
+import { MdFacebook, MdInfoOutline } from 'react-icons/md';
 import styles from '../../styles/profile.module.scss';
 import {
     AccountFormValues,
     Collapse,
     Collection,
-    extendedSidebarLayout,
+    fetchUser,
+    getCollection,
+    getCollectionCount,
     getProducts,
     getUserInfo,
     MarketplacePage,
     metals,
     Modal,
     Page,
+    productExtendedSidebarLayout,
     Select,
+    serviceExtendedSidebarLayout,
     User,
     userApiUrl,
+    UserProductPrice,
     UserProducts,
+    UserProductSalary,
 } from '../../components';
-import { getCollection } from '../../components/utils';
 
 interface Props {
     user: User;
     wishlist?: Collection;
     cart?: Collection;
-    userProducts?: UserProducts;
-    cartCount?: number;
+    initialUserProducts?: UserProducts;
+    initialCartCount?: number;
 }
 
 interface ItemForm {
@@ -47,8 +53,20 @@ interface ItemForm {
     imageName: string;
 }
 
-const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount, userProducts }: Props): JSX.Element => {
+const Profile = ({
+    user: initialUser,
+    cart: initialCart,
+    wishlist: initialWishlist,
+    initialCartCount,
+    initialUserProducts = { products: [], mines: [], services: [], vacancies: [] },
+}: Props): JSX.Element => {
+    /* region functions */
+
     const { push, query } = useRouter();
+    const { data: user, refetch: refetchUser } = useQuery('Profile,User', async () => (await fetchUser()).data, {
+        initialData: initialUser,
+    });
+
     const [openedTab, setOpenedTab] = useState(
         query.section === 'account'
             ? 'Account'
@@ -65,9 +83,18 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
     const [imageUploadUrl, setImageUploadUrl] = useState('');
     const [profileImage, setProfileImage] = useState('');
     const [imageError, setImageError] = useState('');
-    const [imageId, setImageId] = useState(user.image_id);
-    const [createProductModal, setCreateProductModal] = useState(true);
-    const { register: registerAdd, control, watch, reset, handleSubmit: handleItemSubmit, setValue } = useForm<ItemForm>();
+    const [checkoutCompleteModal, setCheckoutCompleteModal] = useState(false);
+    const [imageId, setImageId] = useState(initialUser.image_id);
+    const [createProductModal, setCreateProductModal] = useState(false);
+    const {
+        register: registerAdd,
+        control,
+        watch,
+        reset,
+        setValue,
+        handleSubmit: handleItemSubmit,
+        formState: { errors: itemErrors },
+    } = useForm<ItemForm>();
     const type = watch('Type');
     const category = watch('Category');
     const imageName = watch('imageName');
@@ -111,18 +138,24 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         maxFiles: 1,
         onDrop,
     });
-    const { register, setError, handleSubmit } = useForm<AccountFormValues>({
+    const {
+        register,
+        setError,
+        handleSubmit,
+        reset: resetUser,
+        control: accountControl,
+    } = useForm<AccountFormValues>({
         defaultValues: {
-            'First Name': user.first_name,
-            'Last Name': user.last_name,
-            Email: user.email,
-            'Phone number': user?.phone_number,
-            Location: user.location,
-            'Company Name': user?.company_name,
-            'Facebook Url': user?.facebook,
-            'WhatsApp Url': user?.whatsapp,
-            'Twitter Handle': user?.twitter,
-            'Website Url': user?.company_website,
+            'First Name': initialUser.first_name,
+            'Last Name': initialUser.last_name,
+            Email: initialUser.email,
+            'Phone number': initialUser?.phone_number,
+            Location: initialUser.location,
+            'Company Name': initialUser?.company_name,
+            'Facebook Url': initialUser?.facebook,
+            'WhatsApp Number': initialUser?.whatsapp,
+            'Twitter Handle': initialUser?.twitter,
+            'Website Url': initialUser?.company_website,
         },
     });
 
@@ -156,7 +189,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     companyName: data['Company Name'],
                     // companyType: data['Company Type'],
                     facebookUrl: data['Facebook Url'],
-                    whatsAppNumber: data['WhatsApp Url'],
+                    whatsAppNumber: data['WhatsApp Number'],
                     twitterHandle: data['Twitter Handle'],
                     websiteUrl: data['Website Url'],
                 },
@@ -171,6 +204,20 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
             .then(async () => {
                 await push('/profile');
                 setApiRequestSent(false);
+                await refetchUser().then(usr => {
+                    resetUser({
+                        'First Name': usr.data.first_name,
+                        'Last Name': usr.data.last_name,
+                        Email: usr.data.email,
+                        'Phone number': usr.data?.phone_number,
+                        Location: usr.data.location,
+                        'Company Name': usr.data?.company_name,
+                        'Facebook Url': usr.data?.facebook,
+                        'WhatsApp Number': usr.data?.whatsapp,
+                        'Twitter Handle': usr.data?.twitter,
+                        'Website Url': usr.data?.company_website,
+                    });
+                });
             })
             .catch(e => {
                 setApiRequestSent(false);
@@ -210,27 +257,76 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         },
     );
 
+    const { data: userProducts, refetch: refetchUserProducts } = useQuery('UserProducts', () => getProducts(), {
+        initialData: initialUserProducts,
+    });
+
     const createListing = useMutation(
         (vars: ItemForm) => {
-            const form = new FormData();
-            form.append('file', acceptedFiles[0]);
-            Array.isArray(imageUploadUrl);
-            return axios.post(imageUploadUrl, form, { headers: { 'Content-Type': 'multipart/form-data' } }).then(({ data }) =>
-                axios.post(
-                    `${userApiUrl}/listing/${vars.Type}`,
-                    {
-                        title: vars.Title,
-                        category: vars.Type === 'mine' ? 'material' : vars.Category,
-                        price: vars.Price,
-                        subCategory: vars.SubCategory,
-                        image_id: data.result.id,
-                    },
-                    { withCredentials: true },
-                ),
+            if (imageName !== undefined) {
+                const form = new FormData();
+                form.append('file', acceptedFiles[0]);
+                Array.isArray(imageUploadUrl);
+                return axios.post(imageUploadUrl, form, { headers: { 'Content-Type': 'multipart/form-data' } }).then(({ data }) =>
+                    axios.post(
+                        `${userApiUrl}/listing/${vars.Type}`,
+                        {
+                            title: vars.Title,
+                            category: vars.Type === 'mine' ? 'material' : vars.Type === 'service' ? 'type' : vars.Category,
+                            price: vars.Price,
+                            subCategory: vars.SubCategory,
+                            image_id: data.result.id,
+                        },
+                        { withCredentials: true },
+                    ),
+                );
+            }
+            return axios.post(
+                `${userApiUrl}/listing/${vars.Type}`,
+                {
+                    title: vars.Title,
+                    category:
+                        vars.Type === 'mine' ? 'material' : vars.Type === 'service' ? 'type' : vars.Type === 'vacancy' ? '' : vars.Category,
+                    price: vars.Price,
+                    subCategory: vars.Type === 'vacancy' ? '' : vars.SubCategory,
+                },
+                { withCredentials: true },
             );
         },
-        { onSuccess: () => setCreateProductModal(false) },
+        {
+            onSuccess: async () => {
+                await refetchUserProducts();
+                setCreateProductModal(false);
+            },
+        },
     );
+
+    const destroyListing = useMutation(
+        (vars: { id: number; pageName: MarketplacePage }) =>
+            axios.delete(`${userApiUrl}/listing/${vars.pageName}/${vars.id}`, { withCredentials: true }),
+        {
+            onSuccess: async () => {
+                await refetchUserProducts();
+            },
+        },
+    );
+
+    const { data: cartCount, refetch: reFetchCartCount } = useQuery<number>(
+        [`Profile-CartCount`],
+        async () => {
+            return getCollectionCount('CART');
+        },
+        {
+            initialData: initialCartCount,
+        },
+    );
+
+    const checkout = useMutation(() => axios.post(`${userApiUrl}/user/checkout?shouldWipeCart=false`, {}, { withCredentials: true }), {
+        onSuccess: async () => {
+            await refetchCart();
+            await reFetchCartCount();
+        },
+    });
 
     const createItem = (
         { title, image_id, supplier: { email }, price }: { title: string; supplier: { email: string }; price: number; image_id?: string },
@@ -287,7 +383,10 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     removeCollection.mutate(
                         { id: product.id, pageName: 'product', collectionType: 'CART' },
                         {
-                            onSuccess: () => refetchCart(),
+                            onSuccess: async () => {
+                                await refetchCart();
+                                await reFetchCartCount();
+                            },
                         },
                     ),
                 test: () =>
@@ -302,7 +401,10 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     removeCollection.mutate(
                         { id: mine.id, pageName: 'mine', collectionType: 'CART' },
                         {
-                            onSuccess: () => refetchCart(),
+                            onSuccess: async () => {
+                                await refetchCart();
+                                await reFetchCartCount();
+                            },
                         },
                     ),
                 test: () =>
@@ -334,6 +436,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                   {
                                       onSuccess: async () => {
                                           await refetchCart();
+                                          await reFetchCartCount();
                                           setOpenedTab('Cart');
                                       },
                                   },
@@ -384,6 +487,46 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
         );
     };
 
+    const userListings = (items: UserProductPrice[] | UserProductSalary[], pageName: MarketplacePage) =>
+        items.map(item => (
+            <div key={item.title}>
+                {item.image_id ? (
+                    <NextImage src={`https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`} />
+                ) : (
+                    <FaImage size={100} color={'#E5E5E5'} />
+                )}
+                <div className={styles.text}>
+                    <h3>{item.title}</h3>
+                    <p>
+                        Views: <span>{item.views || 0}</span>
+                    </p>
+
+                    {'price' in item ? (
+                        <p>
+                            Price:
+                            <span> ${item?.price}</span>
+                        </p>
+                    ) : null}
+                    {'salary' in item ? (
+                        <p>
+                            Salary:
+                            <span> ${item?.salary}</span>
+                        </p>
+                    ) : null}
+                </div>
+                <div>
+                    <button
+                        type={'button'}
+                        className={`${styles.productsRemove} ${destroyListing.isLoading ? styles.loading : ''}`}
+                        onClick={() => destroyListing.mutate({ id: item.id, pageName })}
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        ));
+
+    /* endregion functions */
     return (
         <>
             <Head>
@@ -437,7 +580,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 id={'title'}
                                 type={'text'}
                                 placeholder={'Title'}
-                                // style={{ borderColor: false ? '#EC4C4C' : '#ced4da' }}
+                                style={{ borderColor: itemErrors.Title ? '#EC4C4C' : '#ced4da' }}
                                 {...registerAdd('Title', { required: true })}
                             />
                         </label>
@@ -446,8 +589,14 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                             <Controller
                                 name={'Type'}
                                 control={control}
+                                rules={{ required: true }}
                                 render={({ field }) => (
-                                    <Select title={'Type'} selectedOption={field.value} onClick={el => field.onChange(el)}>
+                                    <Select
+                                        title={'Type'}
+                                        style={{ border: `1px solid ${itemErrors.Type ? '#EC4C4C' : '#ced4da'}` }}
+                                        selectedOption={field.value}
+                                        onClick={el => field.onChange(el)}
+                                    >
                                         <option>mine</option>
                                         <option>product</option>
                                         <option>service</option>
@@ -458,26 +607,34 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                         </div>
                         {type !== undefined ? (
                             <label htmlFor={'price'}>
-                                <p>{type === 'product' || type === 'mine' || type === 'service' ? 'Price' : 'Salary'}</p>
+                                <p>
+                                    {type === 'product' || type === 'mine' || type === 'service' ? 'Price (USD)' : 'Salary (USD Annually)'}
+                                </p>
                                 <input
                                     id={'price'}
                                     type={'text'}
-                                    placeholder={type === 'product' || type === 'mine' ? 'Price' : 'Salary'}
-                                    // style={{ borderColor: false ? '#EC4C4C' : '#ced4da' }}
+                                    placeholder={type === 'product' || type === 'mine' || type === 'service' ? 'Price' : 'Salary'}
+                                    style={{ borderColor: itemErrors.Price ? '#EC4C4C' : '#ced4da' }}
                                     {...registerAdd('Price', { required: true })}
                                 />
                             </label>
                         ) : null}
-                        {type === 'product' || type === 'service' ? (
+                        {type === 'product' ? (
                             <>
                                 <div className={styles.label}>
                                     <p>Category</p>
                                     <Controller
                                         name={'Category'}
+                                        rules={{ required: true }}
                                         control={control}
                                         render={({ field }) => (
-                                            <Select title={'Category'} selectedOption={field.value} onClick={el => field.onChange(el)}>
-                                                {extendedSidebarLayout.map(i => (
+                                            <Select
+                                                title={'Category'}
+                                                style={{ border: `1px solid ${itemErrors.Category ? '#EC4C4C' : '#ced4da'}` }}
+                                                selectedOption={field.value}
+                                                onClick={el => field.onChange(el)}
+                                            >
+                                                {productExtendedSidebarLayout.map(i => (
                                                     <option>{i.title}</option>
                                                 ))}
                                             </Select>
@@ -497,7 +654,7 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                                     onClick={el => field.onChange(el)}
                                                 >
                                                     {(
-                                                        extendedSidebarLayout.find(i => i.title === category) || { subList: [''] }
+                                                        productExtendedSidebarLayout.find(i => i.title === category) || { subList: [''] }
                                                     ).subList.map(e => (
                                                         <option>{e}</option>
                                                     ))}
@@ -508,15 +665,21 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                 ) : null}
                             </>
                         ) : null}
-                        {type === 'mine' ? (
+                        {type === 'mine' || type === 'service' ? (
                             <div className={styles.label}>
-                                <p>Material</p>
+                                <p>{type === 'mine' ? 'Material' : 'Type'}</p>
                                 <Controller
                                     name={'SubCategory'}
                                     control={control}
+                                    rules={{ required: true }}
                                     render={({ field }) => (
-                                        <Select title={'Material'} selectedOption={field.value} onClick={el => field.onChange(el)}>
-                                            {metals.map(i => (
+                                        <Select
+                                            title={type === 'mine' ? 'Material' : 'Type'}
+                                            style={{ border: `1px solid ${itemErrors.SubCategory ? '#EC4C4C' : '#ced4da'}` }}
+                                            selectedOption={field.value}
+                                            onClick={el => field.onChange(el)}
+                                        >
+                                            {(type === 'mine' ? metals : serviceExtendedSidebarLayout[0].subList).map(i => (
                                                 <option>{i}</option>
                                             ))}
                                         </Select>
@@ -544,6 +707,15 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                             </button>
                         </div>
                     </form>
+                </Modal>
+                <Modal open={checkoutCompleteModal}>
+                    <div className={styles.checkoutComplete}>
+                        <h3>Checkout complete!</h3>
+                        <h4>
+                            Emails have been sent to each of the suppliers <br />
+                            they should be in contact with you shortly
+                        </h4>
+                    </div>
                 </Modal>
                 <div className={styles.main}>
                     <Collapse
@@ -584,10 +756,6 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                         Change photo
                                     </button>
                                 </div>
-                                <div className={styles.logout}>
-                                    Log Out
-                                    <MdOutlineFileDownload size={20} />
-                                </div>
                             </div>
                             <section>
                                 <h3>General information</h3>
@@ -615,19 +783,26 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                         <input
                                             id={'email'}
                                             type={'email'}
+                                            disabled
                                             placeholder={'Email'}
                                             {...register('Email', { required: true })}
                                         />
                                     </label>
-                                    <label htmlFor={'phoneNumber'} className={styles.firstCol}>
+                                    <div className={styles.firstCol}>
                                         <p>Phone number</p>
-                                        <input
-                                            id={'phoneNumber'}
-                                            type={'text'}
-                                            placeholder={'Phone number'}
-                                            {...register('Phone number')}
+                                        <Controller
+                                            name={'Phone number'}
+                                            control={accountControl}
+                                            render={({ field }) => (
+                                                <PhoneInput
+                                                    onChange={value => field.onChange(value)}
+                                                    value={field.value}
+                                                    defaultCountry={'ZW'}
+                                                    placeholder={'Phone number'}
+                                                />
+                                            )}
                                         />
-                                    </label>
+                                    </div>
                                     <label htmlFor={'location'} className={styles.firstCol}>
                                         <p>Location</p>
                                         <input id={'location'} type={'text'} placeholder={'Location'} {...register('Location')} />
@@ -678,15 +853,23 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                                         <MdFacebook size={'30px'} color={'#BBBBBB'} />
                                         <input id={'facebook'} type={'text'} placeholder={'Facebook Url'} {...register('Facebook Url')} />
                                     </label>
-                                    <label htmlFor={'whatsapp'}>
+                                    <div>
                                         <FaWhatsapp size={'30px'} color={'#BBBBBB'} />
-                                        <input
-                                            id={'whatsapp'}
-                                            type={'text'}
-                                            placeholder={'WhatsApp number'}
-                                            {...register('WhatsApp Url')}
+                                        <Controller
+                                            name={'WhatsApp Number'}
+                                            control={accountControl}
+                                            render={({ field }) => (
+                                                <PhoneInput
+                                                    onChange={value => field.onChange(value)}
+                                                    value={field.value}
+                                                    className={styles.phoneInput}
+                                                    defaultCountry={'ZW'}
+                                                    placeholder={'WhatsApp number'}
+                                                    smartCaret
+                                                />
+                                            )}
                                         />
-                                    </label>
+                                    </div>
                                     <label htmlFor={'twitter'}>
                                         <FaTwitter size={'30px'} color={'#BBBBBB'} />
                                         <input
@@ -714,7 +897,24 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                     >
                         <div className={styles.wishlist}>
                             <h2>Cart</h2>
-                            {getCartComponent()}
+                            {checkout.isSuccess ? <h3>Emails about your inquiries successfully sent</h3> : getCartComponent()}
+
+                            {(cart?.products.length || 0) + (cart?.mines.length || 0) !== 0 ? (
+                                <button
+                                    type={'button'}
+                                    onClick={() =>
+                                        checkout.mutate(undefined, {
+                                            onSuccess: () => {
+                                                setCheckoutCompleteModal(true);
+                                                setTimeout(() => setCheckoutCompleteModal(false), 1500);
+                                            },
+                                        })
+                                    }
+                                    className={`${styles.checkoutButton} ${checkout.isLoading ? styles.loading : ''}`}
+                                >
+                                    Checkout
+                                </button>
+                            ) : null}
                         </div>
                     </Collapse>
                     <Collapse
@@ -750,33 +950,19 @@ const Section = ({ user, cart: initialCart, wishlist: initialWishlist, cartCount
                             >
                                 Create
                             </button>
-                            {userProducts && userProducts.length !== 0 ? (
-                                userProducts.map(item => (
-                                    <div key={item.title}>
-                                        {item.image_id ? (
-                                            <NextImage src={`https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`} />
-                                        ) : (
-                                            <FaImage size={100} color={'#E5E5E5'} />
-                                        )}
-                                        <div className={styles.text}>
-                                            <h3>{item.title}</h3>
-                                            <p>
-                                                Views: <span>{item.views || 0}</span>
-                                            </p>
-                                            <p>
-                                                Price:
-                                                <span> ${item.price}</span>
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <button type={'button'} className={styles.productsRemove}>
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
+                            {(userProducts?.mines.length || 0) +
+                                (userProducts?.products.length || 0) +
+                                (userProducts?.services.length || 0) +
+                                (userProducts?.vacancies.length || 0) ===
+                            0 ? (
                                 <h3>You have no products currently</h3>
+                            ) : (
+                                <>
+                                    {userListings(userProducts?.products || [], 'product')}
+                                    {userListings(userProducts?.mines || [], 'mine')}
+                                    {userListings(userProducts?.vacancies || [], 'vacancy')}
+                                    {userListings(userProducts?.services || [], 'service')}
+                                </>
                             )}
                         </div>
                     </Collapse>
@@ -801,17 +987,23 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
                 permanent: true,
             },
         };
-
-    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
-    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } });
-    const products = await getProducts({ headers: { cookie: req.headers.cookie || '' } });
     const user = await getUserInfo(req, { redirect: { destination: '/login', permanent: true } });
-
     if ('redirect' in user) {
         return user;
     }
+    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
+    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } });
+    const products = await getProducts({ headers: { cookie: req.headers.cookie || '' } });
 
-    return { props: { cart: cart || undefined, userProducts: products, ...user.props, wishlist: wishlist || undefined } };
+    return {
+        props: {
+            cart: cart || undefined,
+            initialUserProducts: products,
+            ...user.props,
+            wishlist: wishlist || undefined,
+            initialCartCount: (cart?.products.length || 0) + (cart?.mines.length || 0),
+        },
+    };
 };
 
-export default Section;
+export default Profile;

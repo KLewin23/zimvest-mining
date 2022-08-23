@@ -110,7 +110,14 @@ export interface MarketplaceVacancy {
     image_id: string;
 }
 
-export type MarketplaceType = MarketplaceProduct | MarketplaceMine | MarketplaceVacancy;
+export interface MarketplaceService {
+    id: number;
+    title: string;
+    price: number;
+    image_id: string;
+}
+
+export type MarketplaceType = MarketplaceProduct | MarketplaceMine | MarketplaceVacancy | MarketplaceService;
 
 export type Joined<T extends MarketplaceType> = T & {
     supplier: Partial<User>;
@@ -145,17 +152,32 @@ export interface AccountFormValues {
     'Company Name': string;
     Location: string;
     'Facebook Url': string;
-    'WhatsApp Url': string;
+    'WhatsApp Number': string;
     'Twitter Handle': string;
     'Website Url': string;
 }
 
-export type UserProducts = {
+export interface UserProductBasic {
+    id: number;
     title: string;
-    price: number;
     image_id: string;
     views: number;
-}[];
+}
+
+export type UserProductPrice = UserProductBasic & {
+    price: number;
+};
+
+export type UserProductSalary = UserProductBasic & {
+    salary: number;
+};
+
+export type UserProducts = {
+    products: UserProductPrice[];
+    services: UserProductPrice[];
+    mines: UserProductPrice[];
+    vacancies: UserProductSalary[];
+};
 
 interface MineItem {
     material: string;

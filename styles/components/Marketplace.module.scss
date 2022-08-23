@@ -89,23 +89,24 @@
         min-width: 150px;
         min-height: 30px;
         @include index.spinner(black);
-        &:first-child {
-            @include index.button-base;
-            background-color: #f49232;
-            color: white;
-            transition: 0.2s background-color ease-in-out;
-            &:hover {
-                background-color: #f66a0f;
-            }
+    }
+    .cartBtn,
+    .contactProvider {
+        @include index.button-base;
+        background-color: #f49232;
+        color: white;
+        transition: 0.2s background-color ease-in-out;
+        &:hover {
+            background-color: #f66a0f;
         }
-        &:last-child {
-            background-color: white;
-            color: black;
-            border: 1px solid #e5e5e5;
-            transition: 0.2s background-color ease-in-out;
-            &:hover {
-                background-color: #fbfbfb;
-            }
+    }
+    .wishlistBtn {
+        background-color: white;
+        color: black;
+        border: 1px solid #e5e5e5;
+        transition: 0.2s background-color ease-in-out;
+        &:hover {
+            background-color: #fbfbfb;
         }
     }
 }

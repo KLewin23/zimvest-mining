@@ -1,7 +1,6 @@
 import React from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { Collection, getInCart, getItem, getUserInfo, Item, MineItemResponse, User } from '../../../components';
-import { getCollection } from '../../../components/utils';
+import { Collection, getCollection, getInCart, getItem, getUserInfo, Item, MineItemResponse, User } from '../../../components';
 
 interface Props {
     user?: User;

@@ -3,6 +3,7 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaHive } from 'react-icons/fa';
 import {
     Collection,
+    getCollection,
     getItems,
     getUserInfo,
     ItemSelectorTab,
@@ -12,7 +13,6 @@ import {
     metals,
     User,
 } from '../../../components';
-import { getCollection } from '../../../components/utils';
 
 interface Props {
     user?: User;
@@ -48,13 +48,13 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
     const user = await getUserInfo(req, null);
     const mines = await getItems<MarketplaceMine>('mine', 1, 'Popularity', []);
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'mine');
-    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } }, 'mine');
+    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
     return {
         props: {
             ...(user && 'props' in user ? user?.props : {}),
             mines,
-            wishlist: wishlist || undefined,
-            cart: cart || undefined,
+            ...(wishlist && { wishlist }),
+            ...(cart && { cart }),
         },
     };
 };

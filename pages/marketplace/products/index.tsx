@@ -2,7 +2,7 @@ import React from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import {
     Collection,
-    extendedSidebarLayout,
+    productExtendedSidebarLayout,
     getItems,
     getUserInfo,
     Joined,
@@ -25,7 +25,7 @@ const Products = ({ user, products, cart, wishlist }: Props): JSX.Element => {
             pageName={'product'}
             user={user}
             items={products}
-            sideBarLayout={extendedSidebarLayout}
+            sideBarLayout={productExtendedSidebarLayout}
             initialCart={cart}
             initialWishlist={wishlist}
         />
@@ -38,7 +38,7 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
     const user = await getUserInfo(req, {});
     const products = await getItems<MarketplaceProduct>('product', 1, 'Popularity', []);
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'product');
-    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } }, 'product');
+    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
 
     return {
         props: {

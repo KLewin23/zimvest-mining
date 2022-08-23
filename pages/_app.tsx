@@ -2,6 +2,7 @@ import React from 'react';
 import '@fontsource/roboto';
 import '../styles/globals.scss';
 import '@fontsource/montserrat';
+import 'react-phone-number-input/style.css';
 import type { AppProps } from 'next/app';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { QueryClient, QueryClientProvider } from 'react-query';

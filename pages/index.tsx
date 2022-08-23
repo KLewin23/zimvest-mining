@@ -4,10 +4,9 @@ import Image from 'next/image';
 import type { NextPage } from 'next';
 import { GetServerSidePropsContext } from 'next';
 import { Carousel } from 'react-responsive-carousel';
-import Page from '../components/Page';
 import styles from '../styles/index.module.scss';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Advert, getUserInfo, User } from '../components';
+import { Advert, getCollectionCount, getUserInfo, Page, User } from '../components';
 import landscapeBanner1 from '../public/banner/zimvest_web banners_1024x500.jpg';
 import landscapeBanner2 from '../public/banner/zimvest_web banners_1024x5002.jpg';
 import landscapeBanner3 from '../public/banner/zimvest_web banners_1024x5004.jpg';
@@ -68,7 +67,18 @@ const Home: NextPage<Props> = ({ user, cartCount }: Props) => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-    return getUserInfo(req, { props: {} });
+    // /count/:type
+    const user = await getUserInfo(req, {});
+    if ('props' in user) {
+        const cartCount = await getCollectionCount('CART', { headers: { cookie: req.headers.cookie || '' } });
+        return {
+            props: {
+                ...user.props,
+                cartCount,
+            },
+        };
+    }
+    return { props: {} };
 };
 
 export default Home;

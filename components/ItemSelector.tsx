@@ -42,13 +42,13 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                     <section key={section.title}>
                         <div>
                             <section.icon size={24} color={'#ED7830'} />
-                            <p>{section.title}</p>
                             <button
                                 type={'button'}
                                 onClick={() => {
                                     setTabStatus({ ...tabStatus, [sectionIndex]: !tabStatus[sectionIndex] });
                                 }}
                             >
+                                <p>{section.title}</p>
                                 <MdOutlineExpandLess
                                     style={{ transform: tabStatus[sectionIndex] ? 'rotate(0deg)' : 'rotate(-180deg)' }}
                                     size={25}

@@ -14,10 +14,25 @@ export type {
     MarketplaceMine,
     MarketplaceVacancy,
     ServerResponse,
+    UserProductBasic,
+    UserProductSalary,
+    UserProductPrice,
+    MarketplaceService,
 } from './types';
-export { userApiUrl, fetchUser, getItems, getUserInfo, getItem, getProducts, cloudflareLoader, getInCart } from './utils';
+export {
+    userApiUrl,
+    fetchUser,
+    getItems,
+    getUserInfo,
+    getItem,
+    getProducts,
+    cloudflareLoader,
+    getInCart,
+    getCollectionCount,
+    getCollection,
+} from './utils';
 export { useEventListener, useWindowWidth, useCartCount } from './hooks';
-export { metals, extendedSidebarLayout } from './data';
+export { metals, productExtendedSidebarLayout, serviceExtendedSidebarLayout } from './data';
 export { default as Advert } from './Advert';
 export { default as BannerPage } from './BannerPage';
 export { default as Checkbox } from './Checkbox';

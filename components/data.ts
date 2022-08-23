@@ -1,3 +1,4 @@
+import { IoMdOptions } from 'react-icons/Io';
 import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
 import { ItemSelectorTab } from './types';
 
@@ -17,7 +18,25 @@ export const metals = [
     'Other',
 ];
 
-export const extendedSidebarLayout: ItemSelectorTab[] = [
+export const serviceExtendedSidebarLayout: ItemSelectorTab[] = [
+    {
+        title: 'Type',
+        icon: IoMdOptions,
+        subList: [
+            'Mining Contractors',
+            'Chemical Providers',
+            'Logistics',
+            'Lab and Testing',
+            'Telecommunication',
+            'Banking and Insurance',
+            'Screening Equipment',
+            'Mining Events Companies',
+        ],
+        tabDefaultState: true,
+    },
+];
+
+export const productExtendedSidebarLayout: ItemSelectorTab[] = [
     {
         title: 'Machinery',
         icon: FaSnowplow,

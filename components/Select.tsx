@@ -1,18 +1,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { cloneElement, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { cloneElement, CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { FaCaretDown } from 'react-icons/fa';
 import styles from '../styles/components/Select.module.scss';
 import { useEventListener } from './hooks';
 
 interface Props {
     icon?: JSX.Element;
-    title: string;
+    title?: string;
     children: ReactNode;
     selectedOption?: string;
     onClick: (selectedOption: string) => void;
+    style?: CSSProperties;
 }
 
-const Select = ({ icon, title, children, selectedOption, onClick }: Props): JSX.Element => {
+const Select = ({ icon, title, children, selectedOption, onClick, style }: Props): JSX.Element => {
     const [open, setOpen] = useState(false);
     const selectRef = useRef<HTMLDivElement>(null);
     const dropRef = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ const Select = ({ icon, title, children, selectedOption, onClick }: Props): JSX.
     });
 
     return (
-        <div ref={selectRef} className={styles.main} style={{ minWidth: `${minWidth}px` }}>
+        <div ref={selectRef} className={styles.main} style={{ minWidth: `${minWidth}px`, ...style }}>
             {icon ? <span>{icon}</span> : null}
             <p style={{ paddingLeft: icon ? 0 : '1rem' }}>{selectedOption || title}</p>
             <button type={'button'} onClick={() => setOpen(!open)}>
@@ -48,7 +49,7 @@ const Select = ({ icon, title, children, selectedOption, onClick }: Props): JSX.
                     return cloneElement(child, {
                         ...child.props,
                         onClick: () => {
-                            onClick(child.props.children);
+                            onClick('value' in child.props ? child.props.value : child.props.children);
                             setOpen(false);
                         },
                         key: child.props.children,

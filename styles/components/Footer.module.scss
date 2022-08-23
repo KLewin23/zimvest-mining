@@ -47,3 +47,15 @@
 
     }
 }
+
+@media only screen and (max-width: 1119px) {
+    .footer{
+        @include index.flex-col;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        > div {
+            align-items: center;
+        }
+    }
+}

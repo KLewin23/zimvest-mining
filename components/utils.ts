@@ -4,7 +4,8 @@ import type { BasicItemResponse, Collection, Joined, MarketplacePage, Marketplac
 import { ServerResponse, UserProducts } from './types';
 
 export const userApiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:80' : 'https://api.zimvestmining.com';
-export const fetchUser = async (cookie: string) => axios.get(`${userApiUrl}/user`, { withCredentials: true, headers: { cookie } });
+export const fetchUser = async (cookie?: string) =>
+    axios.get(`${userApiUrl}/user`, { withCredentials: true, ...(cookie && { headers: { cookie } }) });
 
 export const getItems = async <T extends MarketplaceType>(
     item: MarketplacePage,
@@ -41,15 +42,6 @@ export const getUserInfo = <T>(
         });
 };
 
-// export const getCart = async (config?: Partial<AxiosRequestConfig>, filterItem?: MarketplacePage): Promise<Collection> =>
-//     (await axios.get(`${userApiUrl}/collection/CART`, { withCredentials: true, ...config })).data;
-//
-// export const getWishlist = async (config?: Partial<AxiosRequestConfig>, filterItem?: MarketplacePage): Promise<Collection | null> =>
-//     axios
-//         .get(`${userApiUrl}/collection/WISHLIST${filterItem ? `?id=${filterItem}` : ''}`, { withCredentials: true, ...config })
-//         .then(r => r.data)
-//         .catch(() => null);
-
 export const getCollection = async (
     collection: 'WISHLIST' | 'CART',
     config?: Partial<AxiosRequestConfig>,
@@ -62,6 +54,9 @@ export const getCollection = async (
 
 export const getProducts = async (config?: Partial<AxiosRequestConfig>): Promise<UserProducts> =>
     (await axios.get(`${userApiUrl}/user/products`, { withCredentials: true, ...config })).data;
+
+export const getCollectionCount = async (collection: 'CART' | 'WISHLIST', config?: Partial<AxiosRequestConfig>): Promise<number> =>
+    (await axios.get(`${userApiUrl}/collection/count/${collection}`, { withCredentials: true, ...config })).data.count;
 
 const normalizeSrc = (src: string) => {
     return src.startsWith('/') ? src.slice(1) : src;

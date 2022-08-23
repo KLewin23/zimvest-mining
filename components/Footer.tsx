@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MdPhone, MdMailOutline } from 'react-icons/md';
+import { MdMailOutline, MdPhone } from 'react-icons/md';
 import { AppleBadge, GoogleBadge, WhiteLogo } from '../public';
 import styles from '../styles/components/Footer.module.scss';
 
@@ -24,19 +24,30 @@ const Footer = (): JSX.Element => {
             </div>
             <div className={styles.linkList}>
                 <p>Quick Links</p>
-                <h4>About Us</h4>
-                <h4>Events</h4>
-                <h4>News</h4>
-                <h4>Vacancies</h4>
-                <h4>Contact Us</h4>
+                <Link href={'/about'}>
+                    <h4>About Us</h4>
+                </Link>
+                <Link href={'/mining-overview'}>
+                    <h4>Mining Overview</h4>
+                </Link>
+                <Link href={'mailto:info@zimvestmining.com'}>
+                    <h4>Contact Us</h4>
+                </Link>
             </div>
             <div className={styles.linkList}>
-                <p>Useful Links</p>
-                <h4>Resources</h4>
-                <h4>Terms of Service</h4>
-                <h4>Privacy Policy</h4>
-                <h4>Mining Guidelines</h4>
-                <h4>Gallery</h4>
+                <p>Marketplace</p>
+                <Link href={'/marketplace/products'}>
+                    <h4>Products</h4>
+                </Link>
+                <Link href={'/marketplace/mines'}>
+                    <h4>Mines</h4>
+                </Link>
+                <Link href={'/marketplace/services'}>
+                    <h4>Services</h4>
+                </Link>
+                <Link href={'/marketplace/vacancies'}>
+                    <h4>Vacancies</h4>
+                </Link>
             </div>
             <div className={styles.badges}>
                 <Link href={'https://apps.apple.com/zw/app/zimvest-mobile/id1591476024'}>

@@ -43,6 +43,7 @@
             top: calc(50% + 20px);
             transition: 0.2s ease-in-out opacity;
             width: max-content;
+            min-width: 120px;
             word-break: keep-all;
             border: 1px solid rgba(0, 0, 0, 0.15);
             a,
@@ -88,12 +89,18 @@
                 color: black;
                 width: 200px;
                 transition: 0.2s ease-in-out;
-                a,
-                h4 {
+                > * {
                     padding-block: 0.8rem;
                     &:hover {
                         background-color: #e9ecef;
                     }
+                }
+                button {
+                    cursor: pointer;
+                    width: 100%;
+                    background-color: transparent;
+                    border: none;
+                    font-weight: 600;
                 }
             }
         }
@@ -248,7 +255,6 @@
     .main {
         padding-inline: 2rem;
         width: unset;
-
         .logo {
             position: absolute;
             left: 50%;
