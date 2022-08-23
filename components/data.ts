@@ -1,4 +1,4 @@
-import { IoMdOptions } from 'react-icons/Io';
+import { IoMdOptions } from 'react-icons/io';
 import { FaBolt, FaCogs, FaEnvira, FaHive, FaSnowplow } from 'react-icons/fa';
 import { ItemSelectorTab } from './types';
 
