@@ -27,19 +27,13 @@ export const useWindowWidth = () => {
     return windowWidth;
 };
 
-// export const useCartCount = (pageName: string, initialCartCount: number) =>
-//     useQuery<number>(
-//         [`${pageName}-CartCount`],
-//         async () => (await axios.get(`${userApiUrl}/collection/count/CART`, { withCredentials: true })).data.count,
-//         {
-//             initialData: initialCartCount,
-//         },
-//     );
-
 export const useWishlist = (pageName: MarketplacePage, initialWishlist?: Collection, enabled?: boolean) => {
     const wishlist = useQuery<Collection | null>(
         [`${pageName}-Wishlist`],
-        async () => (await getCollection('WISHLIST', {}, pageName)) || { products: [], mines: [] },
+        async () =>
+            pageName === 'product' || pageName === 'mine'
+                ? (await getCollection('WISHLIST', {}, pageName)) || { products: [], mines: [] }
+                : { products: [], mines: [] },
         {
             ...(initialWishlist && { initialData: initialWishlist }),
             enabled,
