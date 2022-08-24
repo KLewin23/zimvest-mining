@@ -58,7 +58,7 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
             ],
         },
         { title: 'Mining Overview', link: '/mining-overview' },
-        { title: 'Market Prices', link: '/market-prices' },
+        // { title: 'Market Prices', link: '/market-prices' },
     ];
 
     return (

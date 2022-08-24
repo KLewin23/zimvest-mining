@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { BannerPage, getUserInfo, Page, User } from '../../components';
+import { BannerPage, getCollectionCount, getUserInfo, Page, User } from '../../components';
 
 interface Props {
     user?: User;
@@ -89,7 +89,17 @@ const MiningGuidelines = ({ user, cartCount }: Props): JSX.Element => {
 };
 
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
-    return getUserInfo(req, { props: {} });
+    const user = await getUserInfo(req, {});
+    if ('props' in user) {
+        const cartCount = await getCollectionCount('CART', { headers: { cookie: req.headers.cookie || '' } });
+        return {
+            props: {
+                ...user.props,
+                cartCount,
+            },
+        };
+    }
+    return { props: {} };
 };
 
 export default MiningGuidelines;

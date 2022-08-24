@@ -5,7 +5,6 @@ import { Carousel } from 'react-responsive-carousel';
 import styles from '../styles/components/Advert.module.scss';
 import advert1 from '../public/advert/ad1.jpg';
 import advert2 from '../public/advert/ad2.jpg';
-import advert3 from '../public/advert/ad3.jpg';
 
 const Advert = (): JSX.Element => {
     return (
@@ -16,9 +15,6 @@ const Advert = (): JSX.Element => {
                 </div>
                 <div>
                     <Image src={advert2} />
-                </div>
-                <div>
-                    <Image src={advert3} />
                 </div>
             </Carousel>
             <div>
