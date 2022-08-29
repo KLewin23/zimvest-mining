@@ -18,16 +18,19 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
 
     const calcTabHeights = (list: RefObject<HTMLDivElement>) => {
         if (list.current?.children === undefined) return null;
-        return [...list.current.children].map(i => {
-            if (i.lastChild) {
-                const childArray = [...i.children];
-                return childArray[childArray.length - 1].scrollHeight;
-            }
-            return 0;
-        });
+        return [...list.current.children]
+            .filter(el => el.id !== 'close')
+            .map(i => {
+                if (i.lastChild) {
+                    const childArray = [...i.children];
+                    console.log(childArray[1], childArray[1].scrollHeight);
+                    return childArray[1].scrollHeight - 60;
+                }
+                return 0;
+            });
     };
 
-    const [tabHeight, setTabHeight] = useState(calcTabHeights(tabList));
+    const [tabHeight, setTabHeight] = useState<number[] | null>();
     const [maxScreenWidth, setMaxScreenWidth] = useState(0);
     const [open, setOpen] = useState(false);
     const [tabStatus, setTabStatus] = useState<Record<number, boolean>>(() =>
@@ -37,17 +40,17 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
     useEffect(() => {
         setMaxScreenWidth(window.innerWidth);
         setTabHeight(calcTabHeights(tabList));
-    }, [open]);
+    }, [open, tabList]);
 
     useEventListener('resize', () => {
         setMaxScreenWidth(window.innerWidth);
         setTabHeight(calcTabHeights(tabList));
     });
 
-    useEventListener('resize', () => setTabHeight(calcTabHeights(tabList)));
+    console.log(tabHeight);
 
     return (
-        <div className={styles.productSearch} style={{ pointerEvents: open ? 'all' : 'none' }}>
+        <div className={styles.productSearch} style={{ pointerEvents: open || windowWidth >= 800 ? 'all' : 'none' }}>
             {windowWidth < 800 ? (
                 <button type={'button'} style={{ opacity: open ? 0 : 1 }} onClick={() => setOpen(true)} className={styles.stickyTabButton}>
                     <MdFilterAlt size={20} color={'#e5e5e5'} />
@@ -56,7 +59,7 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
 
             <div className={styles.list} ref={tabList} style={{ maxWidth: windowWidth < 800 ? (open ? maxScreenWidth : 0) : 'unset' }}>
                 {windowWidth < 800 ? (
-                    <div className={styles.filtersTitle}>
+                    <div id={'close'} className={styles.filtersTitle}>
                         <h3>Filters</h3>
                         <button type={'button'} onClick={() => setOpen(false)} className={styles.closeButton}>
                             <MdClose size={20} />
@@ -81,7 +84,11 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                                 />
                             </button>
                         </div>
-                        <div style={{ height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex + 1] + 12.8}px` : 0 }}>
+                        <div
+                            style={{
+                                height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex]}px` : 0,
+                            }}
+                        >
                             {section.subList.map(subItem => (
                                 <Controller
                                     key={`${section.title}.${

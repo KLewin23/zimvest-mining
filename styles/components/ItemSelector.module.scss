@@ -73,7 +73,6 @@
         gap: 0.8rem;
         overflow: hidden;
         transition: .2s height ease-in-out;
-
         > div {
           @include index.flex-row;
           gap: 0.5rem;
