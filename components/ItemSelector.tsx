@@ -21,7 +21,6 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
         return [...list.current.children].map(i => {
             if (i.lastChild) {
                 const childArray = [...i.children];
-                console.log(childArray[childArray.length - 1]);
                 return childArray[childArray.length - 1].scrollHeight;
             }
             return 0;
@@ -44,8 +43,6 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
         setMaxScreenWidth(window.innerWidth);
         setTabHeight(calcTabHeights(tabList));
     });
-
-    console.log(tabHeight);
 
     useEventListener('resize', () => setTabHeight(calcTabHeights(tabList)));
 
