@@ -106,7 +106,6 @@ const Marketplace = <T extends MarketplaceType>({
     );
     useEffect(() => {
         (async () => {
-            console.log(inView);
             if (inView && items) {
                 return items?.pages && items.pages[items.pages.length - 1].length === 10
                     ? fetchNextPage()

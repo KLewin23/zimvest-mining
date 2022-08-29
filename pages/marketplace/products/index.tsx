@@ -40,8 +40,6 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'product');
     const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
 
-    console.log(products);
-
     return {
         props: {
             products,
