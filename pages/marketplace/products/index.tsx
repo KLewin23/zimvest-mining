@@ -2,15 +2,15 @@ import React from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import {
     Collection,
-    productExtendedSidebarLayout,
+    getCollection,
     getItems,
     getUserInfo,
     Joined,
     Marketplace,
     MarketplaceProduct,
+    productExtendedSidebarLayout,
     User,
 } from '../../../components';
-import { getCollection } from '../../../components/utils';
 
 interface Props {
     user?: User;
@@ -39,6 +39,8 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
     const products = await getItems<MarketplaceProduct>('product', 1, 'Popularity', []);
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'product');
     const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
+
+    console.log(products);
 
     return {
         props: {
