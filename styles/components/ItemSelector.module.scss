@@ -8,6 +8,7 @@
   width: fit-content;
   background-color: white;
   overflow: hidden;
+
   .search {
     @include index.flex-row;
     align-items: center;
@@ -26,11 +27,13 @@
   }
 
   .list {
+    position: relative;
     @include index.flex-col;
     height: 100%;
-    overflow: hidden;
+    overflow: scroll;
     transition: max-width .2s ease-in-out;
     background-color: white;
+
     > section {
       @include index.flex-col;
       gap: .8rem;
@@ -89,18 +92,24 @@
   top: 220px;
   border: none;
   cursor: pointer;
+  pointer-events: all;
   transition: opacity .2s linear;
 }
 
 .filtersTitle {
   @include index.flex-row;
-  position: relative;
+  position: sticky;
   height: 50px;
+  width: 100%;
+  margin-top: -50px;
+  background-color: white;
+
   h3 {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
+
   .closeButton {
     position: absolute;
     background-color: transparent;
@@ -121,9 +130,10 @@
     left: 0;
     width: 100%;
     background-color: unset;
-    padding:  0;
+    padding: 0;
+
     .list {
-      padding-top: 1rem
+      padding-top: calc(50px + 1rem)
     }
   }
 }

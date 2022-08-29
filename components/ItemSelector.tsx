@@ -21,6 +21,7 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
         return [...list.current.children].map(i => {
             if (i.lastChild) {
                 const childArray = [...i.children];
+                console.log(childArray[childArray.length - 1]);
                 return childArray[childArray.length - 1].scrollHeight;
             }
             return 0;
@@ -37,16 +38,19 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
     useEffect(() => {
         setMaxScreenWidth(window.innerWidth);
         setTabHeight(calcTabHeights(tabList));
-    }, []);
+    }, [open]);
 
     useEventListener('resize', () => {
         setMaxScreenWidth(window.innerWidth);
+        setTabHeight(calcTabHeights(tabList));
     });
+
+    console.log(tabHeight);
 
     useEventListener('resize', () => setTabHeight(calcTabHeights(tabList)));
 
     return (
-        <div className={styles.productSearch}>
+        <div className={styles.productSearch} style={{ pointerEvents: open ? 'all' : 'none' }}>
             {windowWidth < 800 ? (
                 <button type={'button'} style={{ opacity: open ? 0 : 1 }} onClick={() => setOpen(true)} className={styles.stickyTabButton}>
                     <MdFilterAlt size={20} color={'#e5e5e5'} />
@@ -80,7 +84,7 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                                 />
                             </button>
                         </div>
-                        <div style={{ height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex]}px` : 0 }}>
+                        <div style={{ height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex + 1] + 12.8}px` : 0 }}>
                             {section.subList.map(subItem => (
                                 <Controller
                                     key={`${section.title}.${
