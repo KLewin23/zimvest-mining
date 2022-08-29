@@ -2,9 +2,8 @@ import { MdClose, MdFilterAlt, MdOutlineExpandLess } from 'react-icons/md';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import Checkbox from './Checkbox';
-import type { ItemSelectorTab } from '.';
-import { useWindowWidth } from '.';
-import { useEventListener } from './hooks';
+import type { ItemSelectorTab } from './types';
+import { useEventListener, useWindowWidth } from './hooks';
 import styles from '../styles/components/ItemSelector.module.scss';
 
 interface Props {
