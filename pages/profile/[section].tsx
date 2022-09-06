@@ -10,10 +10,11 @@ import { useDropzone } from 'react-dropzone';
 import React, { useCallback, useState } from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { FaGlobe, FaImage, FaTwitter, FaWhatsapp } from 'react-icons/fa';
-import { MdFacebook, MdInfoOutline } from 'react-icons/md';
+import { MdFacebook } from 'react-icons/md';
 import styles from '../../styles/profile.module.scss';
 import {
     AccountFormValues,
+    ChangePassword,
     Collapse,
     Collection,
     fetchUser,
@@ -78,7 +79,6 @@ const Profile = ({
             ? 'Wishlist'
             : '',
     );
-    const [apiRequestSent, setApiRequestSent] = useState(false);
     const [imageModal, setImageModal] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState('');
     const [profileImage, setProfileImage] = useState('');
@@ -175,10 +175,9 @@ const Profile = ({
         { onSuccess: () => setImageModal(false) },
     );
 
-    const updateAccount = (data: AccountFormValues) => {
-        setApiRequestSent(true);
-        axios
-            .put(
+    const account = useMutation(
+        (data: AccountFormValues) =>
+            axios.put(
                 `${userApiUrl}/user`,
                 {
                     firstName: data['First Name'],
@@ -187,7 +186,6 @@ const Profile = ({
                     phoneNumber: data['Phone number'],
                     location: data.Location,
                     companyName: data['Company Name'],
-                    // companyType: data['Company Type'],
                     facebookUrl: data['Facebook Url'],
                     whatsAppNumber: data['WhatsApp Number'],
                     twitterHandle: data['Twitter Handle'],
@@ -200,10 +198,10 @@ const Profile = ({
                     },
                     withCredentials: true,
                 },
-            )
-            .then(async () => {
+            ),
+        {
+            onSuccess: async () => {
                 await push('/profile');
-                setApiRequestSent(false);
                 await refetchUser().then(usr => {
                     resetUser({
                         'First Name': usr.data.first_name,
@@ -218,15 +216,15 @@ const Profile = ({
                         'Website Url': usr.data?.company_website,
                     });
                 });
-            })
-            .catch(e => {
-                setApiRequestSent(false);
+            },
+            onError: (e: { response: { status: number } }) => {
                 if (e.response.status === 403 || e.response.status === 400) {
                     setError('Email', { type: 'invalid' });
                 }
                 setError('Email', { type: 'server_error' });
-            });
-    };
+            },
+        },
+    );
 
     const addToCart = useMutation((vars: { id: number; pageName: string }) =>
         axios.post(`${userApiUrl}/collection/CART/${vars.pageName.toUpperCase()}?id=${vars.id}`, {}, { withCredentials: true }),
@@ -723,172 +721,156 @@ const Profile = ({
                         open={openedTab === 'Account'}
                         onClick={() => setOpenedTab(openedTab === 'Account' ? '' : 'Account')}
                     >
-                        <form onSubmit={handleSubmit(updateAccount)} className={styles.account}>
-                            <div className={styles.layer1}>
-                                <NextImage
-                                    src={
-                                        user.image_id
-                                            ? user.image_id.includes('https://lh3.googleusercontent.com')
-                                                ? user.image_id
-                                                : `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${imageId}/public`
-                                            : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/3cdfe47c-d030-4451-4024-d60667f84800/public'
-                                    }
-                                    layout={'fixed'}
-                                    height={88}
-                                    width={88}
-                                    className={styles.profilePic}
-                                />
-                                <div>
-                                    <h2>
-                                        {user?.first_name} {user?.last_name}
-                                    </h2>
-                                    <h4>{user?.email}</h4>
-                                    <button
-                                        type={'button'}
-                                        onClick={async () => {
-                                            setImageUploadUrl('');
-                                            setProfileImage('');
-                                            setImageModal(true);
-                                            setImageUploadUrl((await axios.post(`${userApiUrl}/image/upload`)).data.uploadURL);
-                                        }}
-                                        className={styles.changePhoto}
-                                    >
-                                        Change photo
-                                    </button>
-                                </div>
-                            </div>
-                            <section>
-                                <h3>General information</h3>
-                                <div>
-                                    <label htmlFor={'firstName'}>
-                                        <p>First name</p>
-                                        <input
-                                            id={'firstName'}
-                                            type={'text'}
-                                            placeholder={'First name'}
-                                            {...register('First Name', { required: true })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'lastName'}>
-                                        <p>Last name</p>
-                                        <input
-                                            id={'lastName'}
-                                            type={'text'}
-                                            placeholder={'Last name'}
-                                            {...register('Last Name', { required: true })}
-                                        />
-                                    </label>
-                                    <label htmlFor={'email'} className={styles.firstCol}>
-                                        <p>Email</p>
-                                        <input
-                                            id={'email'}
-                                            type={'email'}
-                                            disabled
-                                            placeholder={'Email'}
-                                            {...register('Email', { required: true })}
-                                        />
-                                    </label>
-                                    <div className={styles.firstCol}>
-                                        <p>Phone number</p>
-                                        <Controller
-                                            name={'Phone number'}
-                                            control={accountControl}
-                                            render={({ field }) => (
-                                                <PhoneInput
-                                                    onChange={value => field.onChange(value)}
-                                                    value={field.value}
-                                                    defaultCountry={'ZW'}
-                                                    placeholder={'Phone number'}
-                                                />
-                                            )}
-                                        />
-                                    </div>
-                                    <label htmlFor={'location'} className={styles.firstCol}>
-                                        <p>Location</p>
-                                        <input id={'location'} type={'text'} placeholder={'Location'} {...register('Location')} />
-                                    </label>
-                                </div>
-                            </section>
-                            <section>
-                                <h3>Company details</h3>
-                                <div>
-                                    <label htmlFor={'email'}>
-                                        <p>Company name</p>
-                                        <input id={'email'} type={'text'} placeholder={'Company name'} {...register('Company Name')} />
-                                    </label>
-                                    <label htmlFor={'email'}>
-                                        <p>Company type</p>
-                                        <input id={'email'} type={'text'} placeholder={'Company type'} />
-                                    </label>
-                                </div>
-                            </section>
-                            {user.image_id?.includes('https://lh3.googleusercontent.com') ? null : (
-                                <section>
-                                    <div className={styles.info}>
-                                        <h3>Security</h3>
-                                        <MdInfoOutline color={'#969696'} size={20} />
-                                        <h5>To change your password you must know and enter your current password.</h5>
-                                    </div>
+                        <div>
+                            <form onSubmit={handleSubmit(v => account.mutate(v))} className={styles.account}>
+                                <div className={styles.layer1}>
+                                    <NextImage
+                                        src={
+                                            user.image_id
+                                                ? user.image_id.includes('https://lh3.googleusercontent.com')
+                                                    ? user.image_id
+                                                    : `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${imageId}/public`
+                                                : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/3cdfe47c-d030-4451-4024-d60667f84800/public'
+                                        }
+                                        layout={'fixed'}
+                                        height={88}
+                                        width={88}
+                                        className={styles.profilePic}
+                                    />
                                     <div>
-                                        <label htmlFor={'email'}>
-                                            <p>Current password</p>
-                                            <input id={'email'} type={'text'} placeholder={'Current password'} />
+                                        <h2>
+                                            {user?.first_name} {user?.last_name}
+                                        </h2>
+                                        <h4>{user?.email}</h4>
+                                        <button
+                                            type={'button'}
+                                            onClick={async () => {
+                                                setImageUploadUrl('');
+                                                setProfileImage('');
+                                                setImageModal(true);
+                                                setImageUploadUrl((await axios.post(`${userApiUrl}/image/upload`)).data.uploadURL);
+                                            }}
+                                            className={styles.changePhoto}
+                                        >
+                                            Change photo
+                                        </button>
+                                    </div>
+                                </div>
+                                <section>
+                                    <h3>General information</h3>
+                                    <div>
+                                        <label htmlFor={'firstName'}>
+                                            <p>First name</p>
+                                            <input
+                                                id={'firstName'}
+                                                type={'text'}
+                                                placeholder={'First name'}
+                                                {...register('First Name', { required: true })}
+                                            />
+                                        </label>
+                                        <label htmlFor={'lastName'}>
+                                            <p>Last name</p>
+                                            <input
+                                                id={'lastName'}
+                                                type={'text'}
+                                                placeholder={'Last name'}
+                                                {...register('Last Name', { required: true })}
+                                            />
                                         </label>
                                         <label htmlFor={'email'} className={styles.firstCol}>
-                                            <p>New Password</p>
-                                            <input id={'email'} type={'text'} placeholder={'New password'} />
+                                            <p>Email</p>
+                                            <input
+                                                id={'email'}
+                                                type={'email'}
+                                                disabled
+                                                placeholder={'Email'}
+                                                {...register('Email', { required: true })}
+                                            />
                                         </label>
-                                        <label htmlFor={'email'}>
-                                            <p>Confirm Password</p>
-                                            <input id={'email'} type={'text'} placeholder={'Confirm password'} />
+                                        <div className={styles.firstCol}>
+                                            <p>Phone number</p>
+                                            <Controller
+                                                name={'Phone number'}
+                                                control={accountControl}
+                                                render={({ field }) => (
+                                                    <PhoneInput
+                                                        onChange={value => field.onChange(value)}
+                                                        value={field.value}
+                                                        defaultCountry={'ZW'}
+                                                        placeholder={'Phone number'}
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+                                        <label htmlFor={'location'} className={styles.firstCol}>
+                                            <p>Location</p>
+                                            <input id={'location'} type={'text'} placeholder={'Location'} {...register('Location')} />
                                         </label>
                                     </div>
                                 </section>
-                            )}
-
-                            <section>
-                                <h3>Social Media</h3>
-                                <div className={styles.socialMedia}>
-                                    <label htmlFor={'facebook'}>
-                                        <MdFacebook size={'30px'} color={'#BBBBBB'} />
-                                        <input id={'facebook'} type={'text'} placeholder={'Facebook Url'} {...register('Facebook Url')} />
-                                    </label>
+                                <section>
+                                    <h3>Company details</h3>
                                     <div>
-                                        <FaWhatsapp size={'30px'} color={'#BBBBBB'} />
-                                        <Controller
-                                            name={'WhatsApp Number'}
-                                            control={accountControl}
-                                            render={({ field }) => (
-                                                <PhoneInput
-                                                    onChange={value => field.onChange(value)}
-                                                    value={field.value}
-                                                    className={styles.phoneInput}
-                                                    defaultCountry={'ZW'}
-                                                    placeholder={'WhatsApp number'}
-                                                    smartCaret
-                                                />
-                                            )}
-                                        />
+                                        <label htmlFor={'email'}>
+                                            <p>Company name</p>
+                                            <input id={'email'} type={'text'} placeholder={'Company name'} {...register('Company Name')} />
+                                        </label>
+                                        <label htmlFor={'email'}>
+                                            <p>Company type</p>
+                                            <input id={'email'} type={'text'} placeholder={'Company type'} />
+                                        </label>
                                     </div>
-                                    <label htmlFor={'twitter'}>
-                                        <FaTwitter size={'30px'} color={'#BBBBBB'} />
-                                        <input
-                                            id={'twitter'}
-                                            type={'text'}
-                                            placeholder={'Twitter handle'}
-                                            {...register('Twitter Handle')}
-                                        />
-                                    </label>
-                                    <label htmlFor={'website'}>
-                                        <FaGlobe size={'30px'} color={'#BBBBBB'} />
-                                        <input id={'website'} type={'text'} placeholder={'Website url'} {...register('Website Url')} />
-                                    </label>
-                                    <button className={`${styles.firstCol} ${apiRequestSent ? styles.loading : ''}`} type={'submit'}>
-                                        Save
-                                    </button>
-                                </div>
-                            </section>
-                        </form>
+                                </section>
+                                <section>
+                                    <h3>Social Media</h3>
+                                    <div className={styles.socialMedia}>
+                                        <label htmlFor={'facebook'}>
+                                            <MdFacebook size={'30px'} color={'#BBBBBB'} />
+                                            <input
+                                                id={'facebook'}
+                                                type={'text'}
+                                                placeholder={'Facebook Url'}
+                                                {...register('Facebook Url')}
+                                            />
+                                        </label>
+                                        <div>
+                                            <FaWhatsapp size={'30px'} color={'#BBBBBB'} />
+                                            <Controller
+                                                name={'WhatsApp Number'}
+                                                control={accountControl}
+                                                render={({ field }) => (
+                                                    <PhoneInput
+                                                        onChange={value => field.onChange(value)}
+                                                        value={field.value}
+                                                        className={styles.phoneInput}
+                                                        defaultCountry={'ZW'}
+                                                        placeholder={'WhatsApp number'}
+                                                        smartCaret
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+                                        <label htmlFor={'twitter'}>
+                                            <FaTwitter size={'30px'} color={'#BBBBBB'} />
+                                            <input
+                                                id={'twitter'}
+                                                type={'text'}
+                                                placeholder={'Twitter handle'}
+                                                {...register('Twitter Handle')}
+                                            />
+                                        </label>
+                                        <label htmlFor={'website'}>
+                                            <FaGlobe size={'30px'} color={'#BBBBBB'} />
+                                            <input id={'website'} type={'text'} placeholder={'Website url'} {...register('Website Url')} />
+                                        </label>
+                                        <button className={`${styles.firstCol} ${account.isLoading ? styles.loading : ''}`} type={'submit'}>
+                                            Save
+                                        </button>
+                                    </div>
+                                </section>
+                            </form>
+                            {user.image_id?.includes('https://lh3.googleusercontent.com') ? null : <ChangePassword />}
+                        </div>
                     </Collapse>
                     <Collapse
                         title={'Shopping Cart'}

@@ -40,6 +40,7 @@ export { default as Collapse } from './Collapse';
 export { default as Footer } from './Footer';
 export { default as Modal } from './Modal';
 export { default as Page } from './Page';
+export { default as ChangePassword } from './ChangePassword';
 export { default as Marketplace } from './Marketplace';
 export { default as Item } from './Item';
 export { default as Select } from './Select';

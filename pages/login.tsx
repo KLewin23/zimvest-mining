@@ -4,9 +4,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useMutation } from 'react-query';
+import { useForm } from 'react-hook-form';
 import { GetServerSidePropsContext } from 'next';
 import { useGoogleLogin } from '@react-oauth/google';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from '../styles/auth.module.scss';
 import { GoogleIcon, Logo } from '../public';
 import { Checkbox, getUserInfo, Page, userApiUrl } from '../components';
@@ -43,16 +44,9 @@ const Login = (): JSX.Element => {
         },
     });
 
-    // access_token: "ya29.A0AVA9y1stLeA0dxn2S9NrIob-81LDYjGj_WTmdHh8oXzbYSnt0dCjpV48hChG8SZ-r-pImJrZzxxuroqq-uqiGo4Boj_cSQp5nSde7rAkyZt6I8RxKM2SIrM12ByjDYuXCmWwLFrFmDQrnR2eUyC2Kd78axa9aCgYKATASATASFQE65dr8ffHyprOkJ2EMMKxuJM1xCw0163"
-    // authuser: "0"
-    // expires_in: 3599
-    // prompt: "consent"
-    // scope: "email profile openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
-    // token_type: "Bearer"
-
-    const login: SubmitHandler<FormValues> = data => {
-        axios
-            .post(
+    const login = useMutation(
+        (data: FormValues) =>
+            axios.post(
                 `${userApiUrl}/session`,
                 {
                     ...data,
@@ -64,22 +58,24 @@ const Login = (): JSX.Element => {
                     },
                     withCredentials: true,
                 },
-            )
-            .then(async () => {
-                await router.push('/');
-            })
-            .catch(e => {
+            ),
+        {
+            onSuccess: () => router.push('/'),
+            onError: (e: { response: { status: number } }) => {
                 if (e.response.status === 403 || e.response.status === 400) {
                     setError('email', { type: 'invalid' });
                 }
                 setError('email', { type: 'server_error' });
-            });
-    };
+            },
+        },
+    );
 
     const errorMessage = () => {
         const firstError = (['email', 'password'] as (keyof FormValues)[]).find(err => errors[err]);
         if (!firstError) return '';
         switch (errors[firstError]?.type) {
+            case 'email':
+                return 'Your email is not valid';
             case 'required':
                 return `${firstError} is a required field.`;
             case 'invalid':
@@ -100,17 +96,17 @@ const Login = (): JSX.Element => {
             <Page>
                 <div className={styles.main}>
                     <div className={styles.authBox}>
-                        <form onSubmit={handleSubmit(login)}>
+                        <form onSubmit={handleSubmit(v => login.mutate(v))}>
                             <Image src={Logo} width={150} height={60} />
                             <div className={styles.inputs}>
                                 <label htmlFor={'email'} className={styles.email}>
                                     <p>Email</p>
                                     <input
                                         id={'email'}
-                                        type={'text'}
+                                        type={'email'}
                                         placeholder={'Enter Email'}
                                         style={{ borderColor: errors.email ? '#EC4C4C' : '#ced4da' }}
-                                        {...register('email', { required: true })}
+                                        {...register('email', { required: true, pattern: /^\S+@\S+\.\S+$/ })}
                                     />
                                 </label>
                                 <label htmlFor={'password'} className={styles.password}>
@@ -133,7 +129,7 @@ const Login = (): JSX.Element => {
                                     Forgotten password?
                                 </Link>
                             </div>
-                            <button type={'submit'} className={styles.zim_button}>
+                            <button type={'submit'} className={`${styles.zim_button} ${login.isLoading ? styles.loading : null}`}>
                                 Login
                             </button>
                             <button type={'button'} className={styles.googleButton} onClick={() => googleLogin()}>
