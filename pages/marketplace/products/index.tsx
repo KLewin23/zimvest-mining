@@ -2,15 +2,15 @@ import React from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import {
     Collection,
-    productExtendedSidebarLayout,
+    getCollection,
     getItems,
     getUserInfo,
     Joined,
     Marketplace,
     MarketplaceProduct,
+    productExtendedSidebarLayout,
     User,
 } from '../../../components';
-import { getCollection } from '../../../components/utils';
 
 interface Props {
     user?: User;

@@ -61,11 +61,15 @@ const Login = (): JSX.Element => {
             ),
         {
             onSuccess: () => router.push('/'),
-            onError: (e: { response: { status: number } }) => {
-                if (e.response.status === 403 || e.response.status === 400) {
-                    setError('email', { type: 'invalid' });
+            onError: (e: { response: { status: number; data: string } }) => {
+                if (
+                    e.response.status === 403 ||
+                    e.response.status === 400 ||
+                    (e.response.status === 404 && e.response.data === 'No user found')
+                ) {
+                    return setError('email', { type: 'invalid' });
                 }
-                setError('email', { type: 'server_error' });
+                return setError('email', { type: 'server_error' });
             },
         },
     );

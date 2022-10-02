@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
 import { userApiUrl } from './utils';
 import styles from '../styles/profile.module.scss';
+import Notification from './Notification';
+import { useNotification } from './hooks';
 
 interface ChangePassForm {
     'Current Password': string;
@@ -14,23 +16,37 @@ interface ChangePassForm {
 
 const ChangePassword = (): JSX.Element => {
     const { register, handleSubmit } = useForm<ChangePassForm>();
+    const [status, message, setMessage] = useNotification();
 
-    const password = useMutation((vals: ChangePassForm) =>
-        axios.put(
-            `${userApiUrl}/user/change-password`,
-            { ...vals },
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
+    const password = useMutation(
+        (vals: ChangePassForm) =>
+            axios.put(
+                `${userApiUrl}/user/change-password`,
+                { oldPassword: vals['Current Password'], newPassword: vals['New Password'] },
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true,
                 },
-                withCredentials: true,
-            },
-        ),
+            ),
+        {
+            onSuccess: () => setMessage('Password Successfully Changed.'),
+            onError: () => setMessage('Something went wrong changing your password, please try again'),
+        },
     );
 
     return (
-        <form className={styles.changePassword} onSubmit={handleSubmit(v => password.mutate(v))}>
+        <form
+            className={styles.changePassword}
+            onSubmit={handleSubmit(v => {
+                if (v['New Password'] === v['Confirm Password']) {
+                    password.mutate(v);
+                }
+            })}
+        >
+            <Notification open={status}>{message}</Notification>
             <section>
                 <div className={styles.info}>
                     <h3>Security</h3>

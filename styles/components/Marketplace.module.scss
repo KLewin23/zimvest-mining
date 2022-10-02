@@ -19,7 +19,8 @@
             width: max-content;
             max-width: 70%;
             > div {
-                max-width: 400px;
+                min-width: fit-content;
+                width: 200px;
             }
         }
         .pageButtons {
@@ -46,6 +47,10 @@
     .message {
         padding: 2rem;
         justify-content: center;
+    }
+    .invis {
+        max-height: 0;
+        padding: 0;
     }
 }
 

@@ -10,7 +10,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Footer } from '../components';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-    const queryClient = new QueryClient();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: process.env.NODE_ENV !== 'development' } } });
 
     return (
         <GoogleOAuthProvider clientId={'45427185746-5u3psdpvpecdcdbpll3dthgnhtnu1lrv.apps.googleusercontent.com'}>

@@ -36,6 +36,8 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
     const services = await getItems<MarketplaceService>('service', 1, 'Popularity', []);
     const cartCount = 'props' in user ? await getCollectionCount('CART', { headers: { cookie: req.headers.cookie || '' } }) : undefined;
 
+    console.log(services);
+
     return {
         props: {
             services,

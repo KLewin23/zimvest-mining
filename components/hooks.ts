@@ -106,3 +106,28 @@ export const useCart = (pageName: MarketplacePage, initialCart?: Collection | nu
 };
 
 // : { mutate: (id: number, {onSuccess}) => addToCart.mutate(id, { onSuccess: () => refetch() }) }
+
+export const useNotificationTimer = (): [boolean, () => void] => {
+    const [open, setOpen] = useState(false);
+    return [
+        open,
+        () => {
+            setOpen(true);
+            setTimeout(() => setOpen(false), 3000);
+        },
+    ];
+};
+
+export const useNotification = (): [boolean, string, (msg: string) => void] => {
+    const [message, setMessage] = useState('');
+    const [status, open] = useNotificationTimer();
+
+    return [
+        status,
+        message,
+        (msg: string) => {
+            setMessage(msg);
+            open();
+        },
+    ];
+};

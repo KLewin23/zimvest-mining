@@ -1,9 +1,9 @@
-import { MdOutlineExpandLess } from 'react-icons/md';
+import { MdClose, MdFilterAlt, MdOutlineExpandLess } from 'react-icons/md';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import Checkbox from './Checkbox';
-import type { ItemSelectorTab } from '.';
-import { useEventListener } from './hooks';
+import type { ItemSelectorTab } from './types';
+import { useEventListener, useWindowWidth } from './hooks';
 import styles from '../styles/components/ItemSelector.module.scss';
 
 interface Props {
@@ -14,30 +14,55 @@ interface Props {
 const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
     const { control, getValues } = useFormContext();
     const tabList = useRef<HTMLDivElement>(null);
+    const windowWidth = useWindowWidth();
 
     const calcTabHeights = (list: RefObject<HTMLDivElement>) => {
         if (list.current?.children === undefined) return null;
-        return [...list.current.children].map(i => {
-            if (i.lastChild) {
-                const childArray = [...i.children];
-                return childArray[childArray.length - 1].scrollHeight;
-            }
-            return 0;
-        });
+        return [...list.current.children]
+            .filter(el => el.id !== 'close')
+            .map(i => {
+                if (i.lastChild) {
+                    const childArray = [...i.children];
+                    return childArray[1].scrollHeight - 60;
+                }
+                return 0;
+            });
     };
 
-    const [tabHeight, setTabHeight] = useState(calcTabHeights(tabList));
+    const [tabHeight, setTabHeight] = useState<number[] | null>();
+    const [maxScreenWidth, setMaxScreenWidth] = useState(0);
+    const [open, setOpen] = useState(false);
     const [tabStatus, setTabStatus] = useState<Record<number, boolean>>(() =>
         itemSelectorLayout.reduce((acc, tab, index) => ({ ...acc, [index]: itemSelectorLayout[index].tabDefaultState }), {}),
     );
 
-    useEffect(() => setTabHeight(calcTabHeights(tabList)), []);
+    useEffect(() => {
+        setMaxScreenWidth(window.innerWidth);
+        setTabHeight(calcTabHeights(tabList));
+    }, [open, tabList]);
 
-    useEventListener('resize', () => setTabHeight(calcTabHeights(tabList)));
+    useEventListener('resize', () => {
+        setMaxScreenWidth(window.innerWidth);
+        setTabHeight(calcTabHeights(tabList));
+    });
 
     return (
-        <div className={styles.productSearch}>
-            <div className={styles.list} ref={tabList}>
+        <div className={styles.productSearch} style={{ pointerEvents: open || windowWidth >= 800 ? 'all' : 'none' }}>
+            {windowWidth < 800 ? (
+                <button type={'button'} style={{ opacity: open ? 0 : 1 }} onClick={() => setOpen(true)} className={styles.stickyTabButton}>
+                    <MdFilterAlt size={20} color={'#e5e5e5'} />
+                </button>
+            ) : null}
+
+            <div className={styles.list} ref={tabList} style={{ maxWidth: windowWidth < 800 ? (open ? maxScreenWidth : 0) : 'unset' }}>
+                {windowWidth < 800 ? (
+                    <div id={'close'} className={styles.filtersTitle}>
+                        <h3>Filters</h3>
+                        <button type={'button'} onClick={() => setOpen(false)} className={styles.closeButton}>
+                            <MdClose size={20} />
+                        </button>
+                    </div>
+                ) : null}
                 {itemSelectorLayout.map((section, sectionIndex) => (
                     <section key={section.title}>
                         <div>
@@ -56,7 +81,11 @@ const ItemSelector = ({ itemSelectorLayout, onChange }: Props): JSX.Element => {
                                 />
                             </button>
                         </div>
-                        <div style={{ height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex]}px` : 0 }}>
+                        <div
+                            style={{
+                                height: tabStatus[sectionIndex] && tabHeight ? `${tabHeight[sectionIndex]}px` : 0,
+                            }}
+                        >
                             {section.subList.map(subItem => (
                                 <Controller
                                     key={`${section.title}.${

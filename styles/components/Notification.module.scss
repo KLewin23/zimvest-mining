@@ -1,0 +1,22 @@
+.notification {
+  position: fixed;
+  bottom: 200px;
+  right: 100px;
+  padding: 1rem 2rem;
+  background: white;
+  border-radius: 15px;
+  text-transform: capitalize;
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+  box-shadow: 0 9px 25px -7px #DEE0E4;
+  max-width: 500px;
+  text-align: center;
+
+
+  &.closed {
+    bottom: 144px;
+    opacity: 0;
+  }
+
+}

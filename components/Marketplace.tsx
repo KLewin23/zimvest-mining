@@ -152,107 +152,125 @@ const Marketplace = <T extends MarketplaceType>({
                                 />
                             </div>
                             <div className={styles.products}>
-                                {items && items.pages.length !== 0 && items.pages[0].length !== 0 ? (
-                                    items.pages.map(page => {
-                                        return page.map((item: Joined<T>) => (
-                                            <div key={`Marketplace-Product-${item.id}`}>
-                                                <Image
-                                                    width={200}
-                                                    height={100}
-                                                    layout={'fixed'}
-                                                    src={
-                                                        item.image_id
-                                                            ? `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`
-                                                            : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/2e3a5e35-2fbe-402a-9e5c-f19a60f85900/public'
-                                                    }
-                                                />
-                                                <div className={styles.text}>
-                                                    <div>
-                                                        <Link href={`/marketplace/${pageName}s/${item.id}`}>
-                                                            <p className={styles.title}>{item.title}</p>
-                                                        </Link>
-                                                        <p className={styles.subText}>{itemSubText ? itemSubText(item) : null}</p>
+                                {items &&
+                                items.pages &&
+                                items.pages.length !== 0 &&
+                                items.pages[0] !== null &&
+                                items.pages[0].length !== 0 ? (
+                                    <>
+                                        {items.pages.map(page => {
+                                            return page.map((item: Joined<T>) => (
+                                                <div key={`Marketplace-Product-${item.id}`}>
+                                                    <Image
+                                                        width={200}
+                                                        height={100}
+                                                        layout={'fixed'}
+                                                        src={
+                                                            item.image_id
+                                                                ? `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`
+                                                                : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/2e3a5e35-2fbe-402a-9e5c-f19a60f85900/public'
+                                                        }
+                                                    />
+                                                    <div className={styles.text}>
+                                                        <div>
+                                                            <Link href={`/marketplace/${pageName}s/${item.id}`}>
+                                                                <p className={styles.title}>{item.title}</p>
+                                                            </Link>
+                                                            <p className={styles.subText}>{itemSubText ? itemSubText(item) : null}</p>
+                                                        </div>
+                                                        <h4>{item.supplier.email}</h4>
+                                                        <p>
+                                                            <span>
+                                                                $
+                                                                {('price' in item
+                                                                    ? /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+                                                                      /* @ts-ignore  */
+                                                                      item.price
+                                                                    : 'salary' in item
+                                                                    ? /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+                                                                      /* @ts-ignore  */
+                                                                      item.salary
+                                                                    : ''
+                                                                ).toLocaleString('en')}
+                                                            </span>
+                                                        </p>
                                                     </div>
-                                                    <h4>{item.supplier.email}</h4>
-                                                    <p>
-                                                        <span>
-                                                            $
-                                                            {('price' in item
-                                                                ? /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-                                                                  /* @ts-ignore  */
-                                                                  item.price
-                                                                : 'salary' in item
-                                                                ? /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-                                                                  /* @ts-ignore  */
-                                                                  item.salary
-                                                                : ''
-                                                            ).toLocaleString('en')}
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                                {typeof initialCart !== 'number' ? (
-                                                    <div className={styles.buttons}>
-                                                        {(() => {
-                                                            const cartProduct = cart?.products.find(i => i.id === item.id) || null;
-                                                            return cartProduct && pageName === 'product' ? (
-                                                                <QuantityCounter
-                                                                    quantity={cartProduct.ProductCollection.quantity}
-                                                                    decreaseQuantity={() => removeFromCart.mutate(cartProduct.id)}
-                                                                    increaseQuantity={() => addToCart.mutate(cartProduct.id)}
-                                                                />
-                                                            ) : (
-                                                                <button
-                                                                    type={'button'}
-                                                                    className={
-                                                                        addToCart.variables === item.id && addToCart.isLoading
-                                                                            ? `${styles.loading} ${styles.cartBtn}`
-                                                                            : styles.cartBtn
+                                                    {typeof initialCart !== 'number' ? (
+                                                        <div className={styles.buttons}>
+                                                            {(() => {
+                                                                const cartProduct = cart?.products.find(i => i.id === item.id) || null;
+                                                                const cartMine = cart?.mines.find(i => i.id === item.id) || null;
+                                                                return cartProduct && pageName === 'product' ? (
+                                                                    <QuantityCounter
+                                                                        quantity={cartProduct.ProductCollection.quantity}
+                                                                        decreaseQuantity={() => removeFromCart.mutate(cartProduct.id)}
+                                                                        increaseQuantity={() => addToCart.mutate(cartProduct.id)}
+                                                                    />
+                                                                ) : (
+                                                                    <button
+                                                                        type={'button'}
+                                                                        className={
+                                                                            (addToCart.variables === item.id && addToCart.isLoading) ||
+                                                                            (removeFromCart.variables === item.id &&
+                                                                                removeFromCart.isLoading)
+                                                                                ? `${styles.loading} ${styles.cartBtn}`
+                                                                                : styles.cartBtn
+                                                                        }
+                                                                        onClick={async () => {
+                                                                            if (cartMine) {
+                                                                                return removeFromCart.mutate(item.id);
+                                                                            }
+                                                                            return addToCart.mutate(item.id);
+                                                                        }}
+                                                                    >
+                                                                        {cartMine && pageName === 'mine'
+                                                                            ? 'Remove from basket'
+                                                                            : ' Add to cart'}
+                                                                    </button>
+                                                                );
+                                                            })()}
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (!wishlist) return undefined;
+                                                                    if (
+                                                                        wishlist?.products.some(i => i.id === item.id) ||
+                                                                        wishlist?.mines.some(i => i.id === item.id)
+                                                                    ) {
+                                                                        return removeFromWishlist.mutate(item.id);
                                                                     }
-                                                                    onClick={async () => {
-                                                                        addToCart.mutate(item.id);
-                                                                    }}
-                                                                >
-                                                                    Add to cart
-                                                                </button>
-                                                            );
-                                                        })()}
-                                                        <button
-                                                            onClick={async () => {
-                                                                if (!wishlist) return undefined;
-                                                                if (
-                                                                    wishlist?.products.some(i => i.id === item.id) ||
-                                                                    wishlist?.mines.some(i => i.id === item.id)
-                                                                ) {
-                                                                    return removeFromWishlist.mutate(item.id);
+                                                                    return addToWishlist.mutate(item.id);
+                                                                }}
+                                                                className={
+                                                                    (addToWishlist.variables === item.id && addToWishlist.isLoading) ||
+                                                                    (removeFromWishlist.variables === item.id &&
+                                                                        removeFromWishlist.isLoading)
+                                                                        ? `${styles.loading} ${styles.wishlistBtn}`
+                                                                        : styles.wishlistBtn
                                                                 }
-                                                                return addToWishlist.mutate(item.id);
-                                                            }}
-                                                            className={
-                                                                (addToWishlist.variables === item.id && addToWishlist.isLoading) ||
-                                                                (removeFromWishlist.variables === item.id && removeFromWishlist.isLoading)
-                                                                    ? `${styles.loading} ${styles.wishlistBtn}`
-                                                                    : styles.wishlistBtn
-                                                            }
-                                                            type={'button'}
-                                                        >
-                                                            {wishlist?.products.some(i => i.id === item.id) ||
-                                                            wishlist?.mines.some(i => i.id === item.id)
-                                                                ? 'Remove from wishlist'
-                                                                : 'Add to wishlist'}
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className={styles.buttons}>
-                                                        <Link href={`mailto:${item.supplier.email}`}>
-                                                            <button type={'button'} className={styles.contactProvider}>
-                                                                Contact Provider
+                                                                type={'button'}
+                                                            >
+                                                                {wishlist?.products.some(i => i.id === item.id) ||
+                                                                wishlist?.mines.some(i => i.id === item.id)
+                                                                    ? 'Remove from wishlist'
+                                                                    : 'Add to wishlist'}
                                                             </button>
-                                                        </Link>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ));
-                                    })
+                                                        </div>
+                                                    ) : (
+                                                        <div className={styles.buttons}>
+                                                            <Link href={`mailto:${item.supplier.email}`}>
+                                                                <button type={'button'} className={styles.contactProvider}>
+                                                                    Contact Provider
+                                                                </button>
+                                                            </Link>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ));
+                                        })}
+                                        <div ref={ref} className={styles.invis}>
+                                            {isLoading ? <div /> : null}
+                                        </div>
+                                    </>
                                 ) : (
                                     <div className={styles.message}>
                                         <h2>
@@ -275,7 +293,6 @@ const Marketplace = <T extends MarketplaceType>({
                                     </div>
                                 )}
                             </div>
-                            <div ref={ref}>{isLoading ? <div /> : null}</div>
                         </div>
                     </div>
                 </FormProvider>
