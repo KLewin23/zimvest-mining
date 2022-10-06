@@ -44,8 +44,8 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
         props: {
             products,
             ...(user && 'props' in user ? user.props : undefined),
-            wishlist: wishlist || { products: [], mines: [] },
-            cart: cart || { products: [], mines: [] },
+            wishlist: wishlist || [],
+            cart: cart || [],
         },
     };
 };

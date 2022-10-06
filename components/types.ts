@@ -133,16 +133,13 @@ interface CollectionItem {
     supplier: {
         email: string;
     };
+    Collection: {
+        quantity: number;
+    };
+    itemType: MarketplacePage;
 }
 
-export type Collection = {
-    products: (CollectionItem & {
-        ProductCollection: {
-            quantity: number;
-        };
-    })[];
-    mines: CollectionItem[];
-};
+export type Collection = CollectionItem[];
 
 export interface AccountFormValues {
     'First Name': string;

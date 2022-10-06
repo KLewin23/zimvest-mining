@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { TickerTape } from 'react-ts-tradingview-widgets';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
@@ -30,16 +30,17 @@ const PageLayout = ({ children, user, withSideBar, withCurrencyWidget, cartCount
             );
     }, [scriptRef]);
 
+    const tickerTape = useMemo(
+        () => <TickerTape colorTheme={'dark'} copyrightStyles={{ parent: { maxHeight: '0px', overflow: 'hidden' } }} />,
+        [],
+    );
+
     return (
         <main>
             <TopBar />
             <script ref={scriptRef} />
             <NavBar user={user} cartCount={cartCount} />
-            {withCurrencyWidget ? (
-                <div className={styles.widget}>
-                    <TickerTape colorTheme={'dark'} copyrightStyles={{ parent: { maxHeight: '0px', overflow: 'hidden' } }} />
-                </div>
-            ) : null}
+            {withCurrencyWidget ? <div className={styles.widget}>{tickerTape}</div> : null}
             <div className={styles.container}>
                 {withSideBar ? <Sidebar /> : null}
                 {children}

@@ -160,7 +160,7 @@ const Marketplace = <T extends MarketplaceType>({
                                     <>
                                         {items.pages.map(page => {
                                             return page.map((item: Joined<T>) => (
-                                                <div key={`Marketplace-Product-${item.id}`}>
+                                                <div key={`Marketplace-${pageName}-${item.id}`}>
                                                     <Image
                                                         width={200}
                                                         height={100}
@@ -195,75 +195,58 @@ const Marketplace = <T extends MarketplaceType>({
                                                             </span>
                                                         </p>
                                                     </div>
-                                                    {typeof initialCart !== 'number' ? (
-                                                        <div className={styles.buttons}>
-                                                            {(() => {
-                                                                const cartProduct = cart?.products.find(i => i.id === item.id) || null;
-                                                                const cartMine = cart?.mines.find(i => i.id === item.id) || null;
-                                                                return cartProduct && pageName === 'product' ? (
-                                                                    <QuantityCounter
-                                                                        quantity={cartProduct.ProductCollection.quantity}
-                                                                        decreaseQuantity={() => removeFromCart.mutate(cartProduct.id)}
-                                                                        increaseQuantity={() => addToCart.mutate(cartProduct.id)}
-                                                                    />
-                                                                ) : (
-                                                                    <button
-                                                                        type={'button'}
-                                                                        className={
-                                                                            (addToCart.variables === item.id && addToCart.isLoading) ||
-                                                                            (removeFromCart.variables === item.id &&
-                                                                                removeFromCart.isLoading)
-                                                                                ? `${styles.loading} ${styles.cartBtn}`
-                                                                                : styles.cartBtn
-                                                                        }
-                                                                        onClick={async () => {
-                                                                            if (cartMine) {
-                                                                                return removeFromCart.mutate(item.id);
-                                                                            }
-                                                                            return addToCart.mutate(item.id);
-                                                                        }}
-                                                                    >
-                                                                        {cartMine && pageName === 'mine'
-                                                                            ? 'Remove from basket'
-                                                                            : ' Add to cart'}
-                                                                    </button>
-                                                                );
-                                                            })()}
-                                                            <button
-                                                                onClick={async () => {
-                                                                    if (!wishlist) return undefined;
-                                                                    if (
-                                                                        wishlist?.products.some(i => i.id === item.id) ||
-                                                                        wishlist?.mines.some(i => i.id === item.id)
-                                                                    ) {
-                                                                        return removeFromWishlist.mutate(item.id);
+
+                                                    <div className={styles.buttons}>
+                                                        {(() => {
+                                                            const cartItems =
+                                                                cart !== undefined ? cart.find(i => i.id === item.id) || null : null;
+                                                            return cartItems && pageName === 'product' ? (
+                                                                <QuantityCounter
+                                                                    quantity={cartItems.Collection.quantity}
+                                                                    decreaseQuantity={() => removeFromCart.mutate(cartItems.id)}
+                                                                    increaseQuantity={() => addToCart.mutate(cartItems.id)}
+                                                                />
+                                                            ) : (
+                                                                <button
+                                                                    type={'button'}
+                                                                    className={
+                                                                        (addToCart.variables === item.id && addToCart.isLoading) ||
+                                                                        (removeFromCart.variables === item.id && removeFromCart.isLoading)
+                                                                            ? `${styles.loading} ${styles.cartBtn}`
+                                                                            : styles.cartBtn
                                                                     }
-                                                                    return addToWishlist.mutate(item.id);
-                                                                }}
-                                                                className={
-                                                                    (addToWishlist.variables === item.id && addToWishlist.isLoading) ||
-                                                                    (removeFromWishlist.variables === item.id &&
-                                                                        removeFromWishlist.isLoading)
-                                                                        ? `${styles.loading} ${styles.wishlistBtn}`
-                                                                        : styles.wishlistBtn
-                                                                }
-                                                                type={'button'}
-                                                            >
-                                                                {wishlist?.products.some(i => i.id === item.id) ||
-                                                                wishlist?.mines.some(i => i.id === item.id)
-                                                                    ? 'Remove from wishlist'
-                                                                    : 'Add to wishlist'}
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className={styles.buttons}>
-                                                            <Link href={`mailto:${item.supplier.email}`}>
-                                                                <button type={'button'} className={styles.contactProvider}>
-                                                                    Contact Provider
+                                                                    onClick={async () => {
+                                                                        if (cartItems) {
+                                                                            return removeFromCart.mutate(item.id);
+                                                                        }
+                                                                        return addToCart.mutate(item.id);
+                                                                    }}
+                                                                >
+                                                                    {cartItems ? 'Remove from basket' : ' Add to cart'}
                                                                 </button>
-                                                            </Link>
-                                                        </div>
-                                                    )}
+                                                            );
+                                                        })()}
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (!wishlist) return undefined;
+                                                                if (wishlist.some(i => i.id === item.id)) {
+                                                                    return removeFromWishlist.mutate(item.id);
+                                                                }
+                                                                return addToWishlist.mutate(item.id);
+                                                            }}
+                                                            className={
+                                                                (addToWishlist.variables === item.id && addToWishlist.isLoading) ||
+                                                                (removeFromWishlist.variables === item.id && removeFromWishlist.isLoading)
+                                                                    ? `${styles.loading} ${styles.wishlistBtn}`
+                                                                    : styles.wishlistBtn
+                                                            }
+                                                            type={'button'}
+                                                        >
+                                                            {wishlist && wishlist.some(i => i.id === item.id)
+                                                                ? 'Remove from wishlist'
+                                                                : 'Add to wishlist'}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ));
                                         })}

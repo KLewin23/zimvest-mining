@@ -1,14 +1,12 @@
 import axios from 'axios';
 import Head from 'next/head';
 // eslint-disable-next-line import/no-named-default
-import { default as NextImage } from 'next/image';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useDropzone } from 'react-dropzone';
 import React, { useCallback, useState } from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { FaImage } from 'react-icons/fa';
 import styles from '../../styles/profile.module.scss';
 import {
     ChangePassword,
@@ -24,15 +22,15 @@ import {
     Modal,
     Page,
     productExtendedSidebarLayout,
+    ProfileItem,
     Select,
     serviceExtendedSidebarLayout,
     User,
     userApiUrl,
-    UserProductPrice,
     UserProducts,
-    UserProductSalary,
 } from '../../components';
 import ManageAccount from '../../components/ManageAccount';
+import UserListing from '../../components/UserListing';
 
 interface Props {
     user: User;
@@ -129,7 +127,7 @@ const Profile = ({
     });
 
     const addToCart = useMutation((vars: { id: number; pageName: string }) =>
-        axios.post(`${userApiUrl}/collection/CART/${vars.pageName.toUpperCase()}?id=${vars.id}`, {}, { withCredentials: true }),
+        axios.post(`${userApiUrl}/collection/CART/${vars.pageName}?id=${vars.id}`, {}, { withCredentials: true }),
     );
 
     const removeCollection = useMutation(
@@ -141,17 +139,13 @@ const Profile = ({
             ),
     );
 
-    const { data: cart, refetch: refetchCart } = useQuery<Collection>(
-        [`Cart`],
-        async () => (await getCollection('CART')) || { products: [], mines: [] },
-        {
-            initialData: initialCart,
-        },
-    );
+    const { data: cart, refetch: refetchCart } = useQuery<Collection>([`Cart`], async () => (await getCollection('CART')) || [], {
+        initialData: initialCart,
+    });
 
     const { data: wishlist, refetch: refetchWishlist } = useQuery<Collection>(
         [`Wishlist`],
-        async () => (await getCollection('WISHLIST')) || { products: [], mines: [] },
+        async () => (await getCollection('WISHLIST')) || [],
         {
             initialData: initialWishlist,
         },
@@ -228,203 +222,72 @@ const Profile = ({
         },
     });
 
-    const createItem = (
-        { title, image_id, supplier: { email }, price }: { title: string; supplier: { email: string }; price: number; image_id?: string },
-        add?: { fn: () => void; test: () => boolean },
-        remove?: { fn: () => void; test: () => boolean },
-    ) => {
-        return (
-            <div key={title}>
-                <NextImage
-                    width={160}
-                    height={90}
-                    src={
-                        image_id
-                            ? `https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${image_id}/public`
-                            : 'https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/2e3a5e35-2fbe-402a-9e5c-f19a60f85900/public'
-                    }
-                />
-                <div className={styles.text}>
-                    <h3>{title}</h3>
-                    <p>{email}</p>
-                    <p>
-                        <span>${price}</span>
-                    </p>
-                </div>
-                <div className={styles.buttons}>
-                    {add ? (
-                        <button
-                            type={'button'}
-                            className={`${styles.addToCart} ${add.test() ? styles.loading : ''}`}
-                            onClick={() => add.fn()}
-                        >
-                            Add to cart
-                        </button>
-                    ) : null}
-                    {remove ? (
-                        <button
-                            type={'button'}
-                            className={`${styles.productsRemove} ${remove.test() ? styles.loading : ''}`}
-                            onClick={() => remove.fn()}
-                        >
-                            Remove
-                        </button>
-                    ) : null}
-                </div>
-            </div>
-        );
-    };
-
     const getCartComponent = () => {
-        if (!cart || (cart && cart.products.length === 0 && cart.mines.length === 0)) return <h3>You have no items in your cart.</h3>;
-        const products = cart.products.map(product =>
-            createItem(product, undefined, {
-                fn: () =>
-                    removeCollection.mutate(
-                        { id: product.id, pageName: 'product', collectionType: 'CART' },
-                        {
-                            onSuccess: async () => {
-                                await refetchCart();
-                                await reFetchCartCount();
+        if (!cart || (cart && cart.length === 0)) return <h3>You have no items in your cart.</h3>;
+        return cart.map(item => (
+            <ProfileItem
+                item={item}
+                remove={{
+                    fn: () =>
+                        removeCollection.mutate(
+                            { id: item.id, pageName: item.itemType, collectionType: 'CART' },
+                            {
+                                onSuccess: async () => {
+                                    await refetchCart();
+                                    await reFetchCartCount();
+                                },
                             },
-                        },
-                    ),
-                test: () =>
-                    removeCollection.variables?.id === product.id &&
-                    removeCollection.isLoading &&
-                    removeCollection.variables.pageName === 'product',
-            }),
-        );
-        const mines = cart.mines.map(mine =>
-            createItem(mine, undefined, {
-                fn: () =>
-                    removeCollection.mutate(
-                        { id: mine.id, pageName: 'mine', collectionType: 'CART' },
-                        {
-                            onSuccess: async () => {
-                                await refetchCart();
-                                await reFetchCartCount();
-                            },
-                        },
-                    ),
-                test: () =>
-                    removeCollection.variables?.id === mine.id &&
-                    removeCollection.isLoading &&
-                    removeCollection.variables.pageName === 'mine' &&
-                    removeCollection.variables.collectionType === 'CART',
-            }),
-        );
-        return (
-            <>
-                {products}
-                {mines}
-            </>
-        );
+                        ),
+                    test: () =>
+                        removeCollection.variables?.id === item.id &&
+                        removeCollection.isLoading &&
+                        removeCollection.variables.pageName === item.itemType,
+                }}
+            />
+        ));
     };
 
     const getWishlistComponent = () => {
-        if (!wishlist || (wishlist && wishlist.products.length === 0 && wishlist.mines.length === 0))
-            return <h3>You have no items in your wishlist.</h3>;
-        const products = wishlist.products.map(product =>
-            createItem(
-                product,
-                cart && cart.products && cart.products.every(p => p.id !== product.id)
-                    ? {
-                          fn: () =>
-                              addToCart.mutate(
-                                  { id: product.id, pageName: 'product' },
-                                  {
-                                      onSuccess: async () => {
-                                          await refetchCart();
-                                          await reFetchCartCount();
-                                          setOpenedTab('Cart');
+        if (!wishlist || (wishlist && wishlist.length === 0)) return <h3>You have no items in your wishlist.</h3>;
+        return wishlist.map(item => (
+            <ProfileItem
+                item={item}
+                add={
+                    cart && cart.every(p => p.id !== item.id)
+                        ? {
+                              fn: () =>
+                                  addToCart.mutate(
+                                      { id: item.id, pageName: item.itemType },
+                                      {
+                                          onSuccess: async () => {
+                                              await refetchCart();
+                                              await reFetchCartCount();
+                                              setOpenedTab('Cart');
+                                          },
                                       },
-                                  },
-                              ),
-                          test: () =>
-                              addToCart.variables?.id === product.id && addToCart.variables?.pageName === 'product' && addToCart.isLoading,
-                      }
-                    : undefined,
-                {
+                                  ),
+                              test: () =>
+                                  addToCart.variables?.id === item.id &&
+                                  addToCart.variables?.pageName === item.itemType &&
+                                  addToCart.isLoading,
+                          }
+                        : undefined
+                }
+                remove={{
                     fn: () =>
                         removeCollection.mutate(
-                            { id: product.id, collectionType: 'WISHLIST', pageName: 'product' },
+                            { id: item.id, collectionType: 'WISHLIST', pageName: item.itemType },
                             { onSuccess: () => refetchWishlist() },
                         ),
                     test: () =>
-                        removeCollection.variables?.id === product.id &&
-                        removeCollection.variables?.pageName === 'product' &&
+                        removeCollection.variables?.id === item.id &&
+                        removeCollection.variables?.pageName === item.itemType &&
                         removeCollection.variables?.collectionType === 'WISHLIST' &&
                         removeCollection.isLoading,
-                },
-            ),
-        );
-        const mines = wishlist.mines.map(mine =>
-            createItem(
-                mine,
-                cart && cart.mines && cart.mines.every(m => m.id !== mine.id)
-                    ? {
-                          fn: () => addToCart.mutate({ id: mine.id, pageName: 'mine' }),
-                          test: () =>
-                              addToCart.variables?.id === mine.id && addToCart.variables?.pageName === 'mine' && addToCart.isLoading,
-                      }
-                    : undefined,
-                {
-                    fn: () => removeCollection.mutate({ id: mine.id, collectionType: 'WISHLIST', pageName: 'mine' }),
-                    test: () =>
-                        removeCollection.variables?.id === mine.id &&
-                        removeCollection.variables?.pageName === 'mine' &&
-                        removeCollection.variables?.collectionType === 'WISHLIST' &&
-                        removeCollection.isLoading,
-                },
-            ),
-        );
-        return (
-            <>
-                {products}
-                {mines}
-            </>
-        );
-    };
-
-    const userListings = (items: UserProductPrice[] | UserProductSalary[], pageName: MarketplacePage) =>
-        items.map(item => (
-            <div key={item.title}>
-                {item.image_id ? (
-                    <NextImage src={`https://imagedelivery.net/RwHbfJFaRWbC2holDi8g-w/${item.image_id}/public`} />
-                ) : (
-                    <FaImage size={100} color={'#E5E5E5'} />
-                )}
-                <div className={styles.text}>
-                    <h3>{item.title}</h3>
-                    <p>
-                        Views: <span>{item.views || 0}</span>
-                    </p>
-
-                    {'price' in item ? (
-                        <p>
-                            Price:
-                            <span> ${item?.price}</span>
-                        </p>
-                    ) : null}
-                    {'salary' in item ? (
-                        <p>
-                            Salary:
-                            <span> ${item?.salary}</span>
-                        </p>
-                    ) : null}
-                </div>
-                <div>
-                    <button
-                        type={'button'}
-                        className={`${styles.productsRemove} ${destroyListing.isLoading ? styles.loading : ''}`}
-                        onClick={() => destroyListing.mutate({ id: item.id, pageName })}
-                    >
-                        Delete
-                    </button>
-                </div>
-            </div>
+                }}
+            />
         ));
+    };
 
     /* endregion functions */
     return (
@@ -602,7 +465,7 @@ const Profile = ({
                             <h2>Cart</h2>
                             {checkout.isSuccess ? <h3>Emails about your inquiries successfully sent</h3> : getCartComponent()}
 
-                            {(cart?.products.length || 0) + (cart?.mines.length || 0) !== 0 ? (
+                            {cart && cart.length !== 0 ? (
                                 <button
                                     type={'button'}
                                     onClick={() =>
@@ -661,10 +524,14 @@ const Profile = ({
                                 <h3>You have no products currently</h3>
                             ) : (
                                 <>
-                                    {userListings(userProducts?.products || [], 'product')}
-                                    {userListings(userProducts?.mines || [], 'mine')}
-                                    {userListings(userProducts?.vacancies || [], 'vacancy')}
-                                    {userListings(userProducts?.services || [], 'service')}
+                                    <UserListing items={userProducts?.products || []} pageName={'product'} deleteListing={destroyListing} />
+                                    <UserListing items={userProducts?.mines || []} pageName={'mine'} deleteListing={destroyListing} />
+                                    <UserListing
+                                        items={userProducts?.vacancies || []}
+                                        pageName={'vacancy'}
+                                        deleteListing={destroyListing}
+                                    />
+                                    <UserListing items={userProducts?.services || []} pageName={'service'} deleteListing={destroyListing} />
                                 </>
                             )}
                         </div>
@@ -704,7 +571,7 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
             initialUserProducts: products,
             ...user.props,
             wishlist: wishlist || undefined,
-            initialCartCount: (cart?.products.length || 0) + (cart?.mines.length || 0),
+            initialCartCount: cart?.length || 0,
         },
     };
 };

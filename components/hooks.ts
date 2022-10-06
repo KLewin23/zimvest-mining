@@ -30,10 +30,7 @@ export const useWindowWidth = () => {
 export const useWishlist = (pageName: MarketplacePage, initialWishlist?: Collection, enabled?: boolean) => {
     const wishlist = useQuery<Collection | null>(
         [`${pageName}-Wishlist`],
-        async () =>
-            pageName === 'product' || pageName === 'mine'
-                ? (await getCollection('WISHLIST', {}, pageName)) || { products: [], mines: [] }
-                : { products: [], mines: [] },
+        () => getCollection('WISHLIST', {}, pageName) || { products: [], mines: [], services: [], vacancies: [] },
         {
             ...(initialWishlist && { initialData: initialWishlist }),
             enabled,
@@ -42,7 +39,9 @@ export const useWishlist = (pageName: MarketplacePage, initialWishlist?: Collect
 
     const addToWishlist = useMutation(
         (id: number) => axios.post(`${userApiUrl}/collection/WISHLIST/${pageName}?id=${id}`, {}, { withCredentials: true }),
-        { onSuccess: () => wishlist.refetch() },
+        {
+            onSuccess: () => wishlist.refetch(),
+        },
     );
 
     const removeFromWishlist = useMutation(
@@ -90,15 +89,15 @@ export const useCartCount = (pageName: MarketplacePage, initialCartCount: number
 export const useCart = (pageName: MarketplacePage, initialCart?: Collection | number) => {
     const { data: cart, refetch } = useQuery<Collection>(
         [`${pageName}-Cart`],
-        async () => (await getCollection('CART', {}, pageName)) || { products: [], mines: [] },
+        async () => (await getCollection('CART', {}, pageName)) || [],
         {
-            initialData: typeof initialCart === 'number' ? { products: [], mines: [] } : initialCart,
+            initialData: typeof initialCart === 'number' ? [] : initialCart,
             enabled: typeof initialCart !== 'number',
         },
     );
     const { cartCount, addToCart, removeFromCart } = useCartCount(
         pageName,
-        typeof initialCart === 'number' ? initialCart : (initialCart?.products.length || 0) + (initialCart?.mines.length || 0),
+        typeof initialCart === 'number' ? initialCart : initialCart?.length || 0,
         () => refetch(),
     );
 

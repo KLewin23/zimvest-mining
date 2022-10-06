@@ -1,7 +1,8 @@
 import React from 'react';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import {
-    getCollectionCount,
+    Collection,
+    getCollection,
     getItems,
     getUserInfo,
     Joined,
@@ -14,16 +15,18 @@ import {
 interface Props {
     user?: User;
     services: Joined<MarketplaceService>[];
-    cartCount?: number;
+    cart?: Collection;
+    wishlist?: Collection;
 }
 
-const Services = ({ user, services, cartCount }: Props): JSX.Element => {
+const Services = ({ user, services, cart, wishlist }: Props): JSX.Element => {
     return (
         <Marketplace
             pageName={'service'}
             user={user}
             items={services}
-            initialCart={cartCount}
+            initialCart={cart}
+            initialWishlist={wishlist}
             sideBarLayout={serviceExtendedSidebarLayout}
         />
     );
@@ -34,15 +37,15 @@ export default Services;
 export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
     const user = await getUserInfo(req, {});
     const services = await getItems<MarketplaceService>('service', 1, 'Popularity', []);
-    const cartCount = 'props' in user ? await getCollectionCount('CART', { headers: { cookie: req.headers.cookie || '' } }) : undefined;
-
-    console.log(services);
+    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'service');
+    const cart = await getCollection('CART', { headers: { cookie: req.headers.cookie || '' } });
 
     return {
         props: {
             services,
             ...(user && 'props' in user ? user.props : undefined),
-            ...(cartCount && { cartCount }),
+            wishlist: wishlist || [],
+            cart: cart || [],
         },
     };
 };

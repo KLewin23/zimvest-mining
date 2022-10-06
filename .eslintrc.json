@@ -42,6 +42,7 @@
         "@typescript-eslint/no-explicit-any": "warn",
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "error",
+        "spaced-comment": "warn",
         "react/function-component-definition": [
             // https://github.com/airbnb/javascript/issues/2505 issue causing functions to be used
             "warn",

@@ -203,6 +203,7 @@
             background-color: #f49232;
             max-width: 200px;
             margin: auto;
+            color: white;
         }
         > div {
             @include index.flex-row;
