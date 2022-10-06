@@ -128,19 +128,13 @@ const Item = ({ user, initialCartCount, item, pageName, initialWishlist, initial
                                                 }`}
                                                 onClick={async () => {
                                                     if (!wishlist) return undefined;
-                                                    if (
-                                                        wishlist?.products.some(i => i.id === item.id) ||
-                                                        wishlist?.mines.some(i => i.id === item.id)
-                                                    ) {
+                                                    if (wishlist?.some(i => i.id === item.id)) {
                                                         return removeFromWishlist.mutate(item.id);
                                                     }
                                                     return addToWishlist.mutate(item.id);
                                                 }}
                                             >
-                                                {wishlist?.products.some(i => i.id === item.id) ||
-                                                wishlist?.mines.some(i => i.id === item.id)
-                                                    ? 'Remove from wishlist'
-                                                    : 'Add to wishlist'}
+                                                {wishlist?.some(i => i.id === item.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                                             </button>
                                         </>
                                     ) : (
