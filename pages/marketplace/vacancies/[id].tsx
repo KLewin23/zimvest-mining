@@ -4,18 +4,24 @@ import { BasicItemResponse, Collection, getCollection, getInCart, getItem, getUs
 
 interface Props {
     user?: User;
-    service: BasicItemResponse;
+    vacancy: BasicItemResponse;
     wishlist?: Collection;
-    servicesInCart?: Collection;
+    vacanciesInCart?: Collection;
 }
 
-const ServiceItem = ({ user, service, servicesInCart, wishlist }: Props): JSX.Element => {
+const VacancyItem = ({ user, vacancy, wishlist, vacanciesInCart }: Props): JSX.Element => {
     return (
-        <Item pageName={'service'} user={user} initialItemsInCart={servicesInCart?.length || 0} item={service} initialWishlist={wishlist} />
+        <Item
+            pageName={'vacancy'}
+            user={user}
+            item={vacancy}
+            initialWishlist={wishlist}
+            initialItemsInCart={vacanciesInCart?.length || 0}
+        />
     );
 };
 
-export default ServiceItem;
+export default VacancyItem;
 
 export const getServerSideProps = async ({ req, query }: GetServerSidePropsContext) => {
     if (!query.id)
@@ -29,16 +35,16 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
     const id = parseInt(query.id as string, 10);
 
     const user = await getUserInfo(req, { props: {} });
-    const service = await getItem(id, 'service');
-    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'service');
-    const servicesInCart = await getInCart('service', id, { headers: { cookie: req.headers.cookie || '' } });
+    const vacancy = await getItem(id, 'vacancy');
+    const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'vacancy');
+    const vacanciesInCart = await getInCart('vacancy', id, { headers: { cookie: req.headers.cookie || '' } });
 
     return {
         props: {
             ...(user && 'props' in user ? user.props : {}),
-            service,
+            vacancy,
             wishlist,
-            servicesInCart,
+            vacanciesInCart,
         },
     };
 };

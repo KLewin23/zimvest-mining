@@ -71,7 +71,7 @@ export const cloudflareLoader = ({ src, width, quality }: { src: string; width: 
     return `/cdn-cgi/image/${paramsString}/${normalizeSrc(src)}`;
 };
 
-export const getInCart = async (pageName: 'product' | 'mine', id: number, config?: Partial<AxiosRequestConfig>) =>
+export const getInCart = async (pageName: MarketplacePage, id: number, config?: Partial<AxiosRequestConfig>) =>
     (await axios.get(`${userApiUrl}/collection/cart/count/${pageName}/${id}`, { withCredentials: true, ...config })).data;
 
 export const defaultCollection = { products: [], mines: [], services: [], vacancies: [] };

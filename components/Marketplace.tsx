@@ -173,7 +173,11 @@ const Marketplace = <T extends MarketplaceType>({
                                                     />
                                                     <div className={styles.text}>
                                                         <div>
-                                                            <Link href={`/marketplace/${pageName}s/${item.id}`}>
+                                                            <Link
+                                                                href={`/marketplace/${pageName === 'vacancy' ? 'vacancie' : pageName}s/${
+                                                                    item.id
+                                                                }`}
+                                                            >
                                                                 <p className={styles.title}>{item.title}</p>
                                                             </Link>
                                                             <p className={styles.subText}>{itemSubText ? itemSubText(item) : null}</p>

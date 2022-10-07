@@ -27,20 +27,14 @@ const Item = ({ user, initialCartCount, item, pageName, initialWishlist, initial
     const { data: itemsInCart, refetch: refetchCart } = useQuery<number>(
         [`Cart`],
         async () => {
-            if (pageName !== 'product' && pageName !== 'mine') return null;
             return (await getInCart(pageName, item.id)).count;
         },
         {
             initialData: initialItemsInCart || 0,
-            enabled: !(pageName !== 'mine' && pageName !== 'product'),
         },
     );
 
-    const { wishlist, addToWishlist, removeFromWishlist } = useWishlist(
-        'product',
-        initialWishlist,
-        !(pageName !== 'mine' && pageName !== 'product'),
-    );
+    const { wishlist, addToWishlist, removeFromWishlist } = useWishlist(pageName, initialWishlist);
 
     return (
         <>
@@ -97,54 +91,41 @@ const Item = ({ user, initialCartCount, item, pageName, initialWishlist, initial
                             <div className={styles.buttons}>
                                 <Link href={pageName !== 'vacancy' ? `/marketplace/${pageName}s` : '/marketplace/vacancies'}>Back</Link>
                                 <div>
-                                    {pageName === 'mine' || pageName === 'product' ? (
-                                        <>
-                                            {itemsInCart !== 0 && pageName === 'product' ? (
-                                                <QuantityCounter
-                                                    quantity={itemsInCart || 0}
-                                                    decreaseQuantity={() =>
-                                                        removeFromCart.mutate(item.id, { onSuccess: () => refetchCart() })
-                                                    }
-                                                    increaseQuantity={() => addToCart.mutate(item.id, { onSuccess: () => refetchCart() })}
-                                                />
-                                            ) : null}
+                                    {itemsInCart !== 0 && pageName === 'product' ? (
+                                        <QuantityCounter
+                                            quantity={itemsInCart || 0}
+                                            decreaseQuantity={() => removeFromCart.mutate(item.id, { onSuccess: () => refetchCart() })}
+                                            increaseQuantity={() => addToCart.mutate(item.id, { onSuccess: () => refetchCart() })}
+                                        />
+                                    ) : null}
 
-                                            <button
-                                                type={'button'}
-                                                className={`${styles.addToCart} ${addToCart.isLoading ? styles.loading : ''}`}
-                                                onClick={() => {
-                                                    if (pageName === 'mine' && itemsInCart === 1) {
-                                                        return removeFromCart.mutate(item.id, { onSuccess: () => refetchCart() });
-                                                    }
-                                                    return addToCart.mutate(item.id, { onSuccess: () => refetchCart() });
-                                                }}
-                                            >
-                                                {pageName === 'mine' && itemsInCart === 1 ? 'Remove from cart' : 'Add to cart'}
-                                            </button>
-                                            <button
-                                                type={'button'}
-                                                className={`${styles.wishlistButton} ${
-                                                    addToWishlist.isLoading || removeFromWishlist.isLoading ? styles.loading : ''
-                                                }`}
-                                                onClick={async () => {
-                                                    if (!wishlist) return undefined;
-                                                    if (wishlist?.some(i => i.id === item.id)) {
-                                                        return removeFromWishlist.mutate(item.id);
-                                                    }
-                                                    return addToWishlist.mutate(item.id);
-                                                }}
-                                            >
-                                                {wishlist?.some(i => i.id === item.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <Link href={`mailto:${item.supplier.email}?subject=Zimvest: ${item.title}`}>
-                                            <button type={'button'} className={styles.addToCart}>
-                                                Contact&nbsp;
-                                                {pageName === 'service' ? 'provider' : pageName === 'vacancy' ? 'employer' : 'seller'}
-                                            </button>
-                                        </Link>
-                                    )}
+                                    <button
+                                        type={'button'}
+                                        className={`${styles.addToCart} ${addToCart.isLoading ? styles.loading : ''}`}
+                                        onClick={() => {
+                                            if (pageName !== 'product' && itemsInCart === 1) {
+                                                return removeFromCart.mutate(item.id, { onSuccess: () => refetchCart() });
+                                            }
+                                            return addToCart.mutate(item.id, { onSuccess: () => refetchCart() });
+                                        }}
+                                    >
+                                        {pageName !== 'product' && itemsInCart === 1 ? 'Remove from cart' : 'Add to cart'}
+                                    </button>
+                                    <button
+                                        type={'button'}
+                                        className={`${styles.wishlistButton} ${
+                                            addToWishlist.isLoading || removeFromWishlist.isLoading ? styles.loading : ''
+                                        }`}
+                                        onClick={async () => {
+                                            if (!wishlist) return undefined;
+                                            if (wishlist?.some(i => i.id === item.id)) {
+                                                return removeFromWishlist.mutate(item.id);
+                                            }
+                                            return addToWishlist.mutate(item.id);
+                                        }}
+                                    >
+                                        {wishlist?.some(i => i.id === item.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
