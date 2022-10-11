@@ -216,7 +216,7 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                         <Link href={'/profile/wishlist'}>
                             <h4>Wishlist</h4>
                         </Link>
-                        {user?.role === 'ADMIN' ? (
+                        {user?.role === 'ADMIN' || user?.role === 'SUPER' ? (
                             <Link href={'/administration'}>
                                 <h4>Administration</h4>
                             </Link>
