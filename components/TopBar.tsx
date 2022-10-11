@@ -23,7 +23,6 @@ const TopBar = (): JSX.Element => {
                 ) : null}
 
                 <div>
-                    <h4>USD</h4>
                     <div id={'google_translate_element'} className={styles.translate} />
                 </div>
             </div>

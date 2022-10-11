@@ -17,6 +17,7 @@ import {
     getCollectionCount,
     getProducts,
     getUserInfo,
+    ManageAccount,
     MarketplacePage,
     metals,
     Modal,
@@ -27,10 +28,9 @@ import {
     serviceExtendedSidebarLayout,
     User,
     userApiUrl,
+    UserListing,
     UserProducts,
 } from '../../components';
-import ManageAccount from '../../components/ManageAccount';
-import UserListing from '../../components/UserListing';
 
 interface Props {
     user: User;

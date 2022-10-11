@@ -1,0 +1,40 @@
+@use 'components/index.module';
+
+.background {
+    @include index.flex-col;
+    width: 100%;
+    flex-grow: 1;
+    background-color: #e5e5e5;
+}
+
+.container {
+    @include index.flex-col;
+    background-color: white;
+    min-height: 300px;
+    min-width: 30%;
+    margin: auto;
+    gap: 1rem;
+    border-radius: 10px;
+    padding: 2rem 3rem;
+    button {
+        @include index.button-base;
+        border: none;
+        width: 40%;
+        margin: auto;
+        &:last-child {
+            background-color: #f49232;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, color 0.2s linear;
+            @include index.spinner(white);
+        }
+    }
+}
+
+.titleBar {
+    @include index.flex-row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+
+}

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import { FaCaretDown } from 'react-icons/fa';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdPerson, MdShoppingCart } from 'react-icons/md';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
@@ -58,8 +58,14 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
             ],
         },
         { title: 'Mining Overview', link: '/mining-overview' },
-        // { title: 'Market Prices', link: '/market-prices' },
+        { title: 'Contact Us', link: '/contact' },
     ];
+
+    useEffect(() => {
+        setDropdownOpen(false);
+        document.body.style.height = 'unset';
+        document.body.style.overflowY = 'unset';
+    }, []);
 
     return (
         <div className={styles.main}>
@@ -210,6 +216,11 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                         <Link href={'/profile/wishlist'}>
                             <h4>Wishlist</h4>
                         </Link>
+                        {user?.role === 'ADMIN' ? (
+                            <Link href={'/administration'}>
+                                <h4>Administration</h4>
+                            </Link>
+                        ) : null}
                         {windowWidth <= 600 ? (
                             <Link href={'/profile/cart'}>
                                 <h4>Cart</h4>

@@ -1,0 +1,50 @@
+@use 'components/index.module';
+
+.form {
+    @include index.flex-col;
+    gap: 0.8rem;
+    margin: auto;
+    min-width: 300px;
+    width: 50%;
+    max-width: 600px;
+    input,
+    textarea {
+        @include index.input;
+        width: 100%;
+    }
+    p {
+        margin-bottom: 0.2rem;
+    }
+
+    textarea {
+        resize: none;
+        font-family: 'montserrat', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+            Helvetica Neue, sans-serif;
+        height: 100px;
+        padding: 0.3rem 0.5rem;
+        &:focus {
+            outline: none;
+        }
+    }
+    button {
+        @include index.button-base;
+        position: relative;
+        margin: .5rem auto;
+        background-color: #f49232;
+        border: none;
+        color: white;
+        cursor: pointer;
+        width: 70%;
+        transition: background-color 0.2s ease-in-out, color 0.2s linear;
+        @include index.spinner(white);
+    }
+    .errorMessage {
+        height: 1.5rem;
+        line-height: 2.25rem;
+        font-weight: bold;
+        color: #ec4c4c;
+        &:first-letter {
+            text-transform: capitalize;
+        }
+    }
+}

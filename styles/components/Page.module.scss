@@ -1,8 +1,14 @@
+@use 'index.module';
+
+.main {
+    @include index.flex-col;
+    flex-grow: 1;
+}
+
 .container {
     position: relative;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
+    @include index.flex-row;
+    flex-grow: 1;
 }
 
 .widget {
@@ -14,7 +20,7 @@
     height: 35px;
     min-height: 35px;
     overflow: hidden;
-    background-color: #1E222D;
+    background-color: #1e222d;
 }
 
 @media only screen and (max-width: 1119px) {

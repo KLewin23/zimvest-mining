@@ -15,9 +15,3 @@ export const Document = () => {
 };
 
 export default Document;
-
-//         <script
-//                     type={'text/javascript'}
-//                     src={'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'}
-//                     async
-//                 />

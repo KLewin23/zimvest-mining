@@ -207,6 +207,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-table@^7.7.12":
+  version "7.7.12"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.7.12.tgz#628011d3cb695b07c678704a61f2f1d5b8e567fd"
+  integrity sha512-bRUent+NR/WwtDGwI/BqhZ8XnHghwHw0HUKeohzB5xN3K2qKWYE5w19e7GCuOkL1CXD9Gi1HFy7TIm2AvgWUHg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@18.0.14":
   version "18.0.14"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.14.tgz#e016616ffff51dba01b04945610fe3671fdbe06d"
@@ -570,6 +577,11 @@ damerau-levenshtein@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz#b43d286ccbd36bc5b2f7ed41caf2d0aba1f8a6e7"
   integrity sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==
+
+date-fns@^2.29.3:
+  version "2.29.3"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
+  integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
 
 debug@^2.6.9:
   version "2.6.9"
@@ -1844,6 +1856,11 @@ react-responsive-carousel@^3.2.23:
     classnames "^2.2.5"
     prop-types "^15.5.8"
     react-easy-swipe "^0.0.21"
+
+react-table@^7.8.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.8.0.tgz#07858c01c1718c09f7f1aed7034fcfd7bda907d2"
+  integrity sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==
 
 react-ts-tradingview-widgets@^1.0.11:
   version "1.0.11"

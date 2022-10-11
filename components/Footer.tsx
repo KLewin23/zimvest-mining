@@ -51,10 +51,14 @@ const Footer = (): JSX.Element => {
             </div>
             <div className={styles.badges}>
                 <Link href={'https://apps.apple.com/zw/app/zimvest-mobile/id1591476024'}>
-                    <Image src={AppleBadge} layout={'fixed'} width={160} height={54} />
+                    <div>
+                        <Image src={AppleBadge} layout={'fixed'} width={160} height={54} />
+                    </div>
                 </Link>
                 <Link href={'https://play.google.com/store/apps/details?id=zw.co.iamngoni.zimvest'}>
-                    <Image src={GoogleBadge} layout={'fixed'} width={160} height={48} />
+                    <div>
+                        <Image src={GoogleBadge} layout={'fixed'} width={160} height={48} />
+                    </div>
                 </Link>
             </div>
         </footer>

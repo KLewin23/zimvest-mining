@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { FaSortAmountDown } from 'react-icons/fa';
@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useInfiniteQuery } from 'react-query';
+import { MdKeyboardArrowUp } from 'react-icons/md';
 import { useInView } from 'react-intersection-observer';
 import type { Collection, ItemSelectorTab, Joined, MarketplacePage, MarketplaceType, ProductSideBarValues, User } from './types';
 import styles from '../styles/components/Marketplace.module.scss';
@@ -13,8 +14,9 @@ import { getItems } from './utils';
 import Page from './Page';
 import Select from './Select';
 import ItemSelector from './ItemSelector';
-import { useCart, useWishlist } from './hooks';
+import { useCart, useEventListener, useWishlist } from './hooks';
 import QuantityCounter from './QuantityCounter';
+import Notification from './Notification';
 
 interface FormValues extends ProductSideBarValues {
     'Sort By': string;
@@ -67,6 +69,7 @@ const Marketplace = <T extends MarketplaceType>({
         defaultValues: { 'Sort By': 'Popularity', ...defaultFilters(query.type as string) },
     });
     const { watch, getValues } = formMethods;
+    const [showScrollToTop, setShowScrollToTop] = useState(false);
 
     const {
         data: items,
@@ -115,6 +118,11 @@ const Marketplace = <T extends MarketplaceType>({
         })();
     }, [fetchNextPage, inView, items, refetchItems]);
 
+    useEventListener('scroll', () => {
+        if (window.scrollY > window.innerHeight) return setShowScrollToTop(true);
+        return setShowScrollToTop(false);
+    });
+
     const { wishlist, addToWishlist, removeFromWishlist } = useWishlist(pageName, initialWishlist, typeof initialCart === 'number');
     const { cart, addToCart, cartCount, removeFromCart } = useCart(pageName, initialCart);
 
@@ -127,6 +135,9 @@ const Marketplace = <T extends MarketplaceType>({
             </Head>
 
             <Page user={user} withCurrencyWidget withSideBar cartCount={cartCount}>
+                <Notification open={showScrollToTop} onClick={() => window.scrollTo(0, 0)}>
+                    Back to top <MdKeyboardArrowUp size={20} />
+                </Notification>
                 <FormProvider {...formMethods}>
                     <div className={styles.main}>
                         {sideBarLayout ? <ItemSelector itemSelectorLayout={sideBarLayout} /> : null}

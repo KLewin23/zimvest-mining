@@ -36,7 +36,7 @@ const PageLayout = ({ children, user, withSideBar, withCurrencyWidget, cartCount
     );
 
     return (
-        <main>
+        <main className={styles.main}>
             <TopBar />
             <script ref={scriptRef} />
             <NavBar user={user} cartCount={cartCount} />

@@ -59,6 +59,8 @@ export interface ItemSelectorTab {
     tabDefaultState?: boolean;
 }
 
+export type Role = 'ADMIN' | 'SUPER' | 'USER' | undefined;
+
 export interface User {
     id: number;
     email?: string;
@@ -76,7 +78,8 @@ export interface User {
     is_service_provider?: boolean;
     is_investor?: boolean;
     image_id?: string;
-    role?: string;
+    role?: Role;
+    created_at?: string;
 }
 
 export type MarketplacePage = 'product' | 'mine' | 'service' | 'vacancy';
@@ -123,7 +126,7 @@ export type Joined<T extends MarketplaceType> = T & {
     supplier: Partial<User>;
 };
 
-export type ServerResponse<P> = { props: P | Promise<P> } | { redirect: Redirect };
+export type ServerResponse<P> = { props: P } | { redirect: Redirect };
 
 interface CollectionItem {
     id: number;
@@ -204,3 +207,49 @@ export type BasicItemResponse = {
 } & ({ salary: number } | { price: number });
 
 export type MineItemResponse = BasicItemResponse & MineItem;
+
+export interface StrippedUser {
+    id: number;
+    name: string;
+    email: string;
+    role: 'SUPER' | 'ADMIN' | 'USER';
+}
+
+export interface UsersResult {
+    users: StrippedUser[];
+    pages: number;
+}
+
+export type ItemStripped = {
+    id: number;
+    title: string;
+    views: number;
+    value: number;
+};
+
+export interface ListingsResult {
+    listings: ItemStripped[];
+    pages: number;
+}
+
+export interface DbMessage {
+    id: number;
+    email: string;
+    message: string;
+    title: string;
+    read: boolean;
+    createdAt: string;
+    modifiedAt: string;
+}
+
+export interface StrippedMessage {
+    id: number;
+    title: string;
+    email: string;
+    read: boolean;
+}
+
+export interface MessageResult {
+    messages: StrippedMessage[];
+    pages: number;
+}

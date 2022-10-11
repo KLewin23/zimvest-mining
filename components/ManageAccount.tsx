@@ -11,7 +11,7 @@ import { FaGlobe, FaImage, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { AccountFormValues, User } from './types';
 import { fetchUser, userApiUrl } from './utils';
 import styles from '../styles/profile.module.scss';
-import { Modal } from './index';
+import Modal from './Modal';
 
 interface Props {
     initialUser: User;
