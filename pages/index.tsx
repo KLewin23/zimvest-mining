@@ -36,7 +36,7 @@ const Home: NextPage<Props> = ({ user, cartCount }: Props) => {
                     <div className={styles.banner}>
                         <Carousel showArrows showThumbs={false} showIndicators={false} showStatus={false} infiniteLoop autoPlay>
                             <div>
-                                <Image src={LandscapeBanner1} />
+                                <Image src={LandscapeBanner1} priority />
                             </div>
                             <div>
                                 <Image src={LandscapeBanner2} />

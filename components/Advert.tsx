@@ -10,7 +10,7 @@ const Advert = (): JSX.Element => {
         <div className={styles.advert}>
             <Carousel showArrows={false} showThumbs={false} showIndicators={false} showStatus={false} infiniteLoop autoPlay>
                 <div>
-                    <Image src={Advert1} />
+                    <Image src={Advert1} priority />
                 </div>
                 <div>
                     <Image src={Advert2} />
