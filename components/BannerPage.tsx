@@ -14,8 +14,10 @@ const BannerPage = ({ heading, subHeading, children }: Props): JSX.Element => {
         <div className={styles.main}>
             <div className={styles.banner}>
                 <div className={styles.title}>
-                    <h1>{heading}</h1>
-                    <p>{subHeading}</p>
+                    <div>
+                        <h1>{heading}</h1>
+                        <p>{subHeading}</p>
+                    </div>
                 </div>
                 <div className={styles.image}>
                     <Image src={Background1} layout={'responsive'} />

@@ -6,21 +6,29 @@
         position: relative;
         display: flex;
         align-items: center;
+        justify-content: center;
         overflow: hidden;
         max-height: 350px;
         > div {
+            height: 100%;
             width: 100%;
         }
         .title {
             position: absolute;
             @include index.flex-col;
             align-items: center;
+            justify-content: center;
             gap: 1rem;
             color: white;
             left: 50%;
             top: 50%;
             z-index: 20;
             transform: translate(-50%, -50%);
+            >div {
+                @include index.flex-col;
+                align-items: center;
+                gap: 1rem;
+            }
             p {
                 text-align: center;
             }
@@ -28,6 +36,7 @@
         .image {
             filter: brightness(0.3);
             z-index: 10;
+            min-width: 750px;
         }
     }
     .content {

@@ -14,10 +14,12 @@ import { userApiUrl } from './utils';
 
 interface Tab {
     title: string;
-    link: string;
+    link?: string;
+    action?: () => void;
+    condition?: boolean;
 }
 
-type NavTabs = Array<Tab | { title: string; subList: Array<Tab> }>;
+type NavTabs = Array<Tab | { title: string; subList: Array<Tab>; condition?: boolean }>;
 
 interface Props {
     user?: User;
@@ -45,6 +47,8 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
         }
     });
 
+    console.log(user);
+
     const nav: NavTabs = [
         { title: 'Home', link: '/' },
         { title: 'About Us', link: '/about' },
@@ -59,6 +63,22 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
         },
         { title: 'Mining Overview', link: '/mining-overview' },
         { title: 'Contact Us', link: '/contact' },
+        {
+            title: 'Login / Signup',
+            link: 'login',
+            condition: windowWidth <= 600 && user === undefined,
+        },
+        {
+            title: 'My Account',
+            subList: [
+                { title: 'Profile', link: '/profile' },
+                { title: 'My Products', link: '/profile/products' },
+                { title: 'Wishlist', link: '/profile/wishlist' },
+                { title: 'Administration', link: '/profile/products' },
+                { title: 'Logout', action: () => logout.mutate() },
+            ],
+            condition: windowWidth <= 600 && user !== undefined,
+        },
     ];
 
     useEffect(() => {
@@ -89,14 +109,16 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                     </button>
                     <div className={styles.dropdown} style={{ height: dropdownOpen ? ' calc(100vh - 110px)' : 0 }}>
                         {nav.map(tab => {
-                            if ('link' in tab) {
+                            console.log(tab);
+                            console.log('condition' in tab ? tab.condition : true);
+                            if ('link' in tab && tab.link && ('condition' in tab ? tab.condition : true)) {
                                 return (
                                     <Link key={tab.title} href={tab.link}>
                                         {tab.title}
                                     </Link>
                                 );
                             }
-                            return (
+                            return 'subList' in tab && tab.subList && ('condition' in tab ? tab.condition : true) ? (
                                 <div key={tab.title} className={styles.smDropLink}>
                                     <button
                                         id={`${tab.title}-title-btn`}
@@ -121,13 +143,13 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                                         }}
                                     >
                                         {tab.subList.map(subTab => (
-                                            <Link key={subTab.title} href={subTab.link}>
+                                            <Link key={subTab.title} href={subTab.link || ''}>
                                                 {subTab.title}
                                             </Link>
                                         ))}
                                     </div>
                                 </div>
-                            );
+                            ) : null;
                         })}
                     </div>
                 </>
@@ -140,7 +162,7 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
             {windowWidth >= 1120 ? (
                 <nav>
                     {nav.map(tab => {
-                        if ('link' in tab) {
+                        if ('link' in tab && tab.link) {
                             return (
                                 <Link key={tab.title} href={tab.link}>
                                     {tab.title}
@@ -173,11 +195,20 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                                         pointerEvents: tabMenu === tab.title ? 'all' : 'none',
                                     }}
                                 >
-                                    {tab.subList.map(subTab => (
-                                        <Link key={subTab.title} href={subTab.link}>
-                                            {subTab.title}
-                                        </Link>
-                                    ))}
+                                    {'subList' in tab
+                                        ? tab?.subList.map(subTab =>
+                                              subTab.link ? (
+                                                  <Link key={subTab.title} href={subTab.link}>
+                                                      {subTab.title}
+                                                  </Link>
+                                              ) : (
+                                                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+                                                  <div onClick={() => logout.mutate()}>
+                                                      <h4>Log out</h4>
+                                                  </div>
+                                              ),
+                                          )
+                                        : null}
                                 </div>
                             </div>
                         );
@@ -185,54 +216,56 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                 </nav>
             ) : null}
             <div className={styles.endContent}>
-                <button
-                    ref={menuRef}
-                    type={'button'}
-                    className={styles.profile}
-                    onClick={async () => {
-                        if (!user) {
-                            return router.push('/login');
-                        }
-                        return setProfileMenu(true);
-                    }}
-                >
-                    <MdPerson size={25} />
-                    <h4>{user ? `${user.first_name} ${user.last_name}` : 'Login / Sign Up'}</h4>
-                    <div
-                        id={'menu'}
-                        className={styles.menu}
-                        style={
-                            profileMenu
-                                ? { top: '110%', opacity: 1, pointerEvents: 'all' }
-                                : { top: '90%', opacity: 0, pointerEvents: 'none' }
-                        }
+                {windowWidth > 600 ? (
+                    <button
+                        ref={menuRef}
+                        type={'button'}
+                        className={styles.profile}
+                        onClick={async () => {
+                            if (!user) {
+                                return router.push('/login');
+                            }
+                            return setProfileMenu(true);
+                        }}
                     >
-                        <Link href={'/profile'}>
-                            <h4>Profile</h4>
-                        </Link>
-                        <Link href={'/profile/products'}>
-                            <h4>My Products</h4>
-                        </Link>
-                        <Link href={'/profile/wishlist'}>
-                            <h4>Wishlist</h4>
-                        </Link>
-                        {user?.role === 'ADMIN' || user?.role === 'SUPER' ? (
-                            <Link href={'/administration'}>
-                                <h4>Administration</h4>
+                        <MdPerson size={25} />
+                        <h4>{user ? `${user.first_name} ${user.last_name}` : 'Login / Sign Up'}</h4>
+                        <div
+                            id={'menu'}
+                            className={styles.menu}
+                            style={
+                                profileMenu
+                                    ? { top: '110%', opacity: 1, pointerEvents: 'all' }
+                                    : { top: '90%', opacity: 0, pointerEvents: 'none' }
+                            }
+                        >
+                            <Link href={'/profile'}>
+                                <h4>Profile</h4>
                             </Link>
-                        ) : null}
-                        {windowWidth <= 600 ? (
-                            <Link href={'/profile/cart'}>
-                                <h4>Cart</h4>
+                            <Link href={'/profile/products'}>
+                                <h4>My Products</h4>
                             </Link>
-                        ) : null}
+                            <Link href={'/profile/wishlist'}>
+                                <h4>Wishlist</h4>
+                            </Link>
+                            {user?.role === 'ADMIN' || user?.role === 'SUPER' ? (
+                                <Link href={'/administration'}>
+                                    <h4>Administration</h4>
+                                </Link>
+                            ) : null}
+                            {windowWidth <= 600 ? (
+                                <Link href={'/profile/cart'}>
+                                    <h4>Cart</h4>
+                                </Link>
+                            ) : null}
 
-                        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                        <div onClick={() => logout.mutate()}>
-                            <h4>Log out</h4>
+                            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+                            <div onClick={() => logout.mutate()}>
+                                <h4>Log out</h4>
+                            </div>
                         </div>
-                    </div>
-                </button>
+                    </button>
+                ) : null}
                 {user && windowWidth > 600 ? (
                     <Link href={'/profile/cart'}>
                         <div className={styles.cart}>
