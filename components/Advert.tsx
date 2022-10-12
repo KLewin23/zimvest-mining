@@ -2,19 +2,18 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Carousel } from 'react-responsive-carousel';
+import { Advert1, Advert2 } from '../public';
 import styles from '../styles/components/Advert.module.scss';
-import advert1 from '../public/advert/ad1.jpg';
-import advert2 from '../public/advert/ad2.jpg';
 
 const Advert = (): JSX.Element => {
     return (
         <div className={styles.advert}>
             <Carousel showArrows={false} showThumbs={false} showIndicators={false} showStatus={false} infiniteLoop autoPlay>
                 <div>
-                    <Image src={advert1} />
+                    <Image src={Advert1} />
                 </div>
                 <div>
-                    <Image src={advert2} />
+                    <Image src={Advert2} />
                 </div>
             </Carousel>
             <div>

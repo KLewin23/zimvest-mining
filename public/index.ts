@@ -1,8 +1,17 @@
 export { default as Logo } from './logo.svg';
 export { default as WhiteLogo } from './whiteLogo.svg';
 export { default as GoogleIcon } from './Google Icon.svg';
-export { default as Fake } from './fake_1.jpeg';
 export { default as GoogleBadge } from './gogleBadge.svg';
 export { default as AppleBadge } from './appleBadge.svg';
 export { default as Background1 } from './backgrounds/contact-banner.jpg';
 export { default as ServiceProvider1 } from './serviceprovider1.png';
+export { default as Advert1 } from './advert/ad1.jpg';
+export { default as Advert2 } from './advert/ad2.jpg';
+export { default as LandscapeBanner1 } from './banner/zimvest_web-banners_1024x500.jpg';
+export { default as LandscapeBanner2 } from './banner/zimvest_web-banners_1024x5002.jpg';
+export { default as LandscapeBanner3 } from './banner/zimvest_web-banners_1024x5004.jpg';
+export { default as LandscapeBanner4 } from './banner/zimvest_web-banners_1024x5005.jpg';
+export { default as LandscapeBanner5 } from './banner/zimvest_web-banners_1024x5006.jpg';
+export { default as LandscapeBanner6 } from './banner/zimvest_web-banners_1024x5007.jpg';
+export { default as LandscapeBanner7 } from './banner/zimvest_web-banners_1024x5008.jpg';
+export { default as LandscapeBanner8 } from './banner/zimvest_web-banners_1024x5009.jpg';

@@ -5,17 +5,17 @@ import {
     Collapse,
     getCollectionCount,
     getListings,
+    getMessages,
     getUserInfo,
     getUsers,
+    ListingManagement,
     ListingsResult,
+    MessageManagement,
+    MessageResult,
     Page,
     User,
-    UsersResult,
     UserManagement,
-    ListingManagement,
-    MessageManagement,
-    getMessages,
-    MessageResult,
+    UsersResult,
 } from '../../components';
 import styles from '../../styles/administration.module.scss';
 
@@ -85,6 +85,9 @@ export const getServerSideProps = async ({ req }: GetServerSidePropsContext): Pr
         };
     }
     return {
-        props: {},
+        redirect: {
+            destination: '/',
+            permanent: true,
+        },
     };
 };

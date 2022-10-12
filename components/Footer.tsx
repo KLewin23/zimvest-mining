@@ -30,7 +30,7 @@ const Footer = (): JSX.Element => {
                 <Link href={'/mining-overview'}>
                     <h4>Mining Overview</h4>
                 </Link>
-                <Link href={'mailto:info@zimvestmining.com'}>
+                <Link href={'/contact'}>
                     <h4>Contact Us</h4>
                 </Link>
             </div>

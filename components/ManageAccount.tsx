@@ -8,10 +8,10 @@ import { Controller, useForm } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input';
 import { MdFacebook } from 'react-icons/md';
 import { FaGlobe, FaImage, FaTwitter, FaWhatsapp } from 'react-icons/fa';
-import { AccountFormValues, User } from './types';
-import { fetchUser, userApiUrl } from './utils';
-import styles from '../styles/profile.module.scss';
 import Modal from './Modal';
+import { fetchUser, userApiUrl } from './utils';
+import { AccountFormValues, User } from './types';
+import styles from '../styles/profile.module.scss';
 
 interface Props {
     initialUser: User;
@@ -315,5 +315,9 @@ const ManageAccount = ({ initialUser }: Props): JSX.Element => {
         </>
     );
 };
+
+// const Test = ({ initialUser }: Props) => {
+//     return <div>{initialUser.role}</div>;
+// };
 
 export default ManageAccount;

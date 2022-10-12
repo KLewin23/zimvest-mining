@@ -7,14 +7,16 @@ import { Carousel } from 'react-responsive-carousel';
 import styles from '../styles/index.module.scss';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Advert, getCollectionCount, getUserInfo, Page, User } from '../components';
-import landscapeBanner1 from '../public/banner/zimvest_web banners_1024x500.jpg';
-import landscapeBanner2 from '../public/banner/zimvest_web banners_1024x5002.jpg';
-import landscapeBanner3 from '../public/banner/zimvest_web banners_1024x5004.jpg';
-import landscapeBanner4 from '../public/banner/zimvest_web banners_1024x5005.jpg';
-import landscapeBanner5 from '../public/banner/zimvest_web banners_1024x5006.jpg';
-import landscapeBanner6 from '../public/banner/zimvest_web banners_1024x5007.jpg';
-import landscapeBanner7 from '../public/banner/zimvest_web banners_1024x5008.jpg';
-import landscapeBanner8 from '../public/banner/zimvest_web banners_1024x5009.jpg';
+import {
+    LandscapeBanner1,
+    LandscapeBanner2,
+    LandscapeBanner3,
+    LandscapeBanner4,
+    LandscapeBanner5,
+    LandscapeBanner6,
+    LandscapeBanner7,
+    LandscapeBanner8,
+} from '../public';
 
 interface Props {
     user?: User;
@@ -34,28 +36,28 @@ const Home: NextPage<Props> = ({ user, cartCount }: Props) => {
                     <div className={styles.banner}>
                         <Carousel showArrows showThumbs={false} showIndicators={false} showStatus={false} infiniteLoop autoPlay>
                             <div>
-                                <Image src={landscapeBanner1} />
+                                <Image src={LandscapeBanner1} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner2} />
+                                <Image src={LandscapeBanner2} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner3} />
+                                <Image src={LandscapeBanner3} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner4} />
+                                <Image src={LandscapeBanner4} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner5} />
+                                <Image src={LandscapeBanner5} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner6} />
+                                <Image src={LandscapeBanner6} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner7} />
+                                <Image src={LandscapeBanner7} />
                             </div>
                             <div>
-                                <Image src={landscapeBanner8} />
+                                <Image src={LandscapeBanner8} />
                             </div>
                         </Carousel>
                     </div>

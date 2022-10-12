@@ -9,7 +9,8 @@
     "lint": "next lint",
     "prepare": "husky install",
     "snyk": "snyk test",
-    "test": "snyk test"
+    "test": "snyk test",
+    "analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@fontsource/montserrat": "^4.5.11",
@@ -33,6 +34,7 @@
     "react-ts-tradingview-widgets": "^1.0.11"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^12.3.1",
     "@types/axios": "^0.14.0",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
@@ -40,6 +42,7 @@
     "@types/react-phone-number-input": "^3.0.14",
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.16.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "^12.1.6",
