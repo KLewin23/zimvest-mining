@@ -47,8 +47,6 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
         }
     });
 
-    console.log(user);
-
     const nav: NavTabs = [
         { title: 'Home', link: '/' },
         { title: 'About Us', link: '/about' },
@@ -109,8 +107,6 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                     </button>
                     <div className={styles.dropdown} style={{ height: dropdownOpen ? ' calc(100vh - 110px)' : 0 }}>
                         {nav.map(tab => {
-                            console.log(tab);
-                            console.log('condition' in tab ? tab.condition : true);
                             if ('link' in tab && tab.link && ('condition' in tab ? tab.condition : true)) {
                                 return (
                                     <Link key={tab.title} href={tab.link}>
