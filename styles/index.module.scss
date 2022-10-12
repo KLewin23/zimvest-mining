@@ -16,5 +16,6 @@
     .main {
         @include index.flex-col;
         align-items: center;
+        min-height: unset // temp fix
     }
 }
