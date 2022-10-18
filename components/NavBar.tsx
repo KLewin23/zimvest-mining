@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import { FaCaretDown } from 'react-icons/fa';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MdPerson, MdShoppingCart } from 'react-icons/md';
 import { Logo } from '../public';
 import styles from '../styles/components/NavBar.module.scss';
@@ -47,37 +47,41 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
         }
     });
 
-    const nav: NavTabs = [
-        { title: 'Home', link: '/' },
-        { title: 'About Us', link: '/about' },
-        {
-            title: 'Marketplace',
-            subList: [
-                { title: 'Products', link: '/marketplace/products' },
-                { title: 'Mines', link: '/marketplace/mines' },
-                { title: 'Services', link: '/marketplace/services' },
-                { title: 'Vacancies', link: '/marketplace/vacancies' },
-            ],
-        },
-        { title: 'Mining Overview', link: '/mining-overview' },
-        { title: 'Contact Us', link: '/contact' },
-        {
-            title: 'Login / Signup',
-            link: 'login',
-            condition: windowWidth <= 600 && user === undefined,
-        },
-        {
-            title: 'My Account',
-            subList: [
-                { title: 'Profile', link: '/profile' },
-                { title: 'My Products', link: '/profile/products' },
-                { title: 'Wishlist', link: '/profile/wishlist' },
-                { title: 'Administration', link: '/profile/products' },
-                { title: 'Logout', action: () => logout.mutate() },
-            ],
-            condition: windowWidth <= 600 && user !== undefined,
-        },
-    ];
+    const nav: NavTabs = useMemo(
+        () => [
+            { title: 'Home', link: '/' },
+            { title: 'About Us', link: '/about' },
+            {
+                title: 'Marketplace',
+                subList: [
+                    { title: 'Products', link: '/marketplace/products' },
+                    { title: 'Mines', link: '/marketplace/mines' },
+                    { title: 'Services', link: '/marketplace/services' },
+                    { title: 'Vacancies', link: '/marketplace/vacancies' },
+                ],
+            },
+            { title: 'Mining Overview', link: '/mining-overview' },
+            { title: 'Market Data', link: '/market-data' },
+            { title: 'Contact Us', link: '/contact' },
+            {
+                title: 'Login / Signup',
+                link: 'login',
+                condition: windowWidth <= 600 && user === undefined,
+            },
+            {
+                title: 'My Account',
+                subList: [
+                    { title: 'Profile', link: '/profile' },
+                    { title: 'My Products', link: '/profile/products' },
+                    { title: 'Wishlist', link: '/profile/wishlist' },
+                    { title: 'Administration', link: '/profile/products' },
+                    { title: 'Logout', action: () => logout.mutate() },
+                ],
+                condition: windowWidth <= 600 && user !== undefined,
+            },
+        ],
+        [logout, user, windowWidth],
+    );
 
     useEffect(() => {
         setDropdownOpen(false);
@@ -158,14 +162,14 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
             {windowWidth >= 1120 ? (
                 <nav>
                     {nav.map(tab => {
-                        if ('link' in tab && tab.link) {
+                        if ('link' in tab && tab.link && ('condition' in tab ? tab.condition : true)) {
                             return (
                                 <Link key={tab.title} href={tab.link}>
                                     {tab.title}
                                 </Link>
                             );
                         }
-                        return (
+                        return ('condition' in tab ? tab.condition : true) ? (
                             <div
                                 key={tab.title}
                                 className={styles.dropLink}
@@ -207,7 +211,7 @@ const NavBar = ({ user, cartCount }: Props): JSX.Element => {
                                         : null}
                                 </div>
                             </div>
-                        );
+                        ) : null;
                     })}
                 </nav>
             ) : null}

@@ -37,8 +37,16 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
 
     const id = parseInt(query.id as string, 10);
 
-    const user = await getUserInfo(req, { props: {} });
+    const user = await getUserInfo(req, null);
     const product = await getItem(id, 'product');
+
+    if (!user)
+        return {
+            props: {
+                product,
+            },
+        };
+
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'product');
     const productsInCart = await getInCart('product', id, { headers: { cookie: req.headers.cookie || '' } });
 

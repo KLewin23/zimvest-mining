@@ -28,8 +28,14 @@ export const getServerSideProps = async ({ req, query }: GetServerSidePropsConte
 
     const id = parseInt(query.id as string, 10);
 
-    const user = await getUserInfo(req, { props: {} });
+    const user = await getUserInfo(req, null);
     const service = await getItem(id, 'service');
+    if (!user)
+        return {
+            props: {
+                service,
+            },
+        };
     const wishlist = await getCollection('WISHLIST', { headers: { cookie: req.headers.cookie || '' } }, 'service');
     const servicesInCart = await getInCart('service', id, { headers: { cookie: req.headers.cookie || '' } });
 
