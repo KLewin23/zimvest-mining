@@ -18,5 +18,6 @@ RUN yarn global add pm2
 COPY --chown=node:node --from=builder /app ./
 RUN yarn install --production
 RUN yarn global add pm2
+USER node
 EXPOSE 3000
 ENTRYPOINT ["pm2-runtime", "./process.yml"]

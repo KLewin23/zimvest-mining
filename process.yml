@@ -2,5 +2,5 @@ apps:
   - name: Zimvest-mining-ui
     exec_mode: cluster
     instances: max
-    "script": "npm"
-    "args" : "start"
+    script: "npm"
+    args : "start"
