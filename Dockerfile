@@ -20,4 +20,4 @@ RUN yarn install --production
 RUN yarn global add pm2
 USER node
 EXPOSE 3000
-ENTRYPOINT ["pm2-runtime", "./process.yml"]
+ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js"]
