@@ -38,14 +38,14 @@ const MarketData = ({ user, cartCount, gold }: Props): JSX.Element => {
     );
 
     const primaryAxis = useMemo(
-        (): AxisOptions<Metal> => ({
-            getValue: datum => new Date(datum.createdAt),
+        (): AxisOptions<unknown> => ({
+            getValue: datum => new Date((datum as Metal).createdAt),
         }),
         [],
     );
 
     const secondaryAxes = useMemo(
-        (): AxisOptions<Metal>[] => [
+        (): AxisOptions<unknown>[] => [
             {
                 getValue: datum => 1 / (datum as Metal).price,
             },
