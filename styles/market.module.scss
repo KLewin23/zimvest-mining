@@ -1,0 +1,11 @@
+@use 'components/index.module';
+.market {
+    @include index.flex-row;
+    max-width: 1500px;
+    margin: auto;
+}
+
+.chart {
+    min-height: 300px;
+    aspect-ratio: 1.3;
+}

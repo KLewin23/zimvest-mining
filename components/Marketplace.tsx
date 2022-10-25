@@ -10,7 +10,7 @@ import { MdKeyboardArrowUp } from 'react-icons/md';
 import { useInView } from 'react-intersection-observer';
 import type { Collection, ItemSelectorTab, Joined, MarketplacePage, MarketplaceType, ProductSideBarValues, User } from './types';
 import styles from '../styles/components/Marketplace.module.scss';
-import { getItems } from './utils';
+import { getItems, keys } from './utils';
 import Page from './Page';
 import Select from './Select';
 import ItemSelector from './ItemSelector';
@@ -31,8 +31,6 @@ type Props<T extends MarketplaceType> = {
     initialWishlist?: Collection;
     initialCart?: Collection | number;
 };
-
-export const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];
 
 const defaultFilters = (param: string): ProductSideBarValues | object => {
     switch (param) {

@@ -127,3 +127,5 @@ export const getMessages = async (page: number, config?: Partial<AxiosRequestCon
         pages: messageResponse.pages,
     };
 };
+
+export const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];

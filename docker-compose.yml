@@ -1,16 +1,14 @@
 services:
   ui:
     image: index.docker.io/kieranwifinitive/zimvest-mining:latest
-    container_name: zimvest-mining
+    container_name: zimvest
     env_file:
       - ./.env
-    ports:
-      - '3000:3000'
     restart: always
   web_server:
     image: nginx
     container_name: zimvest_webserver
     volumes:
-      - /host/path/nginx.conf:/nginx.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      - '8080:80'
+      - 80:80

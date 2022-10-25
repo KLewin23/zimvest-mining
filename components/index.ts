@@ -42,9 +42,10 @@ export {
     defaultCollection,
     getMessages,
     getListings,
+    keys,
 } from './utils';
 export { useEventListener, useWindowWidth, useCartCount } from './hooks';
-export { metals, productExtendedSidebarLayout, serviceExtendedSidebarLayout } from './data';
+export { metals, productExtendedSidebarLayout, serviceExtendedSidebarLayout, metalsMap } from './data';
 export { default as Advert } from './Advert';
 export { default as BannerPage } from './BannerPage';
 export { default as Checkbox } from './Checkbox';
