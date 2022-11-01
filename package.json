@@ -35,6 +35,9 @@
     "react-ts-tradingview-widgets": "^1.0.11",
     "sharp": "^0.31.1"
   },
+  "overrides": {
+    "d3-color": "3.1.0"
+  },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.3.1",
     "@types/axios": "^0.14.0",

@@ -3,6 +3,13 @@
     @include index.flex-row;
     max-width: 1500px;
     margin: auto;
+    gap: 1rem;
+}
+
+.title {
+    @include index.flex-row;
+    align-items: center;
+    gap: .2rem;
 }
 
 .chart {
